@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QR Codes - Enqu&ecirc;te Appartements</title>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f1f5f9;color:#1e293b;padding:20px}
+
+.config{
+  max-width:600px;margin:0 auto 30px;background:#fff;border-radius:16px;
+  padding:24px;box-shadow:0 2px 12px rgba(0,0,0,0.06);
+}
+.config h1{font-size:22px;margin-bottom:6px;color:#0369a1}
+.config p{font-size:14px;color:#64748b;margin-bottom:16px}
+.config label{font-size:13px;font-weight:600;color:#475569;display:block;margin-bottom:4px}
+.config input{
+  width:100%;padding:12px 14px;border:2px solid #e2e8f0;border-radius:10px;
+  font-size:14px;margin-bottom:14px;font-family:inherit;
+}
+.config input:focus{outline:none;border-color:#0ea5e9}
+.config button{
+  padding:12px 24px;background:linear-gradient(135deg,#0369a1,#0ea5e9);
+  color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;
+  cursor:pointer;font-family:inherit;
+}
+.config button:hover{opacity:0.9}
+
+.actions{
+  max-width:600px;margin:0 auto 20px;display:flex;gap:10px;flex-wrap:wrap;
+}
+.actions button{
+  padding:10px 20px;border:2px solid #0ea5e9;border-radius:10px;
+  background:#fff;color:#0369a1;font-size:14px;font-weight:600;
+  cursor:pointer;font-family:inherit;
+}
+.actions button:hover{background:#f0f9ff}
+.actions .print-btn{background:#0369a1;color:#fff;border-color:#0369a1}
+.actions .print-btn:hover{opacity:0.9}
+
+/* GRID */
+.grid{
+  max-width:800px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;
+}
+
+/* CARD */
+.qr-card{
+  background:#fff;border-radius:16px;padding:20px;text-align:center;
+  box-shadow:0 2px 12px rgba(0,0,0,0.06);border:1px solid #e2e8f0;
+  break-inside:avoid;
+}
+.qr-card .residence{font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.qr-card .appart{font-size:18px;font-weight:700;color:#0369a1;margin-bottom:12px}
+.qr-card canvas{display:block;margin:0 auto 12px}
+.qr-card .invite{font-size:12px;color:#64748b;line-height:1.5}
+.qr-card .invite strong{color:#1e293b}
+
+/* PRINT */
+@media print{
+  body{background:#fff;padding:0}
+  .config,.actions{display:none!important}
+  .grid{grid-template-columns:repeat(3,1fr);gap:12px;max-width:100%}
+  .qr-card{
+    box-shadow:none;border:2px solid #e2e8f0;padding:14px;
+    page-break-inside:avoid;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="config" id="config">
+  <h1>&#x1F4F1; G&eacute;n&eacute;rateur de QR Codes</h1>
+  <p>Entrez l'URL de base de votre questionnaire (ex: votre site Netlify), puis cliquez sur G&eacute;n&eacute;rer.</p>
+  <label for="baseUrl">URL de base du questionnaire</label>
+  <input type="text" id="baseUrl" placeholder="https://enquete-berck.netlify.app" value="">
+  <button onclick="generateAll()">G&eacute;n&eacute;rer tous les QR Codes</button>
+</div>
+
+<div class="actions" id="actions" style="display:none">
+  <button onclick="window.print()" class="print-btn">&#x1F5A8;&#xFE0F; Imprimer les QR Codes</button>
+  <button onclick="document.getElementById('config').style.display='block'">Modifier l'URL</button>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<script>
+var APPARTEMENTS = {
+  'Le 23': ['Kitesurf', 'Hamac', 'Paddle', 'Surf', 'Famille'],
+  'Le 25': ['Baln\u00e9o', 'Spa'],
+  'Apollo': ['La R\u00e9serve', 'Kingston', 'Apollove', 'Apollo'],
+  'Albatros': ['Albatros'],
+  'Face Mer': ['Face Mer'],
+  'Grand Large': ['Grand Large'],
+  'Esplanade': ['Mini Love Room', 'Grande Love Room'],
+  'Rue Jeanne': ['Jeanne', 'Repos', 'Rotonde', 'Patio'],
+  'Terrasse': ['Terrasse', 'C\u0153ur']
+};
+
+function generateAll() {
+  var base = document.getElementById('baseUrl').value.trim().replace(/\/$/,'');
+  if (!base) { alert('Veuillez entrer l\'URL de base'); return; }
+
+  var grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  document.getElementById('config').style.display = 'none';
+  document.getElementById('actions').style.display = 'flex';
+
+  for (var res in APPARTEMENTS) {
+    var apparts = APPARTEMENTS[res];
+    for (var i = 0; i < apparts.length; i++) {
+      var nom = apparts[i];
+      var url = base + '/?appart=' + encodeURIComponent(nom);
+
+      var card = document.createElement('div');
+      card.className = 'qr-card';
+
+      card.innerHTML = '<div class="residence">' + escHtml(res) + '</div>' +
+        '<div class="appart">' + escHtml(nom) + '</div>' +
+        '<div id="qr-' + i + '-' + res.replace(/\s/g,'') + '"></div>' +
+        '<div class="invite"><strong>Votre avis compte !</strong><br>Scannez ce QR code pour<br>r\u00e9pondre \u00e0 notre enqu\u00eate</div>';
+
+      grid.appendChild(card);
+
+      // Generate QR
+      var qr = qrcode(0, 'M');
+      qr.addData(url);
+      qr.make();
+      var canvas = document.createElement('canvas');
+      var size = 180;
+      canvas.width = size;
+      canvas.height = size;
+      var ctx = canvas.getContext('2d');
+      var cellSize = size / qr.getModuleCount();
+      for (var row = 0; row < qr.getModuleCount(); row++) {
+        for (var col = 0; col < qr.getModuleCount(); col++) {
+          ctx.fillStyle = qr.isDark(row, col) ? '#0369a1' : '#ffffff';
+          ctx.fillRect(col * cellSize, row * cellSize, cellSize + 1, cellSize + 1);
+        }
+      }
+      card.querySelector('[id^="qr-"]').appendChild(canvas);
+    }
+  }
+}
+
+function escHtml(s) {
+  var d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+// Auto-detect base URL
+(function() {
+  var loc = window.location;
+  if (loc.protocol === 'https:' || loc.protocol === 'http:') {
+    var base = loc.origin + loc.pathname.replace(/\/qrcodes\.html.*$/,'');
+    document.getElementById('baseUrl').value = base;
+  }
+})();
+</script>
+</body>
+</html>
