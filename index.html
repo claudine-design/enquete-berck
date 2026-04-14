@@ -294,6 +294,18 @@ textarea{resize:vertical;min-height:80px}
       </div>
     </div>
 
+    <!-- Q9 - COMMENTAIRE LIBRE -->
+    <div class="card">
+      <div class="card-title"><span class="num">9</span> &#x1F4AC; Un mot &agrave; nous dire ?</div>
+      <p style="font-size:13px;color:#64748b;margin-bottom:12px;line-height:1.5">
+        Positif ou n&eacute;gatif, dites-nous tout ! C'est ici que vous pouvez vous exprimer librement.
+        Votre retour nous aide vraiment &agrave; progresser &#x1F64F;
+      </p>
+      <div class="form-group">
+        <textarea id="q9" placeholder="Ce que vous avez aim&eacute;, ce qui pourrait &ecirc;tre am&eacute;lior&eacute;, une anecdote, un coup de c&oelig;ur..." rows="5" style="min-height:120px"></textarea>
+      </div>
+    </div>
+
     <!-- CONSENT -->
     <div class="card">
       <div class="consent">
@@ -313,12 +325,19 @@ textarea{resize:vertical;min-height:80px}
     </div>
   </form>
 
-  <!-- THANK YOU -->
+  <!-- THANK YOU (standard) -->
   <div class="thank-you" id="thankYou">
     <div class="check">&#x2713;</div>
     <h2>Merci beaucoup !</h2>
-    <p>Votre avis nous est pr&eacute;cieux et nous aidera &agrave; am&eacute;liorer votre exp&eacute;rience.<br><br>
+    <p id="thankMsg">Votre avis nous est pr&eacute;cieux et nous aidera &agrave; am&eacute;liorer votre exp&eacute;rience.<br><br>
     Nous esp&eacute;rons vous revoir tr&egrave;s bient&ocirc;t &agrave; Berck-sur-Mer ! &#x1F30A;</p>
+    <!-- PROMO CODE (shown only if guest wants to return) -->
+    <div id="promoBlock" style="display:none;margin-top:24px;padding:24px 20px;background:linear-gradient(135deg,#f0f9ff,#e0f2fe);border-radius:16px;border:2px solid #0ea5e9">
+      <p style="font-size:15px;color:#0369a1;font-weight:700;margin-bottom:8px">&#x1F381; Un cadeau pour votre prochain s&eacute;jour !</p>
+      <p style="font-size:13px;color:#475569;margin-bottom:14px;line-height:1.5">Pour vous remercier de votre confiance, b&eacute;n&eacute;ficiez de <strong>10% de r&eacute;duction</strong> sur votre prochaine r&eacute;servation :</p>
+      <div style="background:linear-gradient(135deg,#0369a1,#0ea5e9);color:#fff;padding:16px;border-radius:12px;text-align:center;font-size:22px;font-weight:800;letter-spacing:3px" id="promoCode">BERCK10</div>
+      <p style="font-size:11px;color:#94a3b8;margin-top:10px;text-align:center">Mentionnez ce code lors de votre r&eacute;servation sur notre site</p>
+    </div>
   </div>
 
   <div class="footer">Appart-H&ocirc;tel Berck-sur-Mer &bull; Claudine Podvin</div>
@@ -390,6 +409,7 @@ function submitForm(e) {
     q6: document.getElementById('q6').value.trim(),
     q7: form.querySelector('input[name="q7"]:checked').value,
     q8: form.querySelector('input[name="q8"]:checked').value,
+    q9: document.getElementById('q9').value.trim(),
     consent: document.getElementById('consent').checked ? 'oui' : 'non'
   };
 
@@ -413,7 +433,18 @@ function submitForm(e) {
       if (resp.success) {
         form.style.display = 'none';
         document.getElementById('formHeader').style.display = 'none';
-        document.getElementById('thankYou').classList.add('visible');
+        var thankYou = document.getElementById('thankYou');
+        thankYou.classList.add('visible');
+
+        // Adapt thank-you based on answers
+        var veutRevenir = data.q7;
+        if (veutRevenir === 'Oui' || veutRevenir === 'Peut-\u00eatre') {
+          document.getElementById('promoBlock').style.display = 'block';
+          document.getElementById('thankMsg').innerHTML = 'Votre avis nous est pr\u00e9cieux et nous aidera \u00e0 am\u00e9liorer votre exp\u00e9rience.<br><br>Nous sommes ravis que vous souhaitiez revenir ! \u{1F60D}';
+        } else {
+          document.getElementById('thankMsg').innerHTML = 'Nous sommes d\u00e9sol\u00e9s que votre exp\u00e9rience n\u2019ait pas \u00e9t\u00e9 parfaite.<br>Votre retour est tr\u00e8s important et nous allons tout faire pour nous am\u00e9liorer.<br><br>Merci pour votre honn\u00eat\u00e9 \u{1F64F}';
+        }
+
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         throw new Error(resp.error || 'Erreur serveur');

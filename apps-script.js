@@ -34,10 +34,11 @@ function doGet(e) {
         'Nom Prenom', 'Telephone', 'Ville/Region/Pays', 'Email',
         'Q1 Accueil', 'Q2 Attentes', 'Q3 Appreciation',
         'Q4 Qualite/Prix', 'Q5 Proprete', 'Q6 Ameliorations',
-        'Q7 Revenir', 'Q8 Recommander', 'Consent Marketing'
+        'Q7 Revenir', 'Q8 Recommander', 'Q9 Commentaire libre',
+        'Consent Marketing'
       ]);
       // Style en-tete
-      sheetR.getRange(1, 1, 1, 16).setFontWeight('bold').setBackground('#0369a1').setFontColor('#ffffff');
+      sheetR.getRange(1, 1, 1, 17).setFontWeight('bold').setBackground('#0369a1').setFontColor('#ffffff');
       sheetR.setFrozenRows(1);
     }
 
@@ -57,6 +58,7 @@ function doGet(e) {
       p.q6 || '',
       p.q7 || '',
       p.q8 || '',
+      p.q9 || '',
       p.consent || 'non'
     ]);
 
@@ -94,6 +96,41 @@ function doGet(e) {
         p.email,
         p.nom || '',
         p.ville || '',
+        new Date().toLocaleString('fr-FR')
+      ]);
+    }
+
+    // --- Onglet "Veulent Revenir" (Q7 = Oui ou Peut-etre) ---
+    if (p.email && (p.q7 === 'Oui' || p.q7 === 'Peut-\u00eatre')) {
+      var sheetVR = ss.getSheetByName('Veulent Revenir');
+      if (!sheetVR) {
+        sheetVR = ss.insertSheet('Veulent Revenir');
+        sheetVR.appendRow(['Email', 'Nom Prenom', 'Telephone', 'Ville', 'Appartement', 'Residence', 'Note Accueil', 'Recommande', 'Commentaire', 'Date']);
+        sheetVR.getRange(1, 1, 1, 10).setFontWeight('bold').setBackground('#10b981').setFontColor('#ffffff');
+        sheetVR.setFrozenRows(1);
+      }
+      sheetVR.appendRow([
+        p.email, p.nom || '', p.tel || '', p.ville || '',
+        p.appart || '', p.residence || '',
+        p.q1 || '', p.q8 || '', p.q9 || '',
+        new Date().toLocaleString('fr-FR')
+      ]);
+    }
+
+    // --- Onglet "Ne veulent pas revenir" (Q7 = Non) ---
+    if (p.email && p.q7 === 'Non') {
+      var sheetNR = ss.getSheetByName('Ne veulent pas revenir');
+      if (!sheetNR) {
+        sheetNR = ss.insertSheet('Ne veulent pas revenir');
+        sheetNR.appendRow(['Email', 'Nom Prenom', 'Telephone', 'Ville', 'Appartement', 'Residence', 'Note Accueil', 'Attentes OK', 'Proprete', 'Ameliorations', 'Commentaire', 'Date']);
+        sheetNR.getRange(1, 1, 1, 12).setFontWeight('bold').setBackground('#dc2626').setFontColor('#ffffff');
+        sheetNR.setFrozenRows(1);
+      }
+      sheetNR.appendRow([
+        p.email, p.nom || '', p.tel || '', p.ville || '',
+        p.appart || '', p.residence || '',
+        p.q1 || '', p.q2 || '', p.q5 || '',
+        p.q6 || '', p.q9 || '',
         new Date().toLocaleString('fr-FR')
       ]);
     }
