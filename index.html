@@ -203,6 +203,10 @@ textarea{resize:vertical;min-height:80px}
       <div class="form-group">
         <label for="tel">T&eacute;l&eacute;phone</label>
         <input type="tel" id="tel" placeholder="06 12 34 56 78" autocomplete="tel">
+        <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+          <input type="checkbox" id="whatsapp" style="width:20px;height:20px;accent-color:#25D366;cursor:pointer;flex-shrink:0">
+          <label for="whatsapp" style="font-size:13px;color:#475569;cursor:pointer;margin-bottom:0">&#x1F4AC; Joignable sur WhatsApp</label>
+        </div>
       </div>
       <div class="form-group">
         <label for="ville">Ville / R&eacute;gion / Pays *</label>
@@ -422,6 +426,7 @@ function submitForm(e) {
     residence: RESIDENCES[appart],
     nom: document.getElementById('nom').value.trim(),
     tel: document.getElementById('tel').value.trim(),
+    whatsapp: document.getElementById('whatsapp').checked ? 'oui' : 'non',
     ville: document.getElementById('ville').value.trim(),
     email: document.getElementById('email').value.trim(),
     q1: form.querySelector('input[name="q1"]:checked').value,

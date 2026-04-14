@@ -31,14 +31,14 @@ function doGet(e) {
       sheetR = ss.insertSheet('Reponses');
       sheetR.appendRow([
         'Horodatage', 'Residence', 'Appartement',
-        'Nom Prenom', 'Telephone', 'Ville/Region/Pays', 'Email',
+        'Nom Prenom', 'Telephone', 'WhatsApp', 'Ville/Region/Pays', 'Email',
         'Q1 Accueil', 'Q2 Attentes', 'Q3 Appreciation',
         'Q4 Qualite/Prix', 'Q5 Proprete', 'Q6 Ameliorations',
         'Q7 Revenir', 'Q8 Recommander', 'Q9 Commentaire libre',
         'Consent Marketing'
       ]);
       // Style en-tete
-      sheetR.getRange(1, 1, 1, 17).setFontWeight('bold').setBackground('#0369a1').setFontColor('#ffffff');
+      sheetR.getRange(1, 1, 1, 18).setFontWeight('bold').setBackground('#0369a1').setFontColor('#ffffff');
       sheetR.setFrozenRows(1);
     }
 
@@ -48,6 +48,7 @@ function doGet(e) {
       p.appart || '',
       p.nom || '',
       p.tel || '',
+      p.whatsapp || 'non',
       p.ville || '',
       p.email || '',
       p.q1 || '',
@@ -66,8 +67,8 @@ function doGet(e) {
     var sheetE = ss.getSheetByName('Emails');
     if (!sheetE) {
       sheetE = ss.insertSheet('Emails');
-      sheetE.appendRow(['Email', 'Nom Prenom', 'Appartement', 'Residence', 'Ville', 'Date', 'Consent Marketing']);
-      sheetE.getRange(1, 1, 1, 7).setFontWeight('bold').setBackground('#10b981').setFontColor('#ffffff');
+      sheetE.appendRow(['Email', 'Nom Prenom', 'Telephone', 'WhatsApp', 'Appartement', 'Residence', 'Ville', 'Date', 'Consent Marketing']);
+      sheetE.getRange(1, 1, 1, 9).setFontWeight('bold').setBackground('#10b981').setFontColor('#ffffff');
       sheetE.setFrozenRows(1);
     }
 
@@ -75,6 +76,8 @@ function doGet(e) {
       sheetE.appendRow([
         p.email,
         p.nom || '',
+        p.tel || '',
+        p.whatsapp || 'non',
         p.appart || '',
         p.residence || '',
         p.ville || '',
