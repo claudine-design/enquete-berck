@@ -138,6 +138,45 @@ function doGet(e) {
       ]);
     }
 
+    // --- ALERTE EMAIL automatique si avis negatif ---
+    var alertes = [];
+    if (p.q5 === 'Sale') alertes.push('\u26a0\ufe0f Propret\u00e9 : SALE');
+    if (p.q1 === 'M\u00e9diocre') alertes.push('\u26a0\ufe0f Accueil : M\u00c9DIOCRE');
+    if (p.q2 === 'Non') alertes.push('\u26a0\ufe0f Attentes NON respect\u00e9es');
+    if (p.q4 === 'M\u00e9diocre') alertes.push('\u26a0\ufe0f Qualit\u00e9/prix : M\u00c9DIOCRE');
+    if (p.q7 === 'Non') alertes.push('\u26a0\ufe0f Ne veut PAS revenir');
+
+    if (alertes.length > 0) {
+      var sujet = '\u{1f6a8} ALERTE ENQUETE - ' + (p.appart || '?') + ' (' + (p.residence || '') + ')';
+      var corps = 'Bonjour Claudine,\n\n'
+        + 'Un voyageur vient de donner un avis n\u00e9gatif :\n\n'
+        + '\u{1f3e0} Appartement : ' + (p.appart || '?') + ' (' + (p.residence || '') + ')\n'
+        + '\u{1f464} Voyageur : ' + (p.nom || '?') + '\n'
+        + '\u{1f4e7} Email : ' + (p.email || '?') + '\n'
+        + '\u{1f4de} T\u00e9l : ' + (p.tel || 'non renseign\u00e9') + (p.whatsapp === 'oui' ? ' (WhatsApp \u2705)' : '') + '\n'
+        + '\u{1f4cd} Ville : ' + (p.ville || '?') + '\n\n'
+        + '--- ALERTES ---\n'
+        + alertes.join('\n') + '\n\n'
+        + '--- D\u00c9TAIL DES NOTES ---\n'
+        + 'Accueil : ' + (p.q1 || '?') + '\n'
+        + 'Attentes : ' + (p.q2 || '?') + '\n'
+        + 'Appr\u00e9ciation : ' + (p.q3 || '?') + '\n'
+        + 'Qualit\u00e9/prix : ' + (p.q4 || '?') + '\n'
+        + 'Propret\u00e9 : ' + (p.q5 || '?') + '\n'
+        + 'Am\u00e9liorations : ' + (p.q6 || 'aucune') + '\n'
+        + 'Revenir : ' + (p.q7 || '?') + '\n'
+        + 'Recommande : ' + (p.q8 || '?') + '\n\n'
+        + '--- COMMENTAIRE LIBRE ---\n'
+        + (p.q9 || '(aucun commentaire)') + '\n\n'
+        + '---\nEnqu\u00eate Appart-H\u00f4tel Berck (automatique)';
+
+      try {
+        MailApp.sendEmail('princessedopale@gmail.com', sujet, corps);
+      } catch(err) {
+        // silencieux si quota email depasse
+      }
+    }
+
     return json({ success: true });
   }
 
