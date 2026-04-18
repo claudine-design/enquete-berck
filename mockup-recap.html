@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup Récap Enquête Berck</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f1f5f9;color:#1e293b;line-height:1.5}
+.container{max-width:980px;margin:0 auto;padding:20px}
+.tabs{display:flex;gap:4px;background:#fff;padding:6px;border-radius:12px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.06);overflow-x:auto}
+.tabs button{flex:1;min-width:180px;padding:12px 16px;border:none;background:transparent;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;color:#64748b;font-family:inherit;white-space:nowrap}
+.tabs button.active{background:linear-gradient(135deg,#0369a1,#0ea5e9);color:#fff}
+.panel{display:none}
+.panel.active{display:block}
+
+/* Cards */
+.card{background:#fff;border-radius:16px;padding:24px;margin-bottom:20px;box-shadow:0 2px 12px rgba(0,0,0,0.06)}
+.card h1{font-size:22px;color:#0369a1;margin-bottom:6px}
+.card h2{font-size:17px;color:#0369a1;margin:18px 0 12px}
+.card .subtitle{color:#64748b;font-size:14px;margin-bottom:16px}
+
+/* Stats grid */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-top:12px}
+.stat-card{background:linear-gradient(135deg,#fff,#f8fafc);border:2px solid #e2e8f0;border-radius:14px;padding:18px;text-align:center}
+.stat-card .label{font-size:13px;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;font-weight:600}
+.stat-card .big{font-size:32px;font-weight:800;color:#0369a1}
+.stat-card.good{border-color:#86efac;background:linear-gradient(135deg,#f0fdf4,#dcfce7)}
+.stat-card.good .big{color:#16a34a}
+.stat-card.bad{border-color:#fca5a5;background:linear-gradient(135deg,#fef2f2,#fee2e2)}
+.stat-card.bad .big{color:#dc2626}
+
+/* Donuts SVG */
+.donut-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:20px;margin:12px 0}
+.donut-item{text-align:center}
+.donut-label{font-size:13px;font-weight:600;color:#475569;margin-top:6px}
+.donut-sub{font-size:11px;color:#94a3b8}
+
+/* Apart list */
+.apart-row{display:grid;grid-template-columns:170px 1fr auto;gap:14px;align-items:center;padding:14px 16px;border-bottom:1px solid #e2e8f0}
+.apart-row:last-child{border-bottom:none}
+.apart-name{font-weight:700;color:#1e293b;font-size:14px}
+.apart-res{font-size:12px;color:#94a3b8}
+.bar-wrap{height:10px;background:#e2e8f0;border-radius:5px;overflow:hidden;position:relative}
+.bar{height:100%;border-radius:5px}
+.bar.green{background:linear-gradient(90deg,#10b981,#34d399)}
+.bar.red{background:linear-gradient(90deg,#dc2626,#f87171)}
+.bar.amber{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+.apart-pct{font-weight:700;font-size:14px;min-width:54px;text-align:right}
+
+/* Trend badges */
+.trend{display:inline-block;padding:3px 10px;border-radius:10px;font-size:11px;font-weight:700}
+.trend.up{background:#dcfce7;color:#16a34a}
+.trend.down{background:#fee2e2;color:#dc2626}
+.trend.flat{background:#e2e8f0;color:#64748b}
+
+/* Alert banner */
+.alert-banner{background:linear-gradient(135deg,#fef2f2,#fee2e2);border:2px solid #fecaca;border-radius:12px;padding:14px 18px;margin:14px 0;display:flex;align-items:center;gap:12px}
+.alert-banner .ico{font-size:28px}
+.alert-banner .text{flex:1}
+.alert-banner .title{font-weight:700;color:#991b1b}
+.alert-banner .desc{font-size:13px;color:#7f1d1d}
+
+/* Email preview */
+.email-preview{max-width:640px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.1)}
+.email-head{background:linear-gradient(135deg,#0369a1,#0ea5e9);color:#fff;padding:24px}
+.email-head h1{font-size:22px;margin:0}
+.email-head .meta{font-size:13px;opacity:0.85;margin-top:6px}
+.email-body{padding:24px;font-size:14px;color:#1e293b}
+.email-body h2{font-size:16px;color:#0369a1;margin:20px 0 10px}
+.email-body table{width:100%;border-collapse:collapse;font-size:14px;margin:8px 0}
+.email-body table td{padding:8px 10px;border-bottom:1px solid #e2e8f0}
+.email-body .summary-box{background:#f0f9ff;border-left:4px solid #0ea5e9;padding:12px 14px;border-radius:8px;margin:12px 0}
+.email-body .warn-box{background:#fef2f2;border-left:4px solid #dc2626;padding:12px 14px;border-radius:8px;margin:12px 0}
+.email-body .good-box{background:#f0fdf4;border-left:4px solid #10b981;padding:12px 14px;border-radius:8px;margin:12px 0}
+.email-footer{background:#f8fafc;padding:14px;text-align:center;font-size:12px;color:#94a3b8;border-top:1px solid #e2e8f0}
+
+/* Rappel top */
+.note{background:#fef3c7;border:1px solid #fde68a;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#78350f}
+.note b{color:#92400e}
+
+@media(max-width:640px){
+  .apart-row{grid-template-columns:1fr}
+  .apart-pct{text-align:left}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="note">
+    <b>🔍 MOCKUP VALIDATION</b> — Ce fichier présente le rendu visuel du dashboard récap et des emails prestataires/direction. Les données affichées sont <b>fictives</b>. Valide le look général, je connecterai ensuite aux vraies données du Google Sheet.
+  </div>
+
+  <div class="tabs">
+    <button class="active" onclick="showTab('dash', this)">📊 Dashboard global</button>
+    <button onclick="showTab('weekly', this)">📮 Email hebdo Prestataire</button>
+    <button onclick="showTab('monthly', this)">📅 Email mensuel Direction</button>
+    <button onclick="showTab('alert', this)">🚨 Alerte appart décroche</button>
+  </div>
+
+  <!-- ============ DASHBOARD GLOBAL ============ -->
+  <div class="panel active" id="dash">
+
+    <div class="card">
+      <h1>📊 Tableau de bord global — 21 appartements</h1>
+      <div class="subtitle">Données consolidées des 30 derniers jours · 42 avis reçus</div>
+
+      <div class="stats-grid">
+        <div class="stat-card good"><div class="label">Satisfaction générale</div><div class="big">87%</div></div>
+        <div class="stat-card good"><div class="label">Veulent revenir</div><div class="big">76%</div></div>
+        <div class="stat-card"><div class="label">Avis reçus ce mois</div><div class="big">42</div></div>
+        <div class="stat-card bad"><div class="label">Alertes actives</div><div class="big">2</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🧹 Classement Propreté (% d'avis "Sale" ou "Normale")</h2>
+      <div class="subtitle">Plus le pourcentage est haut, plus il y a de problèmes de ménage signalés.</div>
+
+      <div class="apart-row">
+        <div><div class="apart-name">Apollove</div><div class="apart-res">Apollo · Clara</div></div>
+        <div class="bar-wrap"><div class="bar red" style="width:40%"></div></div>
+        <div class="apart-pct" style="color:#dc2626">40%</div>
+      </div>
+      <div class="apart-row">
+        <div><div class="apart-name">Hamac</div><div class="apart-res">Le 23 · Rémi</div></div>
+        <div class="bar-wrap"><div class="bar amber" style="width:22%"></div></div>
+        <div class="apart-pct" style="color:#f59e0b">22%</div>
+      </div>
+      <div class="apart-row">
+        <div><div class="apart-name">Rotonde</div><div class="apart-res">Ru Jeanne · Christelle</div></div>
+        <div class="bar-wrap"><div class="bar amber" style="width:15%"></div></div>
+        <div class="apart-pct" style="color:#f59e0b">15%</div>
+      </div>
+      <div class="apart-row">
+        <div><div class="apart-name">Kitesurf</div><div class="apart-res">Le 23 · Rémi</div></div>
+        <div class="bar-wrap"><div class="bar green" style="width:5%"></div></div>
+        <div class="apart-pct" style="color:#10b981">5%</div>
+      </div>
+      <div class="apart-row">
+        <div><div class="apart-name">Cocon Romantique</div><div class="apart-res">Le 25 · Clara</div></div>
+        <div class="bar-wrap"><div class="bar green" style="width:0%"></div></div>
+        <div class="apart-pct" style="color:#10b981">0%</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>💡 Classement "À améliorer" (% d'avis avec suggestions)</h2>
+
+      <div class="apart-row">
+        <div><div class="apart-name">Surf</div><div class="apart-res">Le 23 · Rémi</div></div>
+        <div class="bar-wrap"><div class="bar amber" style="width:60%"></div></div>
+        <div class="apart-pct" style="color:#f59e0b">60%</div>
+      </div>
+      <div class="apart-row">
+        <div><div class="apart-name">Patio</div><div class="apart-res">Ru Jeanne · Christelle</div></div>
+        <div class="bar-wrap"><div class="bar amber" style="width:45%"></div></div>
+        <div class="apart-pct" style="color:#f59e0b">45%</div>
+      </div>
+      <div class="apart-row">
+        <div><div class="apart-name">Grand Large</div><div class="apart-res">· Christelle</div></div>
+        <div class="bar-wrap"><div class="bar green" style="width:12%"></div></div>
+        <div class="apart-pct" style="color:#10b981">12%</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>❤️ Classement "Veulent revenir"</h2>
+
+      <div class="apart-row">
+        <div><div class="apart-name">Cocon Romantique</div><div class="apart-res">Le 25 · Clara</div></div>
+        <div class="bar-wrap"><div class="bar green" style="width:100%"></div></div>
+        <div class="apart-pct" style="color:#10b981">100%</div>
+      </div>
+      <div class="apart-row">
+        <div><div class="apart-name">Grande Love Room</div><div class="apart-res">Esplanade · ?</div></div>
+        <div class="bar-wrap"><div class="bar green" style="width:95%"></div></div>
+        <div class="apart-pct" style="color:#10b981">95%</div>
+      </div>
+      <div class="apart-row">
+        <div><div class="apart-name">Kitesurf</div><div class="apart-res">Le 23 · Rémi</div></div>
+        <div class="bar-wrap"><div class="bar green" style="width:90%"></div></div>
+        <div class="apart-pct" style="color:#10b981">90%</div>
+      </div>
+      <div class="apart-row">
+        <div><div class="apart-name">Apollove</div><div class="apart-res">Apollo · Clara</div></div>
+        <div class="bar-wrap"><div class="bar red" style="width:50%"></div></div>
+        <div class="apart-pct" style="color:#dc2626">50%</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🎯 Fiche appart — Apollove (Apollo · Clara)</h2>
+      <div class="subtitle">Visuels de performance de cet appartement · 8 avis</div>
+
+      <div class="donut-row">
+        <div class="donut-item">
+          <svg viewBox="0 0 80 80" width="120" height="120">
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#e2e8f0" stroke-width="12"/>
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#dc2626" stroke-width="12" stroke-dasharray="80.4 200" stroke-dashoffset="0" transform="rotate(-90 40 40)"/>
+            <text x="40" y="44" text-anchor="middle" font-size="16" font-weight="700" fill="#dc2626">40%</text>
+          </svg>
+          <div class="donut-label">Problèmes ménage</div>
+          <div class="donut-sub">3 avis sur 8</div>
+        </div>
+        <div class="donut-item">
+          <svg viewBox="0 0 80 80" width="120" height="120">
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#e2e8f0" stroke-width="12"/>
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#f59e0b" stroke-width="12" stroke-dasharray="120.6 200" stroke-dashoffset="0" transform="rotate(-90 40 40)"/>
+            <text x="40" y="44" text-anchor="middle" font-size="16" font-weight="700" fill="#f59e0b">60%</text>
+          </svg>
+          <div class="donut-label">À améliorer</div>
+          <div class="donut-sub">suggestions reçues</div>
+        </div>
+        <div class="donut-item">
+          <svg viewBox="0 0 80 80" width="120" height="120">
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#e2e8f0" stroke-width="12"/>
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#10b981" stroke-width="12" stroke-dasharray="100.5 200" stroke-dashoffset="0" transform="rotate(-90 40 40)"/>
+            <text x="40" y="44" text-anchor="middle" font-size="16" font-weight="700" fill="#10b981">50%</text>
+          </svg>
+          <div class="donut-label">Veulent revenir</div>
+          <div class="donut-sub">faible vs moyenne</div>
+        </div>
+        <div class="donut-item">
+          <!-- Demi-lune pour tendance -->
+          <svg viewBox="0 0 100 55" width="120" height="66">
+            <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#e2e8f0" stroke-width="8" stroke-linecap="round"/>
+            <path d="M 10 50 A 40 40 0 0 1 65 18" fill="none" stroke="#dc2626" stroke-width="8" stroke-linecap="round"/>
+            <text x="50" y="45" text-anchor="middle" font-size="14" font-weight="700" fill="#dc2626">3.2/5</text>
+          </svg>
+          <div class="donut-label">Note globale</div>
+          <div class="donut-sub"><span class="trend down">📉 -0.8 vs mois dernier</span></div>
+        </div>
+      </div>
+
+      <div class="alert-banner">
+        <div class="ico">⚠️</div>
+        <div class="text">
+          <div class="title">Cet appart décroche vs les autres</div>
+          <div class="desc">40% de problèmes ménage contre 11% en moyenne. Tendance en baisse depuis 2 mois. Un email a été envoyé au prestataire.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ EMAIL HEBDO PRESTATAIRE ============ -->
+  <div class="panel" id="weekly">
+
+    <div class="card">
+      <h1>📮 Email hebdo envoyé chaque lundi matin</h1>
+      <div class="subtitle">Chaque prestataire reçoit uniquement les avis de SES appartements. Copie automatique à <b>princessedopale@gmail.com</b>.</div>
+    </div>
+
+    <div class="email-preview">
+      <div class="email-head">
+        <h1>🧹 Ton récap de la semaine — Clara</h1>
+        <div class="meta">Semaine du 12 au 18 avril 2026 · 5 avis reçus</div>
+      </div>
+      <div class="email-body">
+        <p>Bonjour Clara,</p>
+        <p>Voici le résumé des avis voyageurs pour tes appartements cette semaine.</p>
+
+        <div class="good-box">
+          <b>✨ Très bon retour</b> — Cocon Romantique : 3 avis tous très positifs, 100% veulent revenir. Continue comme ça !
+        </div>
+
+        <div class="warn-box">
+          <b>⚠️ À surveiller</b> — Apollove : 2 avis mentionnent un problème de ménage (poussière sous le lit, salle de bain). Détails ci-dessous.
+        </div>
+
+        <h2>🏠 Par appartement</h2>
+        <table>
+          <tr>
+            <td><b>Cocon Romantique</b><br><span style="font-size:12px;color:#64748b">Le 25</span></td>
+            <td>3 avis · ⭐⭐⭐⭐⭐ · 100% reviennent<br><span style="color:#10b981;font-size:12px">✅ Tous très contents</span></td>
+          </tr>
+          <tr>
+            <td><b>Apollove</b><br><span style="font-size:12px;color:#64748b">Apollo</span></td>
+            <td>2 avis · ⭐⭐⭐ · 50% reviennent<br><span style="color:#dc2626;font-size:12px">⚠️ 2 problèmes ménage signalés</span></td>
+          </tr>
+        </table>
+
+        <h2>🧹 Détails des problèmes ménage</h2>
+        <div class="warn-box">
+          <b>Apollove — 15/04/2026 — Marie D.</b><br>
+          "Il y avait de la poussière sous le lit et des cheveux dans la douche. Le reste était OK mais ces détails gâchent l'expérience."
+        </div>
+        <div class="warn-box">
+          <b>Apollove — 17/04/2026 — Paul M.</b><br>
+          "Miroir de salle de bain taché, plan de travail de la cuisine pas bien essuyé."
+        </div>
+
+        <h2>💡 Suggestions d'amélioration reçues</h2>
+        <div class="summary-box">
+          <b>Cocon Romantique :</b> "Rajouter une bouilloire serait top"<br>
+          <b>Apollove :</b> "Les rideaux ne ferment pas complètement"
+        </div>
+
+        <div class="good-box" style="margin-top:18px">
+          <b>📊 Ton score de la semaine :</b> 82/100 · <span class="trend flat">➡️ stable</span>
+        </div>
+
+        <p style="margin-top:20px;font-size:13px;color:#64748b">Bon courage pour cette nouvelle semaine 🙏<br>Claudine</p>
+      </div>
+      <div class="email-footer">Envoyé automatiquement tous les lundis · Appart-Hôtel Berck</div>
+    </div>
+  </div>
+
+  <!-- ============ EMAIL MENSUEL DIRECTION ============ -->
+  <div class="panel" id="monthly">
+
+    <div class="card">
+      <h1>📅 Email mensuel envoyé le dernier jour du mois</h1>
+      <div class="subtitle">Bilan par appartement avec tendance (stable / amélioration / dégradation). Envoyé à chaque prestataire + copie à <b>princessedopale@gmail.com</b>.</div>
+    </div>
+
+    <div class="email-preview">
+      <div class="email-head" style="background:linear-gradient(135deg,#7c3aed,#a855f7)">
+        <h1>📅 Bilan Avril 2026 — Clara</h1>
+        <div class="meta">Comparé à Mars 2026 · 18 avis ce mois</div>
+      </div>
+      <div class="email-body">
+        <p>Bonjour Clara,</p>
+        <p>Voici le bilan du mois d'<b>avril 2026</b> pour tes 6 appartements.</p>
+
+        <h2>🎯 Vue d'ensemble</h2>
+        <table>
+          <tr>
+            <td>Score moyen</td>
+            <td><b>4.2/5</b> <span class="trend up">📈 +0.3 vs mars</span></td>
+          </tr>
+          <tr>
+            <td>Avis reçus</td>
+            <td><b>18</b> <span class="trend up">📈 +4 vs mars</span></td>
+          </tr>
+          <tr>
+            <td>Veulent revenir</td>
+            <td><b>78%</b> <span class="trend up">📈 +12% vs mars</span></td>
+          </tr>
+          <tr>
+            <td>Problèmes ménage</td>
+            <td><b>11%</b> <span class="trend up">📈 -6% vs mars</span></td>
+          </tr>
+        </table>
+
+        <h2>🏠 Tendance par appartement</h2>
+
+        <div class="good-box">
+          <b>📈 Cocon Romantique — EN AMÉLIORATION</b><br>
+          Score 4.9/5 (+0.4) · 6 avis · 100% reviennent · 0% problème ménage<br>
+          <span style="font-size:12px;color:#166534">Excellent travail ! Les clients adorent l'ambiance romantique.</span>
+        </div>
+
+        <div class="warn-box">
+          <b>📉 Apollove — EN DÉGRADATION</b><br>
+          Score 3.2/5 (-0.8) · 8 avis · 50% reviennent · 40% problème ménage<br>
+          <span style="font-size:12px;color:#7f1d1d">Point d'attention sur la salle de bain et la poussière. Nécessite vigilance.</span>
+        </div>
+
+        <div class="summary-box">
+          <b>➡️ Hamac chic vue mer — STABLE</b><br>
+          Score 4.1/5 (=) · 4 avis · 75% reviennent · 10% problème ménage
+        </div>
+
+        <div class="summary-box">
+          <b>➡️ Balneo 100m Plage Jardin — STABLE</b><br>
+          Score 4.3/5 (+0.1) · 0 avis ce mois
+        </div>
+
+        <h2>🎖️ Top 3 des félicitations</h2>
+        <div class="good-box">
+          "Le Cocon Romantique est un vrai bijou, décoration parfaite, tout était immaculé." — Sophie L., 10/04<br><br>
+          "Séjour magique, on reviendra c'est sûr !" — Emma T., 15/04<br><br>
+          "Propreté irréprochable, accueil au top." — Julien P., 18/04
+        </div>
+
+        <h2>🔧 Points d'amélioration récurrents</h2>
+        <ul style="padding-left:20px;color:#475569;font-size:14px">
+          <li>Apollove : rideaux, miroir salle de bain, poussière</li>
+          <li>Suite Romantique : manque d'une bouilloire</li>
+        </ul>
+
+        <div style="background:linear-gradient(135deg,#e0e7ff,#ddd6fe);padding:16px;border-radius:10px;margin:20px 0;text-align:center">
+          <b>🏆 Score global du mois : 84/100</b><br>
+          <span style="color:#6d28d9;font-size:13px">Tu progresses bien, bravo !</span>
+        </div>
+
+        <p style="margin-top:20px;font-size:13px;color:#64748b">Un grand merci pour ton travail ce mois-ci 🙏<br>Claudine</p>
+      </div>
+      <div class="email-footer">Envoyé automatiquement fin de mois · Appart-Hôtel Berck</div>
+    </div>
+  </div>
+
+  <!-- ============ ALERTE APPART DÉCROCHE ============ -->
+  <div class="panel" id="alert">
+
+    <div class="card">
+      <h1>🚨 Alerte automatique si un appartement décroche</h1>
+      <div class="subtitle">Envoyée dès qu'un appart passe sous 50% de satisfaction ou > 30% problèmes ménage sur les 7 derniers jours. Envoyée à toi + au prestataire concerné.</div>
+    </div>
+
+    <div class="email-preview">
+      <div class="email-head" style="background:linear-gradient(135deg,#dc2626,#991b1b)">
+        <h1>🚨 Alerte : Apollove décroche</h1>
+        <div class="meta">Détectée automatiquement · 18 avril 2026</div>
+      </div>
+      <div class="email-body">
+        <div class="warn-box">
+          <b>⚠️ Problème détecté sur Apollove (Apollo · Clara)</b><br>
+          Cet appartement a 40% de plaintes ménage sur les 7 derniers jours, contre <b>11% en moyenne</b> sur tes 21 appartements.
+        </div>
+
+        <h2>📊 Détail</h2>
+        <table>
+          <tr><td>Problèmes ménage</td><td><b style="color:#dc2626">40%</b> (moyenne : 11%)</td></tr>
+          <tr><td>Veulent revenir</td><td><b style="color:#dc2626">50%</b> (moyenne : 76%)</td></tr>
+          <tr><td>Score moyen</td><td><b style="color:#dc2626">3.2/5</b> (moyenne : 4.3/5)</td></tr>
+          <tr><td>Avis négatifs consécutifs</td><td><b style="color:#dc2626">3 sur 3</b></td></tr>
+        </table>
+
+        <h2>💬 Verbatims clients récents</h2>
+        <div class="warn-box">"Poussière sous le lit, douche pas propre" — Marie D., 15/04</div>
+        <div class="warn-box">"Plan de travail sale, miroir taché" — Paul M., 17/04</div>
+        <div class="warn-box">"Je ne reviendrai pas, trop de petits détails qui gâchent" — Julie R., 18/04</div>
+
+        <h2>🎯 Actions recommandées</h2>
+        <ul style="padding-left:20px;color:#475569;font-size:14px;line-height:1.8">
+          <li>Prévenir Clara pour un check ménage approfondi</li>
+          <li>Envisager un passage de contrôle avant le prochain check-in</li>
+          <li>Éventuellement : geste commercial aux prochains clients</li>
+        </ul>
+
+        <p style="margin-top:20px;font-size:13px;color:#64748b">Cette alerte est automatique. Tu recevras un récap dans 7 jours pour suivre l'évolution.</p>
+      </div>
+      <div class="email-footer">Alerte automatique · Appart-Hôtel Berck</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function showTab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+
+</body>
+</html>

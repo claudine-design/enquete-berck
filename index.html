@@ -96,6 +96,17 @@ textarea{resize:vertical;min-height:80px}
 .options-2 .opt{min-width:calc(50% - 4px)}
 .options-3 .opt{min-width:calc(33% - 6px)}
 
+/* 5 niveaux avec aides — toujours en colonne verticale */
+.options-5{flex-direction:column;gap:8px}
+.options-5 .opt{min-width:100%;flex:none}
+.options-5 .opt label{
+  display:flex;flex-direction:column;align-items:flex-start;justify-content:center;
+  text-align:left;padding:12px 14px;min-height:auto;line-height:1.3;
+}
+.options-5 .opt-main{display:block;font-size:15px;font-weight:700;margin-bottom:2px}
+.options-5 .opt-hint{display:block;font-size:12px;color:#94a3b8;font-weight:400;font-style:italic}
+.options-5 .opt input:checked+label .opt-hint{color:#0369a1}
+
 /* CONSENT */
 .consent{
   display:flex;align-items:flex-start;gap:10px;
@@ -245,80 +256,97 @@ textarea{resize:vertical;min-height:80px}
       </div>
     </div>
 
-    <!-- Q1 -->
+    <!-- Q1 — Informations et entr&eacute;e dans le logement -->
     <div class="card">
-      <div class="card-title"><span class="num">1</span> Comment qualifiez-vous l'accueil ?</div>
-      <div class="options options-4">
-        <div class="opt"><input type="radio" name="q1" id="q1a" value="M&eacute;diocre" required><label for="q1a">M&eacute;diocre</label></div>
-        <div class="opt"><input type="radio" name="q1" id="q1b" value="Normal"><label for="q1b">Normal</label></div>
-        <div class="opt"><input type="radio" name="q1" id="q1c" value="Bon"><label for="q1c">Bon</label></div>
-        <div class="opt"><input type="radio" name="q1" id="q1d" value="Tr&egrave;s Bon"><label for="q1d">Tr&egrave;s Bon</label></div>
+      <div class="card-title"><span class="num">1</span> Informations et entr&eacute;e dans le logement</div>
+      <div class="subtitle" style="font-size:13px;color:#64748b;margin:-8px 0 12px;font-style:italic">Clart&eacute; des instructions d'arriv&eacute;e et r&eacute;activit&eacute; en cas de question</div>
+      <div class="options options-5">
+        <div class="opt"><input type="radio" name="q1" id="q1a" value="Tr&egrave;s d&eacute;cevant" required>
+          <label for="q1a"><span class="opt-main">&#x1F534; Tr&egrave;s d&eacute;cevant</span><span class="opt-hint">Instructions manquantes ou probl&egrave;me majeur d'entr&eacute;e</span></label></div>
+        <div class="opt"><input type="radio" name="q1" id="q1b" value="D&eacute;cevant">
+          <label for="q1b"><span class="opt-main">&#x1F7E0; D&eacute;cevant</span><span class="opt-hint">Informations incompl&egrave;tes ou r&eacute;ponses trop lentes</span></label></div>
+        <div class="opt"><input type="radio" name="q1" id="q1c" value="Correct">
+          <label for="q1c"><span class="opt-main">&#x1F7E1; Correct</span><span class="opt-hint">J'ai eu ce qu'il fallait</span></label></div>
+        <div class="opt"><input type="radio" name="q1" id="q1d" value="Bon">
+          <label for="q1d"><span class="opt-main">&#x1F7E2; Bon</span><span class="opt-hint">Instructions claires, bonne r&eacute;activit&eacute;</span></label></div>
+        <div class="opt"><input type="radio" name="q1" id="q1e" value="Excellent">
+          <label for="q1e"><span class="opt-main">&#x2B50; Excellent</span><span class="opt-hint">Tr&egrave;s bien pr&eacute;par&eacute;, entr&eacute;e tr&egrave;s simple</span></label></div>
       </div>
     </div>
 
-    <!-- Q2 -->
+    <!-- Q3 (visible: 2) — Appr&eacute;ciation g&eacute;n&eacute;rale -->
     <div class="card">
-      <div class="card-title"><span class="num">2</span> L'appartement a-t-il r&eacute;pondu &agrave; vos attentes d'apr&egrave;s l'annonce ?</div>
-      <div class="options options-2">
-        <div class="opt"><input type="radio" name="q2" id="q2a" value="Oui" required><label for="q2a">Oui</label></div>
-        <div class="opt"><input type="radio" name="q2" id="q2b" value="Non"><label for="q2b">Non</label></div>
+      <div class="card-title"><span class="num">2</span> Appr&eacute;ciation g&eacute;n&eacute;rale</div>
+      <div class="subtitle" style="font-size:13px;color:#64748b;margin:-8px 0 12px;font-style:italic">Situation, acc&egrave;s, vue, d&eacute;co&hellip;</div>
+      <div class="options options-5">
+        <div class="opt"><input type="radio" name="q3" id="q3a" value="Tr&egrave;s d&eacute;cevant" required>
+          <label for="q3a"><span class="opt-main">&#x1F534; Tr&egrave;s d&eacute;cevant</span><span class="opt-hint">Loin de ce que j'imaginais</span></label></div>
+        <div class="opt"><input type="radio" name="q3" id="q3b" value="D&eacute;cevant">
+          <label for="q3b"><span class="opt-main">&#x1F7E0; D&eacute;cevant</span><span class="opt-hint">Quelques points &agrave; revoir</span></label></div>
+        <div class="opt"><input type="radio" name="q3" id="q3c" value="Correct">
+          <label for="q3c"><span class="opt-main">&#x1F7E1; Correct</span><span class="opt-hint">Conforme &agrave; mes attentes</span></label></div>
+        <div class="opt"><input type="radio" name="q3" id="q3d" value="Bon">
+          <label for="q3d"><span class="opt-main">&#x1F7E2; Bon</span><span class="opt-hint">Agr&eacute;able, j'ai appr&eacute;ci&eacute;</span></label></div>
+        <div class="opt"><input type="radio" name="q3" id="q3e" value="Excellent">
+          <label for="q3e"><span class="opt-main">&#x2B50; Excellent</span><span class="opt-hint">J'ai ador&eacute;</span></label></div>
       </div>
     </div>
 
-    <!-- Q3 -->
+    <!-- Q4 (visible: 3) — Rapport qualit&eacute;/prix -->
     <div class="card">
-      <div class="card-title"><span class="num">3</span> Appr&eacute;ciation g&eacute;n&eacute;rale (situation, acc&egrave;s, vue, d&eacute;co...) ?</div>
-      <div class="options options-4">
-        <div class="opt"><input type="radio" name="q3" id="q3a" value="M&eacute;diocre" required><label for="q3a">M&eacute;diocre</label></div>
-        <div class="opt"><input type="radio" name="q3" id="q3b" value="Normal"><label for="q3b">Normal</label></div>
-        <div class="opt"><input type="radio" name="q3" id="q3c" value="Bon"><label for="q3c">Bon</label></div>
-        <div class="opt"><input type="radio" name="q3" id="q3d" value="Tr&egrave;s Bon"><label for="q3d">Tr&egrave;s Bon</label></div>
+      <div class="card-title"><span class="num">3</span> Rapport qualit&eacute;/prix de cette location</div>
+      <div class="options options-5">
+        <div class="opt"><input type="radio" name="q4" id="q4a" value="Trop cher" required>
+          <label for="q4a"><span class="opt-main">&#x1F534; Trop cher</span><span class="opt-hint">Beaucoup trop cher pour ce que c'est</span></label></div>
+        <div class="opt"><input type="radio" name="q4" id="q4b" value="Un peu cher">
+          <label for="q4b"><span class="opt-main">&#x1F7E0; Un peu cher</span><span class="opt-hint">Prix l&eacute;g&egrave;rement au-dessus</span></label></div>
+        <div class="opt"><input type="radio" name="q4" id="q4c" value="Correct">
+          <label for="q4c"><span class="opt-main">&#x1F7E1; Correct</span><span class="opt-hint">Prix juste</span></label></div>
+        <div class="opt"><input type="radio" name="q4" id="q4d" value="Bon rapport">
+          <label for="q4d"><span class="opt-main">&#x1F7E2; Bon rapport</span><span class="opt-hint">Plut&ocirc;t avantageux</span></label></div>
+        <div class="opt"><input type="radio" name="q4" id="q4e" value="Excellent">
+          <label for="q4e"><span class="opt-main">&#x2B50; Excellent</span><span class="opt-hint">Tr&egrave;s bon prix vu la qualit&eacute;</span></label></div>
       </div>
     </div>
 
-    <!-- Q4 -->
+    <!-- Q5 (visible: 4) — Propret&eacute; du logement -->
     <div class="card">
-      <div class="card-title"><span class="num">4</span> Rapport qualit&eacute;/prix de cette location ?</div>
-      <div class="options options-4">
-        <div class="opt"><input type="radio" name="q4" id="q4a" value="M&eacute;diocre" required><label for="q4a">M&eacute;diocre</label></div>
-        <div class="opt"><input type="radio" name="q4" id="q4b" value="Normal"><label for="q4b">Normal</label></div>
-        <div class="opt"><input type="radio" name="q4" id="q4c" value="Bon"><label for="q4c">Bon</label></div>
-        <div class="opt"><input type="radio" name="q4" id="q4d" value="Tr&egrave;s Bon"><label for="q4d">Tr&egrave;s Bon</label></div>
-      </div>
-    </div>
-
-    <!-- Q5 -->
-    <div class="card">
-      <div class="card-title"><span class="num">5</span> Propret&eacute; du logement &agrave; votre arriv&eacute;e ?</div>
-      <div class="options options-4">
-        <div class="opt"><input type="radio" name="q5" id="q5a" value="Sale" required onchange="toggleQ5Details()"><label for="q5a">Sale</label></div>
-        <div class="opt"><input type="radio" name="q5" id="q5b" value="Normale" onchange="toggleQ5Details()"><label for="q5b">Normale</label></div>
-        <div class="opt"><input type="radio" name="q5" id="q5c" value="Propre" onchange="toggleQ5Details()"><label for="q5c">Propre</label></div>
-        <div class="opt"><input type="radio" name="q5" id="q5d" value="Tr&egrave;s propre" onchange="toggleQ5Details()"><label for="q5d">Tr&egrave;s propre</label></div>
+      <div class="card-title"><span class="num">4</span> Propret&eacute; du logement &agrave; votre arriv&eacute;e</div>
+      <div class="options options-5">
+        <div class="opt"><input type="radio" name="q5" id="q5a" value="Tr&egrave;s sale" required onchange="toggleQ5Details()">
+          <label for="q5a"><span class="opt-main">&#x1F534; Tr&egrave;s sale</span><span class="opt-hint">Probl&egrave;me grave (taches, cheveux, draps sales&hellip;)</span></label></div>
+        <div class="opt"><input type="radio" name="q5" id="q5b" value="Quelques d&eacute;fauts" onchange="toggleQ5Details()">
+          <label for="q5b"><span class="opt-main">&#x1F7E0; Quelques d&eacute;fauts</span><span class="opt-hint">Petits oublis (poussi&egrave;re, miroir tach&eacute;&hellip;)</span></label></div>
+        <div class="opt"><input type="radio" name="q5" id="q5c" value="Correct" onchange="toggleQ5Details()">
+          <label for="q5c"><span class="opt-main">&#x1F7E1; Correct</span><span class="opt-hint">Rien &agrave; signaler</span></label></div>
+        <div class="opt"><input type="radio" name="q5" id="q5d" value="Propre" onchange="toggleQ5Details()">
+          <label for="q5d"><span class="opt-main">&#x1F7E2; Propre</span><span class="opt-hint">Bien fait</span></label></div>
+        <div class="opt"><input type="radio" name="q5" id="q5e" value="Tr&egrave;s propre" onchange="toggleQ5Details()">
+          <label for="q5e"><span class="opt-main">&#x2B50; Tr&egrave;s propre</span><span class="opt-hint">Irr&eacute;prochable</span></label></div>
       </div>
 
-      <!-- Zone de detail conditionnelle -->
+      <!-- Zone de detail conditionnelle (si Tr&egrave;s sale / Quelques d&eacute;fauts) -->
       <div class="q5-details" id="q5Details">
         <div class="q5-details-title">
           <span class="ico">&#x1F9F9;</span>
           <span>Pouvez-vous nous pr&eacute;ciser ce qui n'allait pas ?</span>
         </div>
         <div class="hint">Votre retour nous permettra d'intervenir rapidement aupr&egrave;s de l'&eacute;quipe de m&eacute;nage.</div>
-        <textarea id="q5details" placeholder="Ex: taches sur les draps, poussi&egrave;re sous le lit, cuisine pas nettoy&eacute;e, salle de bain..." rows="4"></textarea>
+        <textarea id="q5details" placeholder="Ex: taches sur les draps, poussi&egrave;re sous le lit, cuisine pas nettoy&eacute;e, salle de bain&hellip;" rows="4"></textarea>
       </div>
     </div>
 
-    <!-- Q6 -->
+    <!-- Q6 (visible: 5) — &Agrave; am&eacute;liorer -->
     <div class="card">
-      <div class="card-title"><span class="num">6</span> Est-il int&eacute;ressant de remplacer ou d'am&eacute;liorer quelque chose ?</div>
+      <div class="card-title"><span class="num">5</span> Est-il int&eacute;ressant de remplacer ou d'am&eacute;liorer quelque chose ?</div>
       <div class="form-group">
         <textarea id="q6" placeholder="Vos suggestions d'am&eacute;lioration..." rows="3"></textarea>
       </div>
     </div>
 
-    <!-- Q7 -->
+    <!-- Q7 (visible: 6) — Revenir -->
     <div class="card">
-      <div class="card-title"><span class="num">7</span> Envisageriez-vous de s&eacute;journer &agrave; nouveau ?</div>
+      <div class="card-title"><span class="num">6</span> Envisageriez-vous de s&eacute;journer &agrave; nouveau ?</div>
       <div class="options options-3">
         <div class="opt"><input type="radio" name="q7" id="q7a" value="Oui" required><label for="q7a">Oui</label></div>
         <div class="opt"><input type="radio" name="q7" id="q7b" value="Non"><label for="q7b">Non</label></div>
@@ -326,18 +354,18 @@ textarea{resize:vertical;min-height:80px}
       </div>
     </div>
 
-    <!-- Q8 -->
+    <!-- Q8 (visible: 7) — Recommander -->
     <div class="card">
-      <div class="card-title"><span class="num">8</span> Recommanderiez-vous cet appartement &agrave; vos proches ?</div>
+      <div class="card-title"><span class="num">7</span> Recommanderiez-vous cet appartement &agrave; vos proches ?</div>
       <div class="options options-2">
         <div class="opt"><input type="radio" name="q8" id="q8a" value="Oui" required><label for="q8a">Oui</label></div>
         <div class="opt"><input type="radio" name="q8" id="q8b" value="Non"><label for="q8b">Non</label></div>
       </div>
     </div>
 
-    <!-- Q9 - COMMENTAIRE LIBRE -->
+    <!-- Q9 (visible: 8) - COMMENTAIRE LIBRE -->
     <div class="card">
-      <div class="card-title"><span class="num">9</span> &#x1F4AC; Un mot &agrave; nous dire ?</div>
+      <div class="card-title"><span class="num">8</span> &#x1F4AC; Un mot &agrave; nous dire ?</div>
       <p style="font-size:13px;color:#64748b;margin-bottom:12px;line-height:1.5">
         Positif ou n&eacute;gatif, dites-nous tout ! C'est ici que vous pouvez vous exprimer librement.
         Votre retour nous aide vraiment &agrave; progresser &#x1F64F;
@@ -416,13 +444,13 @@ var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyZ50d01GyAOXi4LKQteCr
 var RESIDENCES = {
   'Kitesurf':'Le 23','Hamac':'Le 23','Paddle':'Le 23','Surf':'Le 23','Famille':'Le 23',
   'Baln\u00e9o':'Le 25','Cocon Romantique':'Le 25',
-  'La R\u00e9serve':'Apollo','Kingston':'Apollo','Apollove':'Apollo','Apollo':'Apollo',
+  'La R\u00e9serve':'Apollo','Kingston':'Apollo','Apolove':'Apollo','Apollo':'Apollo',
   'Albatros':'Albatros',
   'Face Mer':'Face Mer',
   'Grand Large':'Grand Large',
   'Mini Love Room':'Esplanade','Grande Love Room':'Esplanade',
   'Jeanne':'Rue Jeanne','Evasion':'Rue Jeanne','Rotonde':'Rue Jeanne','Patio':'Rue Jeanne',
-  'Terrasse':'Terrasse','Coeur':'Terrasse'
+  'Terrasse':'Terrasse','Maisonnette':'Terrasse'
 };
 
 // ===== INIT =====
@@ -441,7 +469,7 @@ if (!appart || !RESIDENCES[appart]) {
 function toggleQ5Details() {
   var val = (document.querySelector('input[name="q5"]:checked') || {}).value;
   var box = document.getElementById('q5Details');
-  if (val === 'Sale' || val === 'Normale') {
+  if (val === 'Tr\u00e8s sale' || val === 'Quelques d\u00e9fauts') {
     box.classList.add('visible');
   } else {
     box.classList.remove('visible');
@@ -459,7 +487,7 @@ function submitForm(e) {
   var errorMsg = document.getElementById('errorMsg');
 
   // Validate required radios
-  var radios = ['q1','q2','q3','q4','q5','q7','q8'];
+  var radios = ['q1','q3','q4','q5','q7','q8'];
   for (var i = 0; i < radios.length; i++) {
     if (!form.querySelector('input[name="' + radios[i] + '"]:checked')) {
       errorMsg.textContent = 'Merci de r\u00e9pondre \u00e0 toutes les questions.';
@@ -479,7 +507,6 @@ function submitForm(e) {
     ville: document.getElementById('ville').value.trim(),
     email: document.getElementById('email').value.trim(),
     q1: form.querySelector('input[name="q1"]:checked').value,
-    q2: form.querySelector('input[name="q2"]:checked').value,
     q3: form.querySelector('input[name="q3"]:checked').value,
     q4: form.querySelector('input[name="q4"]:checked').value,
     q5: form.querySelector('input[name="q5"]:checked').value,
@@ -514,11 +541,13 @@ function submitForm(e) {
         var thankYou = document.getElementById('thankYou');
         thankYou.classList.add('visible');
 
-        // Adapt thank-you based on answers
+        // Adapt thank-you based on answers — code promo UNIQUEMENT si Q7=Oui
         var veutRevenir = data.q7;
-        if (veutRevenir === 'Oui' || veutRevenir === 'Peut-\u00eatre') {
+        if (veutRevenir === 'Oui') {
           document.getElementById('promoBlock').style.display = 'block';
           document.getElementById('thankMsg').innerHTML = 'Votre avis nous est pr\u00e9cieux et nous aidera \u00e0 am\u00e9liorer votre exp\u00e9rience.<br><br>Nous sommes ravis que vous souhaitiez revenir ! \u{1F60D}';
+        } else if (veutRevenir === 'Peut-\u00eatre') {
+          document.getElementById('thankMsg').innerHTML = 'Votre avis nous est pr\u00e9cieux.<br><br>Nous esp\u00e9rons avoir le plaisir de vous revoir ! \u{1F60A}';
         } else {
           document.getElementById('thankMsg').innerHTML = 'Nous sommes d\u00e9sol\u00e9s que votre exp\u00e9rience n\u2019ait pas \u00e9t\u00e9 parfaite.<br>Votre retour est tr\u00e8s important et nous allons tout faire pour nous am\u00e9liorer.<br><br>Merci pour votre honn\u00eat\u00e9 \u{1F64F}';
         }
