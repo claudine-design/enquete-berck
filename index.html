@@ -163,6 +163,33 @@ textarea{resize:vertical;min-height:80px}
 .no-appart h2{font-size:20px;color:#0369a1;margin-bottom:10px}
 .no-appart p{font-size:14px;color:#64748b;line-height:1.6}
 
+/* Q5 DETAILS (conditionnel) */
+.q5-details{
+  display:none;margin-top:14px;padding:16px;
+  background:linear-gradient(135deg,#fef2f2,#fff1f2);
+  border:2px solid #fecaca;border-radius:12px;
+  animation:slideDown 0.3s ease-out;
+}
+.q5-details.visible{display:block}
+@keyframes slideDown{
+  from{opacity:0;transform:translateY(-6px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.q5-details-title{
+  font-size:14px;font-weight:700;color:#991b1b;
+  margin-bottom:10px;display:flex;align-items:center;gap:8px;
+}
+.q5-details-title .ico{font-size:20px}
+.q5-details textarea{
+  background:#fff;border-color:#fecaca;
+}
+.q5-details textarea:focus{
+  border-color:#dc2626;box-shadow:0 0 0 3px rgba(220,38,38,0.15);
+}
+.q5-details .hint{
+  font-size:12px;color:#7f1d1d;margin-bottom:8px;line-height:1.4;
+}
+
 /* Responsive tweaks */
 @media(max-width:360px){
   .options-4 .opt{min-width:calc(50% - 4px)}
@@ -264,10 +291,20 @@ textarea{resize:vertical;min-height:80px}
     <div class="card">
       <div class="card-title"><span class="num">5</span> Propret&eacute; du logement &agrave; votre arriv&eacute;e ?</div>
       <div class="options options-4">
-        <div class="opt"><input type="radio" name="q5" id="q5a" value="Sale" required><label for="q5a">Sale</label></div>
-        <div class="opt"><input type="radio" name="q5" id="q5b" value="Normale"><label for="q5b">Normale</label></div>
-        <div class="opt"><input type="radio" name="q5" id="q5c" value="Propre"><label for="q5c">Propre</label></div>
-        <div class="opt"><input type="radio" name="q5" id="q5d" value="Tr&egrave;s propre"><label for="q5d">Tr&egrave;s propre</label></div>
+        <div class="opt"><input type="radio" name="q5" id="q5a" value="Sale" required onchange="toggleQ5Details()"><label for="q5a">Sale</label></div>
+        <div class="opt"><input type="radio" name="q5" id="q5b" value="Normale" onchange="toggleQ5Details()"><label for="q5b">Normale</label></div>
+        <div class="opt"><input type="radio" name="q5" id="q5c" value="Propre" onchange="toggleQ5Details()"><label for="q5c">Propre</label></div>
+        <div class="opt"><input type="radio" name="q5" id="q5d" value="Tr&egrave;s propre" onchange="toggleQ5Details()"><label for="q5d">Tr&egrave;s propre</label></div>
+      </div>
+
+      <!-- Zone de detail conditionnelle -->
+      <div class="q5-details" id="q5Details">
+        <div class="q5-details-title">
+          <span class="ico">&#x1F9F9;</span>
+          <span>Pouvez-vous nous pr&eacute;ciser ce qui n'allait pas ?</span>
+        </div>
+        <div class="hint">Votre retour nous permettra d'intervenir rapidement aupr&egrave;s de l'&eacute;quipe de m&eacute;nage.</div>
+        <textarea id="q5details" placeholder="Ex: taches sur les draps, poussi&egrave;re sous le lit, cuisine pas nettoy&eacute;e, salle de bain..." rows="4"></textarea>
       </div>
     </div>
 
@@ -400,6 +437,18 @@ if (!appart || !RESIDENCES[appart]) {
   document.getElementById('appartName').textContent = appart + ' \u2014 ' + RESIDENCES[appart];
 }
 
+// ===== Q5 DETAILS TOGGLE =====
+function toggleQ5Details() {
+  var val = (document.querySelector('input[name="q5"]:checked') || {}).value;
+  var box = document.getElementById('q5Details');
+  if (val === 'Sale' || val === 'Normale') {
+    box.classList.add('visible');
+  } else {
+    box.classList.remove('visible');
+    document.getElementById('q5details').value = '';
+  }
+}
+
 // ===== SUBMIT =====
 function submitForm(e) {
   e.preventDefault();
@@ -434,6 +483,7 @@ function submitForm(e) {
     q3: form.querySelector('input[name="q3"]:checked').value,
     q4: form.querySelector('input[name="q4"]:checked').value,
     q5: form.querySelector('input[name="q5"]:checked').value,
+    q5details: document.getElementById('q5details').value.trim(),
     q6: document.getElementById('q6').value.trim(),
     q7: form.querySelector('input[name="q7"]:checked').value,
     q8: form.querySelector('input[name="q8"]:checked').value,
