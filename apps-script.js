@@ -1,20 +1,18 @@
 // =============================================
-// GOOGLE APPS SCRIPT — Enquete Satisfaction v5
+// GOOGLE APPS SCRIPT — Enquete Satisfaction v6
 // =============================================
-// Nouveautes v5 :
-//   - Nouveaux libelles 5 niveaux (Q1/Q3/Q4/Q5) + aides
-//   - Suppression Q2 (Attentes)
-//   - Mapping APPART -> PRESTATAIRE + EMAIL
-//   - Alerte immediate si Q5=Tres sale (prestataire + princessedopale en copie)
-//   - Alerte immediate si Q1/Q3/Q4=Tres decevant (princessedopale uniquement)
-//   - Trigger hebdo (lundi 8h) : recap par prestataire + copie princessedopale
-//   - Trigger mensuel (dernier jour du mois 18h) : bilan avec tendance
-//   - Alerte auto si appart decroche vs moyenne
-//   - Renommages : Apollove->Apolove, Coeur->Maisonnette (Spa/Repos supprimes)
+// Nouveautes v6 :
+//   - Systeme parrainage automatique : generation code BERCK-PRENOM-XXXX si Q7=Oui ET Q8=Oui
+//   - Anti-fraude natif : validation au sejour effectif du filleul (il a rempli le questionnaire)
+//   - Emails auto parrain + filleul avec code FIDELE-10 (-10% prochain sejour)
+//   - Nouvelles feuilles : Parrains + Parrainages Valides
+// + v5 : 5 niveaux Q1/Q3/Q4/Q5, mapping prestataires, recaps hebdo/mensuel
 // =============================================
 
 var SHEET_ID = '1Yqa2l_B4-mlNWI6AU14nBisEj3Xy4Kxic9qiH67Ra-k';
 var ALERT_EMAIL = 'princessedopale@gmail.com';
+var PROMO_FIDELE = 'FIDELE-10';  // code promo generique -10% (a creer dans Beds24)
+var SITE_URL = 'https://appart-hotel-berck.com';
 
 // ===== MAPPING APPARTEMENT -> PRESTATAIRE =====
 // Prestataire geografique et email de contact
@@ -57,6 +55,8 @@ var HEAD_EMAILS = [
 var HEAD_MARKETING = ['Email', 'Nom Prenom', 'Ville', 'Zone Vacances', 'Date inscription'];
 var HEAD_VR = ['Email', 'Nom Prenom', 'Telephone', 'Ville', 'Zone Vacances', 'Appartement', 'Residence', 'Prestataire', 'Note Arrivee', 'Recommande', 'Commentaire', 'Date'];
 var HEAD_NR = ['Email', 'Nom Prenom', 'Telephone', 'Ville', 'Zone Vacances', 'Appartement', 'Residence', 'Prestataire', 'Note Arrivee', 'Proprete', 'Details Menage', 'Ameliorations', 'Commentaire', 'Date'];
+var HEAD_PARRAINS = ['Code Parrain', 'Nom Prenom', 'Email', 'Telephone', 'Appartement', 'Residence', 'Date Creation', 'Nb Utilisations', 'Derniere Utilisation'];
+var HEAD_PARRAINAGES = ['Date Validation', 'Code Parrain Utilise', 'Parrain Nom', 'Parrain Email', 'Filleul Nom', 'Filleul Email', 'Filleul Appartement', 'Filleul Date Sejour'];
 
 // ===== VALEURS NEGATIVES (5 niveaux) =====
 var NEG_Q1 = 'Tr\xe8s d\xe9cevant';
@@ -140,7 +140,30 @@ function handle(p) {
     // --- ALERTES IMMEDIATES ---
     try { sendImmediateAlerts(p, zone, prestaKey, prestaNom); } catch(err) {}
 
-    return json({ success: true });
+    // --- PARRAINAGE : gestion du code parrain du voyageur ---
+    var parrainCodeGenere = null;
+    var parrainageValide = false;
+
+    // 1) Si voyageur Q7=Oui ET Q8=Oui -> generer son code parrain
+    if (p.email && p.nom && p.q7 === 'Oui' && p.q8 === 'Oui') {
+      try {
+        parrainCodeGenere = genererOuRecupererCodeParrain(ss, p);
+      } catch(err) {}
+    }
+
+    // 2) Si voyageur a saisi un code parrain -> verifier et valider
+    if (p.parrainUtilise && p.email) {
+      try {
+        var res = validerEtNotifierParrainage(ss, p, p.parrainUtilise);
+        parrainageValide = res;
+      } catch(err) {}
+    }
+
+    return json({
+      success: true,
+      parrainCode: parrainCodeGenere,
+      parrainValide: parrainageValide
+    });
   }
 
   if (action === 'getStats') {
@@ -597,6 +620,197 @@ function escapeHtml(s) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+// ===== PARRAINAGE : generation du code parrain du voyageur =====
+function genererOuRecupererCodeParrain(ss, p) {
+  var sheet = ensureSheet(ss, 'Parrains', HEAD_PARRAINS, '#a855f7');
+  var data = sheet.getDataRange().getValues();
+
+  // Verifier si ce voyageur (email) a deja un code parrain -> le reutiliser
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][2] && String(data[i][2]).toLowerCase() === String(p.email).toLowerCase()) {
+      return data[i][0]; // code deja existant
+    }
+  }
+
+  // Generer un nouveau code unique
+  var prenom = String(p.nom || 'AMI').split(' ')[0].toUpperCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^A-Z]/g, '').substring(0, 10);
+  if (!prenom) prenom = 'AMI';
+  var code;
+  var tryCount = 0;
+  do {
+    var rand = Math.floor(1000 + Math.random() * 9000);
+    code = 'BERCK-' + prenom + '-' + rand;
+    tryCount++;
+  } while (codeExiste(data, code) && tryCount < 20);
+
+  sheet.appendRow([
+    code, p.nom || '', p.email || '', p.tel || '',
+    p.appart || '', p.residence || '',
+    new Date().toLocaleString('fr-FR'), 0, ''
+  ]);
+
+  // Envoyer mail de bienvenue parrain
+  try { envoyerMailCodeParrain(p, code); } catch(err) {}
+
+  return code;
+}
+
+function codeExiste(data, code) {
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][0] === code) return true;
+  }
+  return false;
+}
+
+function envoyerMailCodeParrain(p, code) {
+  var waMsg = 'Coucou ! J\'ai s\xe9journ\xe9 \xe0 Berck chez Claudine, c\'\xe9tait super ! '
+    + 'Tu peux avoir -10% en r\xe9servant en direct sur ' + SITE_URL + ' avec mon code parrain : '
+    + code + ' (et moi aussi je gagne -10% \u{1F60A})';
+  var waUrl = 'https://wa.me/?text=' + encodeURIComponent(waMsg);
+  var mailUrl = 'mailto:?subject=' + encodeURIComponent('Mon code parrain Appart-H\xf4tel Berck (-10%)')
+              + '&body=' + encodeURIComponent(waMsg);
+
+  var html = ''
+    + '<div style="font-family:-apple-system,sans-serif;max-width:600px;margin:0 auto;color:#1e293b">'
+    + '<div style="background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;padding:24px;border-radius:12px 12px 0 0">'
+    + '<h1 style="margin:0;font-size:22px">\u{1F381} Votre code parrain est pr\xeat !</h1>'
+    + '<p style="margin:6px 0 0;opacity:0.9">Partagez, gagnez -10%</p>'
+    + '</div>'
+    + '<div style="background:#fff;padding:24px;border:1px solid #e2e8f0;border-top:none">'
+    + '<p>Bonjour ' + escapeHtml(p.nom || '') + ',</p>'
+    + '<p>Merci d\'avoir s\xe9journ\xe9 \xe0 Berck ! En recommandant notre Appart-H\xf4tel, vous et vos proches b\xe9n\xe9ficiez d\'un avantage mutuel :</p>'
+    + '<div style="background:linear-gradient(135deg,#faf5ff,#f3e8ff);border:2px solid #a855f7;border-radius:12px;padding:20px;text-align:center;margin:20px 0">'
+    + '<p style="font-size:12px;color:#6d28d9;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;font-weight:600">Votre code parrain</p>'
+    + '<div style="font-size:22px;font-weight:800;color:#7c3aed;letter-spacing:2px;background:#fff;padding:14px;border-radius:8px;display:inline-block">' + code + '</div>'
+    + '</div>'
+    + '<h2 style="font-size:16px;color:#7c3aed;margin:20px 0 10px">Comment \xe7a marche ?</h2>'
+    + '<ol style="padding-left:20px;line-height:1.8;color:#475569">'
+    + '<li>Vous partagez votre code avec un proche</li>'
+    + '<li>Il r\xe9serve en direct sur <a href="' + SITE_URL + '" style="color:#7c3aed">appart-hotel-berck.com</a> et mentionne votre code</li>'
+    + '<li>D\xe8s qu\'il a s\xe9journ\xe9 et rempli le questionnaire : <strong>votre -10% est activ\xe9 automatiquement</strong></li>'
+    + '<li>Vous recevez votre code <strong>' + PROMO_FIDELE + '</strong> pour votre prochain s\xe9jour</li>'
+    + '</ol>'
+    + '<h2 style="font-size:16px;color:#7c3aed;margin:24px 0 10px">Partager votre code</h2>'
+    + '<a href="' + waUrl + '" style="display:inline-block;padding:12px 20px;background:#25d366;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;margin-right:8px">\u{1F4AC} WhatsApp</a>'
+    + '<a href="' + mailUrl + '" style="display:inline-block;padding:12px 20px;background:#8b5cf6;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">\u2709\ufe0f Email</a>'
+    + '<p style="margin-top:20px;font-size:13px;color:#64748b">\xc0 bient\xf4t \xe0 Berck,<br>Claudine</p>'
+    + '</div></div>';
+
+  MailApp.sendEmail({
+    to: p.email,
+    bcc: ALERT_EMAIL,
+    subject: '\u{1F381} Votre code parrain Appart-H\xf4tel Berck : ' + code,
+    htmlBody: html
+  });
+}
+
+// ===== PARRAINAGE : validation d'un code utilise par un filleul =====
+function validerEtNotifierParrainage(ss, filleul, codeUtilise) {
+  var sheetParrains = ensureSheet(ss, 'Parrains', HEAD_PARRAINS, '#a855f7');
+  var data = sheetParrains.getDataRange().getValues();
+
+  // Chercher le code parrain
+  var parrainRow = -1;
+  var parrainInfo = null;
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][0] === codeUtilise) {
+      parrainRow = i + 1; // ligne reelle (1-indexed)
+      parrainInfo = {
+        code: data[i][0],
+        nom: data[i][1],
+        email: data[i][2],
+        tel: data[i][3],
+        appart: data[i][4],
+        nbUtilisations: Number(data[i][7]) || 0
+      };
+      break;
+    }
+  }
+
+  if (!parrainInfo) return false; // code invalide
+
+  // Anti-fraude : verifier que le parrain != filleul (meme email)
+  if (String(parrainInfo.email).toLowerCase() === String(filleul.email).toLowerCase()) {
+    return false;
+  }
+
+  // Incrementer compteur parrain
+  sheetParrains.getRange(parrainRow, 8).setValue(parrainInfo.nbUtilisations + 1);
+  sheetParrains.getRange(parrainRow, 9).setValue(new Date().toLocaleString('fr-FR'));
+
+  // Logger dans Parrainages Valides
+  var sheetPV = ensureSheet(ss, 'Parrainages Valides', HEAD_PARRAINAGES, '#10b981');
+  var ts = new Date().toLocaleString('fr-FR');
+  sheetPV.appendRow([
+    ts, codeUtilise,
+    parrainInfo.nom, parrainInfo.email,
+    filleul.nom || '', filleul.email || '',
+    filleul.appart || '', ts
+  ]);
+
+  // Envoyer mails
+  try { envoyerMailParrainValide(parrainInfo, filleul); } catch(err) {}
+  try { envoyerMailFilleulValide(filleul, parrainInfo); } catch(err) {}
+
+  return true;
+}
+
+function envoyerMailParrainValide(parrain, filleul) {
+  var html = ''
+    + '<div style="font-family:-apple-system,sans-serif;max-width:600px;margin:0 auto;color:#1e293b">'
+    + '<div style="background:linear-gradient(135deg,#10b981,#34d399);color:#fff;padding:24px;border-radius:12px 12px 0 0">'
+    + '<h1 style="margin:0;font-size:22px">\u2728 F\xe9licitations ' + escapeHtml((parrain.nom || '').split(' ')[0]) + ' !</h1>'
+    + '<p style="margin:6px 0 0;opacity:0.9">Votre parrainage a \xe9t\xe9 valid\xe9</p>'
+    + '</div>'
+    + '<div style="background:#fff;padding:24px;border:1px solid #e2e8f0;border-top:none">'
+    + '<p>Bonne nouvelle ! <strong>' + escapeHtml(filleul.nom || 'Un proche') + '</strong> a s\xe9journ\xe9 \xe0 Berck et a utilis\xe9 votre code parrain <strong>' + escapeHtml(parrain.code) + '</strong>.</p>'
+    + '<p>Comme promis, voici votre bon <strong>-10% de r\xe9duction</strong> \xe0 utiliser sur votre prochain s\xe9jour en direct :</p>'
+    + '<div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:2px solid #10b981;border-radius:12px;padding:20px;text-align:center;margin:20px 0">'
+    + '<p style="font-size:12px;color:#166534;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;font-weight:600">Votre bon fid\xe9lit\xe9</p>'
+    + '<div style="font-size:24px;font-weight:800;color:#10b981;letter-spacing:3px;background:#fff;padding:16px;border-radius:8px;display:inline-block">' + PROMO_FIDELE + '</div>'
+    + '<p style="font-size:12px;color:#64748b;margin:12px 0 0">\xc0 utiliser lors de votre r\xe9servation directe sur <strong>' + SITE_URL.replace('https://','') + '</strong></p>'
+    + '</div>'
+    + '<p style="font-size:14px;color:#64748b">Votre code parrain <strong>' + escapeHtml(parrain.code) + '</strong> reste actif : continuez \xe0 le partager, chaque nouveau filleul = -10% suppl\xe9mentaire !</p>'
+    + '<p style="margin-top:20px;font-size:13px;color:#64748b">Merci pour votre confiance,<br>Claudine</p>'
+    + '</div></div>';
+
+  MailApp.sendEmail({
+    to: parrain.email,
+    bcc: ALERT_EMAIL,
+    subject: '\u2728 Votre parrainage a \xe9t\xe9 valid\xe9 : voici votre -10% !',
+    htmlBody: html
+  });
+}
+
+function envoyerMailFilleulValide(filleul, parrain) {
+  var html = ''
+    + '<div style="font-family:-apple-system,sans-serif;max-width:600px;margin:0 auto;color:#1e293b">'
+    + '<div style="background:linear-gradient(135deg,#10b981,#34d399);color:#fff;padding:24px;border-radius:12px 12px 0 0">'
+    + '<h1 style="margin:0;font-size:22px">\u{1F381} Merci ' + escapeHtml((filleul.nom || '').split(' ')[0]) + ' !</h1>'
+    + '<p style="margin:6px 0 0;opacity:0.9">Votre code parrain a \xe9t\xe9 accept\xe9</p>'
+    + '</div>'
+    + '<div style="background:#fff;padding:24px;border:1px solid #e2e8f0;border-top:none">'
+    + '<p>Bonne nouvelle ! Le code parrain de <strong>' + escapeHtml(parrain.nom || 'votre proche') + '</strong> est bien valid\xe9.</p>'
+    + '<p>En plus du code BERCK10 que nous vous avons d\xe9j\xe0 envoy\xe9, voici votre <strong>bonus parrainage -10%</strong> :</p>'
+    + '<div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:2px solid #10b981;border-radius:12px;padding:20px;text-align:center;margin:20px 0">'
+    + '<p style="font-size:12px;color:#166534;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;font-weight:600">Votre bon fid\xe9lit\xe9</p>'
+    + '<div style="font-size:24px;font-weight:800;color:#10b981;letter-spacing:3px;background:#fff;padding:16px;border-radius:8px;display:inline-block">' + PROMO_FIDELE + '</div>'
+    + '<p style="font-size:12px;color:#64748b;margin:12px 0 0">\xc0 utiliser sur <strong>' + SITE_URL.replace('https://','') + '</strong></p>'
+    + '</div>'
+    + '<p style="font-size:14px;color:#64748b">Vous aussi, <strong>parrainez vos proches</strong> ! Votre propre code parrain personnel vous a \xe9t\xe9 envoy\xe9 dans un email s\xe9par\xe9 si vous avez dit souhaiter revenir ET recommander notre Appart-H\xf4tel.</p>'
+    + '<p style="margin-top:20px;font-size:13px;color:#64748b">\xc0 tr\xe8s bient\xf4t \xe0 Berck !<br>Claudine</p>'
+    + '</div></div>';
+
+  MailApp.sendEmail({
+    to: filleul.email,
+    bcc: ALERT_EMAIL,
+    subject: '\u{1F381} Parrainage valid\xe9 : votre -10% est l\xe0 !',
+    htmlBody: html
+  });
 }
 
 function json(obj) {

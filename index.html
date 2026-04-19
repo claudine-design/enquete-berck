@@ -375,6 +375,18 @@ textarea{resize:vertical;min-height:80px}
       </div>
     </div>
 
+    <!-- PARRAINAGE RE&Ccedil;U -->
+    <div class="card" style="border:2px dashed #a855f7;background:linear-gradient(135deg,#faf5ff,#f3e8ff)">
+      <div class="card-title" style="color:#7c3aed">&#x1F381; Un ami vous a-t-il parrain&eacute; ?</div>
+      <div style="font-size:13px;color:#6d28d9;margin:-8px 0 12px;font-style:italic">
+        Si quelqu'un vous a donn&eacute; un code parrain, entrez-le ici. Vous recevrez <strong>-10%</strong> sur votre prochain s&eacute;jour en direct, et votre parrain aussi !
+      </div>
+      <input type="text" id="parrainUtilise"
+             placeholder="BERCK-MARIE-4823 (optionnel)"
+             style="text-transform:uppercase;letter-spacing:1px;background:#fff"
+             autocomplete="off">
+    </div>
+
     <!-- CONSENT -->
     <div class="card">
       <div class="consent">
@@ -428,6 +440,33 @@ textarea{resize:vertical;min-height:80px}
         <p style="font-size:13px;color:#475569;margin-bottom:14px;line-height:1.5">Pour vous remercier de votre confiance, b&eacute;n&eacute;ficiez de <strong>10% de r&eacute;duction</strong> sur votre prochaine r&eacute;servation :</p>
         <div style="background:linear-gradient(135deg,#0369a1,#0ea5e9);color:#fff;padding:16px;border-radius:12px;text-align:center;font-size:22px;font-weight:800;letter-spacing:3px" id="promoCode">BERCK10</div>
         <p style="font-size:11px;color:#94a3b8;margin-top:10px;text-align:center">Mentionnez ce code lors de votre r&eacute;servation sur <strong>appart-hotel-berck.com</strong></p>
+      </div>
+
+      <!-- PARRAINAGE G&Eacute;N&Eacute;R&Eacute; (si Q7=Oui ET Q8=Oui) -->
+      <div id="parrainGenBlock" style="display:none;margin-top:16px;padding:24px 20px;background:linear-gradient(135deg,#faf5ff,#f3e8ff);border-radius:16px;border:2px solid #a855f7">
+        <p style="font-size:16px;color:#7c3aed;font-weight:700;margin-bottom:8px">&#x1F381; Partagez et gagnez encore plus !</p>
+        <p style="font-size:13px;color:#5b21b6;margin-bottom:14px;line-height:1.6">
+          Partagez votre <strong>code parrain personnel</strong> avec vos proches. Quand ils r&eacute;servent et utilisent votre code,
+          <strong>ils auront -10%</strong> sur leur s&eacute;jour, et <strong>vous aussi -10%</strong> de plus &mdash; cumulable avec BERCK10 !
+        </p>
+        <div style="background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;padding:16px;border-radius:12px;text-align:center;font-size:18px;font-weight:800;letter-spacing:2px" id="parrainCodeDisplay">BERCK-XXXX</div>
+        <a id="parrainWhatsAppBtn" href="#" target="_blank" rel="noopener"
+           style="display:block;text-align:center;padding:14px;margin-top:14px;background:#25d366;color:#fff;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none">
+          &#x1F4AC; Partager sur WhatsApp
+        </a>
+        <a id="parrainEmailBtn" href="#"
+           style="display:block;text-align:center;padding:12px;margin-top:8px;background:#8b5cf6;color:#fff;border-radius:12px;font-size:14px;font-weight:600;text-decoration:none">
+          &#x2709;&#xFE0F; Partager par email
+        </a>
+        <p style="font-size:11px;color:#94a3b8;margin-top:12px;text-align:center">Votre code est unique. Il est activ&eacute; d&egrave;s qu'un proche r&eacute;serve et s&eacute;journe.</p>
+      </div>
+
+      <!-- PARRAINAGE VALID&Eacute; (si le filleul a utilis&eacute; un code valide) -->
+      <div id="parrainValideBlock" style="display:none;margin-top:16px;padding:20px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-radius:16px;border:2px solid #10b981">
+        <p style="font-size:15px;color:#166534;font-weight:700;margin-bottom:8px">&#x2728; Parrainage valid&eacute; !</p>
+        <p style="font-size:13px;color:#14532d;line-height:1.6">
+          Votre code parrain a &eacute;t&eacute; accept&eacute;. Un mail avec votre <strong>bon -10%</strong> vous est envoy&eacute; &mdash; et votre parrain aussi !
+        </p>
       </div>
     </div>
   </div>
@@ -515,6 +554,7 @@ function submitForm(e) {
     q7: form.querySelector('input[name="q7"]:checked').value,
     q8: form.querySelector('input[name="q8"]:checked').value,
     q9: document.getElementById('q9').value.trim(),
+    parrainUtilise: document.getElementById('parrainUtilise').value.trim().toUpperCase(),
     consent: document.getElementById('consent').checked ? 'oui' : 'non'
   };
 
@@ -550,6 +590,27 @@ function submitForm(e) {
           document.getElementById('thankMsg').innerHTML = 'Votre avis nous est pr\u00e9cieux.<br><br>Nous esp\u00e9rons avoir le plaisir de vous revoir ! \u{1F60A}';
         } else {
           document.getElementById('thankMsg').innerHTML = 'Nous sommes d\u00e9sol\u00e9s que votre exp\u00e9rience n\u2019ait pas \u00e9t\u00e9 parfaite.<br>Votre retour est tr\u00e8s important et nous allons tout faire pour nous am\u00e9liorer.<br><br>Merci pour votre honn\u00eat\u00e9 \u{1F64F}';
+        }
+
+        // PARRAINAGE — afficher le code parrain g\u00e9n\u00e9r\u00e9 si Q7=Oui ET Q8=Oui
+        if (resp.parrainCode) {
+          document.getElementById('parrainGenBlock').style.display = 'block';
+          document.getElementById('parrainCodeDisplay').textContent = resp.parrainCode;
+          var nomPrenom = data.nom || 'un proche';
+          var waMsg = '\u{1F30A} Coucou ! J\'ai s\xe9journ\xe9 \xe0 Berck chez Claudine, c\'\xe9tait super ! '
+            + 'Tu peux avoir -10% en r\xe9servant en direct sur appart-hotel-berck.com avec mon code parrain : '
+            + resp.parrainCode + ' (et moi aussi je gagne -10% \u{1F60A})';
+          document.getElementById('parrainWhatsAppBtn').href =
+            'https://wa.me/?text=' + encodeURIComponent(waMsg);
+          document.getElementById('parrainEmailBtn').href =
+            'mailto:?subject=' + encodeURIComponent('Mon code parrain Appart-H\xf4tel Berck (-10%)')
+            + '&body=' + encodeURIComponent(waMsg);
+        }
+
+        // PARRAINAGE VALID\u00c9 — si le filleul a entr\u00e9 un code valide qui a \xe9t\xe9 accept\xe9
+        if (resp.parrainValide) {
+          document.getElementById('parrainValideBlock').style.display = 'block';
+          document.getElementById('promoBlock').style.display = 'block'; // forcer affichage
         }
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
