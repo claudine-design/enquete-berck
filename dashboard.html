@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard Enqu&ecirc;te Berck</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f1f5f9;color:#1e293b;padding:16px;line-height:1.5}
+.container{max-width:1100px;margin:0 auto}
+
+/* Header */
+.header{background:linear-gradient(135deg,#0369a1,#0ea5e9);color:#fff;padding:20px 24px;border-radius:14px;margin-bottom:16px;box-shadow:0 4px 16px rgba(3,105,161,0.2)}
+.header h1{font-size:22px;font-weight:800;margin-bottom:4px}
+.header .subtitle{font-size:14px;opacity:0.9}
+.header .refresh{background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;margin-top:8px}
+.header .refresh:hover{background:rgba(255,255,255,0.3)}
+
+/* Filtres période */
+.filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.filter-btn{padding:8px 14px;background:#fff;border:2px solid #e2e8f0;border-radius:10px;font-size:13px;font-weight:600;color:#64748b;cursor:pointer}
+.filter-btn.active{background:#0369a1;color:#fff;border-color:#0369a1}
+
+/* Stats grid */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:16px}
+.stat{background:#fff;border:2px solid #e2e8f0;border-radius:12px;padding:14px;text-align:center}
+.stat .label{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;margin-bottom:6px}
+.stat .big{font-size:28px;font-weight:800;color:#0369a1}
+.stat.good{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-color:#86efac}
+.stat.good .big{color:#16a34a}
+.stat.bad{background:linear-gradient(135deg,#fef2f2,#fee2e2);border-color:#fca5a5}
+.stat.bad .big{color:#dc2626}
+.stat.warning{background:linear-gradient(135deg,#fef3c7,#fde68a);border-color:#fde047}
+.stat.warning .big{color:#ca8a04}
+
+/* Cards */
+.card{background:#fff;border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,0.04)}
+.card h2{font-size:16px;color:#0369a1;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card .sub{font-size:12px;color:#94a3b8;margin-bottom:10px}
+
+/* Apart row */
+.apart-list{display:flex;flex-direction:column;gap:8px}
+.apart-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:10px 12px;background:#f8fafc;border-radius:8px;font-size:13px}
+.apart-name{font-weight:700}
+.apart-info{font-size:11px;color:#94a3b8}
+.apart-bar{height:6px;background:#e2e8f0;border-radius:3px;margin-top:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px}
+.bar-fill.red{background:linear-gradient(90deg,#dc2626,#f87171)}
+.bar-fill.green{background:linear-gradient(90deg,#10b981,#34d399)}
+.bar-fill.amber{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+.apart-value{font-weight:700;font-size:14px;min-width:50px;text-align:right}
+
+/* Donuts */
+.donut-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:14px;margin-top:8px}
+.donut-item{text-align:center}
+.donut-label{font-size:12px;font-weight:600;color:#475569;margin-top:6px}
+.donut-sub{font-size:10px;color:#94a3b8}
+
+/* Alerts */
+.alert-banner{background:linear-gradient(135deg,#fef2f2,#fee2e2);border:2px solid #fecaca;border-radius:12px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.alert-banner .ico{font-size:24px}
+.alert-banner .title{font-weight:700;color:#991b1b;font-size:14px}
+.alert-banner .desc{font-size:12px;color:#7f1d1d}
+
+/* Verbatims */
+.verbatim{background:#fef3c7;border-left:4px solid #f59e0b;padding:10px 14px;border-radius:6px;margin:6px 0;font-size:13px}
+.verbatim .meta{font-size:11px;color:#92400e;font-weight:600;margin-bottom:4px}
+.verbatim.bad{background:#fef2f2;border-left-color:#dc2626}
+.verbatim.bad .meta{color:#991b1b}
+.verbatim.good{background:#f0fdf4;border-left-color:#10b981}
+.verbatim.good .meta{color:#166534}
+
+/* Loading */
+.loading{text-align:center;padding:40px;color:#64748b}
+.loading .spinner{width:40px;height:40px;border:4px solid #e2e8f0;border-top-color:#0ea5e9;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Presta badge */
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;margin-left:6px}
+.badge.remi{background:#e0f2fe;color:#0369a1}
+.badge.clara{background:#fff7ed;color:#c2410c}
+.badge.christelle{background:#f0fdf4;color:#15803d}
+
+.refresh-time{font-size:11px;color:#94a3b8;text-align:center;padding:8px}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h1>&#x1F4CA; Dashboard Enqu&ecirc;te Berck</h1>
+    <div class="subtitle">Vue d'ensemble en temps r&eacute;el de tous les avis voyageurs</div>
+    <button class="refresh" onclick="loadData()">&#x21BB; Rafra&icirc;chir</button>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn" data-days="7" onclick="setPeriod(7,this)">7 derniers jours</button>
+    <button class="filter-btn active" data-days="30" onclick="setPeriod(30,this)">30 derniers jours</button>
+    <button class="filter-btn" data-days="90" onclick="setPeriod(90,this)">3 mois</button>
+    <button class="filter-btn" data-days="9999" onclick="setPeriod(9999,this)">Tout</button>
+  </div>
+
+  <div id="content">
+    <div class="loading">
+      <div class="spinner"></div>
+      <div>Chargement des donn&eacute;es&hellip;</div>
+    </div>
+  </div>
+
+  <div class="refresh-time" id="refreshTime"></div>
+</div>
+
+<script>
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyZ50d01GyAOXi4LKQteCrGKkEcq4eKzLBMh3_G9hM4TI-5IAfjhrnxDZyKZO3-0IolBA/exec';
+
+// Mapping prestataires (synchro avec business-berck)
+var APPART_PRESTA = {
+  'Kitesurf':'remi','Hamac':'remi','Paddle':'remi','Surf':'remi','Famille':'remi',
+  'Balnéo':'clara','Cocon Romantique':'clara','La Réserve':'clara','Kingston':'clara',
+  'Apolove':'clara','Apollo':'clara','Albatros':'clara',
+  'Face Mer':'christelle','Grand Large':'christelle',
+  'Mini Love Room':'christelle','Grande Love Room':'christelle',
+  'Jeanne':'christelle','Evasion':'christelle','Évasion':'christelle','Rotonde':'christelle','Patio':'christelle',
+  'Terrasse':'christelle','Maisonnette':'christelle','Coeur':'christelle','Cœur':'christelle'
+};
+var PRESTA_NOM = { remi:'Rémi', clara:'Clara', christelle:'Christelle' };
+var NEG_Q1 = ['Très décevant','Mediocre','Médiocre'];
+var NEG_Q5 = ['Très sale','Sale'];
+var WARN_Q5 = ['Quelques défauts','Normale','Normal'];
+var POS_Q5 = ['Propre','Très propre'];
+
+var currentPeriod = 30;
+var rawData = null;
+
+function parseFrDate(str) {
+  if (!str) return null;
+  // ISO format
+  if (/^\d{4}-\d{2}-\d{2}T/.test(str)) return new Date(str);
+  // "18/04/2026 12:34:56" ou "18/04/2026, 12:34:56"
+  var m = String(str).match(/(\d{1,2})\/(\d{1,2})\/(\d{4})[\s,]+(\d{1,2}):(\d{1,2})/);
+  if (!m) return null;
+  return new Date(+m[3], +m[2] - 1, +m[1], +m[4], +m[5]);
+}
+
+function setPeriod(days, btn) {
+  currentPeriod = days;
+  document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  render();
+}
+
+function loadData() {
+  document.getElementById('content').innerHTML = '<div class="loading"><div class="spinner"></div><div>Chargement&hellip;</div></div>';
+  fetch(SCRIPT_URL + '?action=getStats&t=' + Date.now())
+    .then(function(r) { return r.json(); })
+    .then(function(resp) {
+      rawData = resp.data || [];
+      document.getElementById('refreshTime').textContent = 'Dernière mise à jour : ' + new Date().toLocaleString('fr-FR');
+      render();
+    })
+    .catch(function(e) {
+      document.getElementById('content').innerHTML = '<div class="card"><h2>⚠️ Erreur de chargement</h2><p>' + e.message + '</p></div>';
+    });
+}
+
+function render() {
+  if (!rawData) { loadData(); return; }
+  var headers = rawData[0] || [];
+  var rows = rawData.slice(1);
+
+  // Indices des colonnes (v4 et v6 différent)
+  function idx(name) {
+    for (var i = 0; i < headers.length; i++) {
+      if (String(headers[i]).toLowerCase().indexOf(name.toLowerCase()) !== -1) return i;
+    }
+    return -1;
+  }
+  var iDate = 0;
+  var iAppart = idx('Appartement');
+  var iQ1 = idx('Q1');
+  var iQ5 = idx('Q5 Proprete') !== -1 ? idx('Q5 Proprete') : idx('Q5');
+  var iQ6 = idx('Q6');
+  var iQ7 = idx('Q7');
+  var iQ8 = idx('Q8');
+  var iQ9 = idx('Q9');
+  var iNom = idx('Nom Prenom');
+  var iQ5Details = idx('Q5 Details');
+
+  // Filtrer par période
+  var cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - currentPeriod);
+  var filtered = rows.filter(function(r) {
+    if (!r[iAppart]) return false;
+    if (currentPeriod >= 9999) return true;
+    var d = parseFrDate(r[iDate]);
+    return d && d >= cutoff;
+  });
+
+  // Stats globales
+  var total = filtered.length;
+  var revenir = filtered.filter(function(r){ return r[iQ7] === 'Oui'; }).length;
+  var menagePb = filtered.filter(function(r){ return NEG_Q5.indexOf(r[iQ5]) !== -1 || WARN_Q5.indexOf(r[iQ5]) !== -1; }).length;
+  var menageOk = filtered.filter(function(r){ return POS_Q5.indexOf(r[iQ5]) !== -1; }).length;
+  var recommande = filtered.filter(function(r){ return r[iQ8] === 'Oui'; }).length;
+
+  var satisfaction = total === 0 ? 0 : Math.round((menageOk + (total - menagePb) * 0.5) / total * 100);
+  var pctRevenir = total === 0 ? 0 : Math.round(revenir / total * 100);
+  var pctMenagePb = total === 0 ? 0 : Math.round(menagePb / total * 100);
+
+  // Par appartement
+  var byAppart = {};
+  filtered.forEach(function(r) {
+    var a = r[iAppart];
+    if (!byAppart[a]) byAppart[a] = { total:0, menagePb:0, menageTresSale:0, revenir:0, q6:0, notes:[], verbatims:[] };
+    byAppart[a].total++;
+    if (NEG_Q5.indexOf(r[iQ5]) !== -1) { byAppart[a].menagePb++; byAppart[a].menageTresSale++; }
+    if (WARN_Q5.indexOf(r[iQ5]) !== -1) byAppart[a].menagePb++;
+    if (r[iQ7] === 'Oui') byAppart[a].revenir++;
+    if (iQ6 !== -1 && r[iQ6]) byAppart[a].q6++;
+    if (iQ9 !== -1 && r[iQ9]) byAppart[a].verbatims.push({ nom:r[iNom], texte:r[iQ9], q5:r[iQ5], q7:r[iQ7] });
+    if (iQ5Details !== -1 && r[iQ5Details]) byAppart[a].verbatims.push({ nom:r[iNom], texte:'[MÉNAGE] '+r[iQ5Details], q5:r[iQ5], q7:r[iQ7] });
+  });
+
+  // Tri classements
+  var apartsArr = Object.keys(byAppart).map(function(k){ return Object.assign({nom:k}, byAppart[k]); });
+  var topMenagePb = apartsArr.slice().sort(function(a,b){ return (b.menagePb/b.total) - (a.menagePb/a.total); });
+  var topRevenir = apartsArr.slice().sort(function(a,b){ return (b.revenir/b.total) - (a.revenir/a.total); });
+  var topQ6 = apartsArr.slice().sort(function(a,b){ return (b.q6/b.total) - (a.q6/a.total); });
+
+  // Alertes apparts qui décrochent
+  var moyenneMenage = apartsArr.length > 0 ? apartsArr.reduce(function(s,a){ return s + a.menagePb/a.total; }, 0) / apartsArr.length : 0;
+  var alertes = apartsArr.filter(function(a){
+    return a.total >= 2 && (a.menagePb/a.total) > Math.max(0.3, moyenneMenage + 0.2);
+  });
+
+  // Verbatims récents
+  var allVerbatims = [];
+  filtered.forEach(function(r) {
+    if (iQ9 !== -1 && r[iQ9]) {
+      allVerbatims.push({
+        date: parseFrDate(r[iDate]),
+        appart: r[iAppart],
+        nom: r[iNom],
+        texte: r[iQ9],
+        q5: r[iQ5],
+        q7: r[iQ7],
+        type: r[iQ7] === 'Non' ? 'bad' : (r[iQ7] === 'Oui' ? 'good' : '')
+      });
+    }
+  });
+  allVerbatims.sort(function(a,b){ return (b.date||0) - (a.date||0); });
+
+  // Build HTML
+  var html = '';
+
+  // Alertes
+  if (alertes.length > 0) {
+    html += '<div class="alert-banner">'
+      + '<div class="ico">⚠️</div>'
+      + '<div style="flex:1"><div class="title">' + alertes.length + ' appartement' + (alertes.length > 1 ? 's' : '') + ' décroche' + (alertes.length > 1 ? 'nt' : '') + '</div>'
+      + '<div class="desc">' + alertes.map(function(a){ return a.nom + ' (' + Math.round(a.menagePb/a.total*100) + '% problèmes ménage)'; }).join(' · ') + '</div></div>'
+      + '</div>';
+  }
+
+  // Stats globales
+  html += '<div class="stats-grid">'
+    + statCard('Avis reçus', total, '')
+    + statCard('Satisfaction', satisfaction + '%', satisfaction >= 75 ? 'good' : satisfaction >= 50 ? 'warning' : 'bad')
+    + statCard('Veulent revenir', pctRevenir + '%', pctRevenir >= 70 ? 'good' : pctRevenir >= 40 ? 'warning' : 'bad')
+    + statCard('Problèmes ménage', pctMenagePb + '%', pctMenagePb <= 10 ? 'good' : pctMenagePb <= 25 ? 'warning' : 'bad')
+    + '</div>';
+
+  // Donuts KPI
+  html += '<div class="card"><h2>📊 Vue d\'ensemble</h2>'
+    + '<div class="donut-grid">'
+    + donut('Satisfaction', satisfaction, satisfaction >= 75 ? '#10b981' : satisfaction >= 50 ? '#f59e0b' : '#dc2626')
+    + donut('Reviennent', pctRevenir, pctRevenir >= 70 ? '#10b981' : '#f59e0b')
+    + donut('Ménage OK', 100 - pctMenagePb, pctMenagePb <= 15 ? '#10b981' : '#dc2626')
+    + donut('Recommandent', total === 0 ? 0 : Math.round(recommande / total * 100), '#0ea5e9')
+    + '</div></div>';
+
+  // Classement problèmes ménage
+  if (topMenagePb.filter(function(a){return a.menagePb>0;}).length > 0) {
+    html += '<div class="card"><h2>🧹 Appartements avec le plus de défauts ménage</h2>'
+      + '<div class="sub">% d\'avis signalant Très sale ou Quelques défauts</div>'
+      + '<div class="apart-list">';
+    topMenagePb.slice(0, 10).forEach(function(a) {
+      if (a.menagePb === 0) return;
+      var pct = Math.round(a.menagePb / a.total * 100);
+      var color = pct > 30 ? 'red' : pct > 10 ? 'amber' : 'green';
+      html += apartRow(a.nom, a.total + ' avis', pct, color);
+    });
+    html += '</div></div>';
+  }
+
+  // Classement veulent revenir
+  html += '<div class="card"><h2>❤️ Veulent revenir par appartement</h2>'
+    + '<div class="apart-list">';
+  topRevenir.slice(0, 10).forEach(function(a) {
+    var pct = Math.round(a.revenir / a.total * 100);
+    html += apartRow(a.nom, a.total + ' avis', pct, pct >= 70 ? 'green' : pct >= 40 ? 'amber' : 'red');
+  });
+  html += '</div></div>';
+
+  // Commentaires récents
+  if (allVerbatims.length > 0) {
+    html += '<div class="card"><h2>💬 Commentaires récents</h2>';
+    allVerbatims.slice(0, 10).forEach(function(v) {
+      var dateStr = v.date ? v.date.toLocaleDateString('fr-FR') : '';
+      html += '<div class="verbatim ' + v.type + '">'
+        + '<div class="meta">' + escapeHtml(v.appart) + ' · ' + escapeHtml(v.nom || '') + ' · ' + dateStr + '</div>'
+        + escapeHtml(v.texte)
+        + '</div>';
+    });
+    html += '</div>';
+  }
+
+  if (total === 0) {
+    html = '<div class="card"><h2>📭 Aucun avis sur la période</h2>'
+      + '<div class="sub">Change la période en haut pour élargir, ou reviens quand tu auras reçu des avis.</div>'
+      + '<p style="margin-top:14px;font-size:13px">Partage le lien du questionnaire à tes voyageurs : <br>'
+      + '<a href="https://claudine-design.github.io/enquete-berck/?appart=Hamac" target="_blank" style="color:#0369a1">exemple: appartement Hamac</a></p></div>';
+  }
+
+  document.getElementById('content').innerHTML = html;
+}
+
+function statCard(label, value, cls) {
+  return '<div class="stat ' + (cls || '') + '"><div class="label">' + label + '</div><div class="big">' + value + '</div></div>';
+}
+
+function apartRow(nom, info, pct, color) {
+  var presta = APPART_PRESTA[nom] || '';
+  var badge = presta ? '<span class="badge ' + presta + '">' + PRESTA_NOM[presta] + '</span>' : '';
+  var pctColor = color === 'red' ? '#dc2626' : color === 'amber' ? '#f59e0b' : '#10b981';
+  return '<div class="apart-row">'
+    + '<div>'
+    + '<div><span class="apart-name">' + escapeHtml(nom) + '</span>' + badge + '</div>'
+    + '<div class="apart-info">' + info + '</div>'
+    + '<div class="apart-bar"><div class="bar-fill ' + color + '" style="width:' + pct + '%"></div></div>'
+    + '</div>'
+    + '<div class="apart-value" style="color:' + pctColor + '">' + pct + '%</div>'
+    + '</div>';
+}
+
+function donut(label, pct, color) {
+  var circumference = 2 * Math.PI * 32;
+  var offset = circumference * (1 - pct/100);
+  return '<div class="donut-item">'
+    + '<svg viewBox="0 0 80 80" width="100" height="100">'
+    + '<circle cx="40" cy="40" r="32" fill="none" stroke="#e2e8f0" stroke-width="10"/>'
+    + '<circle cx="40" cy="40" r="32" fill="none" stroke="' + color + '" stroke-width="10" '
+    + 'stroke-dasharray="' + circumference + '" stroke-dashoffset="' + offset + '" '
+    + 'transform="rotate(-90 40 40)" stroke-linecap="round"/>'
+    + '<text x="40" y="46" text-anchor="middle" font-size="16" font-weight="700" fill="' + color + '">' + pct + '%</text>'
+    + '</svg>'
+    + '<div class="donut-label">' + label + '</div>'
+    + '</div>';
+}
+
+function escapeHtml(s) {
+  if (s === null || s === undefined) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// Init
+loadData();
+// Auto-refresh every 60s
+setInterval(loadData, 60000);
+</script>
+
+</body>
+</html>
