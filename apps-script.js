@@ -41,7 +41,7 @@ var HEAD_REPONSES = [
   'Horodatage', 'Residence', 'Appartement', 'Prestataire',
   'Nom Prenom', 'Telephone', 'WhatsApp',
   'Ville/Region/Pays', 'Zone Vacances', 'Email',
-  'Q1 Arrivee', 'Q3 Appreciation', 'Q4 Qualite/Prix',
+  'Q1 Arrivee', 'Q1 Details', 'Q3 Appreciation', 'Q4 Qualite/Prix',
   'Q5 Proprete', 'Q5 Details', 'Q6 Ameliorations',
   'Q7 Revenir', 'Q8 Recommander', 'Q9 Commentaire libre',
   'Consent Marketing'
@@ -92,7 +92,7 @@ function handle(p) {
       ts, p.residence || '', p.appart || '', prestaNom,
       p.nom || '', p.tel || '', p.whatsapp || 'non',
       p.ville || '', zone, p.email || '',
-      p.q1 || '', p.q3 || '', p.q4 || '',
+      p.q1 || '', p.q1details || '', p.q3 || '', p.q4 || '',
       p.q5 || '', p.q5details || '', p.q6 || '',
       p.q7 || '', p.q8 || '', p.q9 || '',
       p.consent || 'non'
@@ -140,29 +140,18 @@ function handle(p) {
     // --- ALERTES IMMEDIATES ---
     try { sendImmediateAlerts(p, zone, prestaKey, prestaNom); } catch(err) {}
 
-    // --- PARRAINAGE : gestion du code parrain du voyageur ---
+    // --- PARRAINAGE : generer le code parrain si voyageur tres satisfait ---
+    // Note : la validation se fait au moment de la reservation (via site/Beds24), pas dans le questionnaire.
     var parrainCodeGenere = null;
-    var parrainageValide = false;
-
-    // 1) Si voyageur Q7=Oui ET Q8=Oui -> generer son code parrain
     if (p.email && p.nom && p.q7 === 'Oui' && p.q8 === 'Oui') {
       try {
         parrainCodeGenere = genererOuRecupererCodeParrain(ss, p);
       } catch(err) {}
     }
 
-    // 2) Si voyageur a saisi un code parrain -> verifier et valider
-    if (p.parrainUtilise && p.email) {
-      try {
-        var res = validerEtNotifierParrainage(ss, p, p.parrainUtilise);
-        parrainageValide = res;
-      } catch(err) {}
-    }
-
     return json({
       success: true,
-      parrainCode: parrainCodeGenere,
-      parrainValide: parrainageValide
+      parrainCode: parrainCodeGenere
     });
   }
 
