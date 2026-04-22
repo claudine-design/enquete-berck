@@ -4,207 +4,361 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Votre avis - Appart-H&ocirc;tel Berck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
+:root{
+  --noir:#0a0a0a;
+  --noir-2:#141414;
+  --noir-3:#1a1a1a;
+  --or-clair:#f4d98a;
+  --or:#d4a84a;
+  --or-cuivre:#b8872c;
+  --or-fonce:#7a5a1c;
+  --creme:#f5ecd9;
+  --creme-2:#e8dcc0;
+}
 body{
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-  background:linear-gradient(135deg,#e0f2fe 0%,#f0f9ff 30%,#fef3c7 70%,#fde68a 100%);
-  min-height:100vh;color:#1e293b;
+  font-family:'Inter','Segoe UI',Roboto,sans-serif;
+  background:radial-gradient(ellipse at top,#1a1a1a 0%,#0a0a0a 50%,#050505 100%);
   background-attachment:fixed;
+  min-height:100vh;color:var(--creme);
+  position:relative;
+}
+/* Fleur de lys filigrane en fond */
+body::before{
+  content:"";position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:80vmin;height:80vmin;pointer-events:none;z-index:0;opacity:0.04;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 40'><path fill='%23f4d98a' d='M16 0c1.5 5 6 8 6 14-1-1-3.5-2-6-2s-5 1-6 2c0-6 4.5-9 6-14zM8 16c-2 3-2 7 0 10 1.5 2.5 4 4 8 6 4-2 6.5-3.5 8-6 2-3 2-7 0-10-2 2-5 3-8 3s-6-1-8-3zM10 34c2 2 4 3.5 6 6 2-2.5 4-4 6-6-2 .5-4 .8-6 .8s-4-.3-6-.8z'/></svg>") center/contain no-repeat;
 }
 
-.container{max-width:540px;margin:0 auto;padding:16px 16px 40px}
+.container{max-width:560px;margin:0 auto;padding:20px 16px 40px;position:relative;z-index:1}
 
 /* HEADER */
 .header{
-  text-align:center;padding:28px 20px 24px;
-  background:linear-gradient(135deg,#0369a1,#0284c7,#0ea5e9);
-  border-radius:20px;margin-bottom:20px;color:#fff;
-  box-shadow:0 8px 30px rgba(3,105,161,0.3);
+  text-align:center;padding:36px 24px 30px;
+  background:linear-gradient(180deg,rgba(20,20,20,0.95),rgba(10,10,10,0.95));
+  border:1px solid var(--or-cuivre);
+  border-radius:0;margin-bottom:22px;color:var(--creme);
+  box-shadow:0 8px 30px rgba(0,0,0,0.5),inset 0 0 0 1px rgba(122,90,28,0.3);
   position:relative;overflow:hidden;
 }
 .header::before{
-  content:'';position:absolute;top:-50%;right:-50%;width:100%;height:100%;
-  background:radial-gradient(circle,rgba(255,255,255,0.1) 0%,transparent 70%);
+  content:"";position:absolute;top:3mm;left:3mm;right:3mm;bottom:3mm;
+  border:0.5px solid rgba(212,168,74,0.25);pointer-events:none;
 }
-.header-emoji{font-size:44px;margin-bottom:8px;display:block}
-.header h1{font-size:20px;font-weight:700;margin-bottom:6px;position:relative}
+.header-lys{
+  width:52px;height:62px;display:block;margin:0 auto 12px;
+}
+.header h1{
+  font-family:'Cinzel',serif;
+  font-size:14px;font-weight:500;letter-spacing:5px;text-transform:uppercase;
+  color:var(--or);margin-bottom:10px;position:relative;
+}
 .header .appart-name{
-  font-size:26px;font-weight:800;
-  background:linear-gradient(135deg,#fde68a,#fbbf24);
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:32px;font-weight:500;
+  background:linear-gradient(180deg,var(--or-clair),var(--or),var(--or-cuivre));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;margin-bottom:10px;display:block;position:relative;
+  background-clip:text;margin-bottom:12px;display:block;position:relative;
+  line-height:1.1;
 }
-.header p{font-size:14px;opacity:0.9;line-height:1.5;position:relative}
+.header-sep{display:flex;align-items:center;justify-content:center;gap:10px;margin:12px 0;position:relative}
+.header-sep .line{width:50px;height:1px;background:linear-gradient(90deg,transparent,var(--or-cuivre),transparent)}
+.header-sep .diamond{width:6px;height:6px;background:var(--or);transform:rotate(45deg)}
+.header p{
+  font-family:'Cormorant Garamond',serif;font-size:15px;
+  color:var(--creme-2);font-style:italic;line-height:1.5;position:relative;opacity:0.9;
+}
 
 /* CARDS */
 .card{
-  background:#fff;border-radius:16px;padding:22px 20px;margin-bottom:14px;
-  box-shadow:0 2px 12px rgba(0,0,0,0.06);
-  border:1px solid rgba(0,0,0,0.04);
+  background:linear-gradient(180deg,rgba(20,20,20,0.85),rgba(10,10,10,0.85));
+  backdrop-filter:blur(6px);
+  border:1px solid rgba(122,90,28,0.5);border-radius:0;
+  padding:24px 20px;margin-bottom:16px;
+  box-shadow:0 4px 16px rgba(0,0,0,0.35);
+  position:relative;
+}
+.card::before{
+  content:"";position:absolute;top:2mm;left:2mm;right:2mm;bottom:2mm;
+  border:0.3px solid rgba(212,168,74,0.15);pointer-events:none;
 }
 .card-title{
-  font-size:15px;font-weight:700;color:#0369a1;margin-bottom:14px;
-  display:flex;align-items:center;gap:8px;
+  font-family:'Cinzel',serif;
+  font-size:13px;font-weight:500;letter-spacing:3px;text-transform:uppercase;
+  color:var(--or);margin-bottom:16px;
+  display:flex;align-items:center;gap:10px;position:relative;z-index:1;
+  padding-bottom:12px;border-bottom:1px solid rgba(122,90,28,0.4);
 }
 .card-title .num{
-  background:linear-gradient(135deg,#0369a1,#0ea5e9);color:#fff;
+  background:linear-gradient(180deg,var(--or-clair),var(--or-cuivre));color:var(--noir);
   width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-size:13px;font-weight:700;flex-shrink:0;
+  font-size:12px;font-weight:600;flex-shrink:0;font-family:'Cinzel',serif;
+  box-shadow:0 2px 8px rgba(212,168,74,0.3);
+}
+.subtitle{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:14px !important;color:var(--creme-2) !important;
+  margin:-8px 0 14px !important;opacity:0.85;
 }
 
 /* FORM INPUTS */
-.form-group{margin-bottom:14px}
+.form-group{margin-bottom:16px;position:relative;z-index:1}
 .form-group:last-child{margin-bottom:0}
-label{display:block;font-size:13px;font-weight:600;color:#475569;margin-bottom:5px}
+label{
+  display:block;font-family:'Cinzel',serif;
+  font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;
+  color:var(--or);margin-bottom:6px;
+}
 input[type="text"],input[type="email"],input[type="tel"],textarea{
-  width:100%;padding:12px 14px;border:2px solid #e2e8f0;border-radius:12px;
-  font-size:16px;font-family:inherit;color:#1e293b;
-  transition:border-color 0.2s,box-shadow 0.2s;background:#f8fafc;
+  width:100%;padding:13px 16px;
+  border:1px solid rgba(122,90,28,0.6);border-radius:0;
+  font-size:15px;font-family:'Cormorant Garamond',serif;color:var(--creme);
+  transition:border-color 0.3s,box-shadow 0.3s,background 0.3s;
+  background:rgba(0,0,0,0.4);
   -webkit-appearance:none;
 }
+input::placeholder,textarea::placeholder{color:rgba(245,236,217,0.35);font-style:italic}
 input:focus,textarea:focus{
-  outline:none;border-color:#0ea5e9;
-  box-shadow:0 0 0 3px rgba(14,165,233,0.15);background:#fff;
+  outline:none;border-color:var(--or);
+  box-shadow:0 0 0 1px var(--or),inset 0 0 8px rgba(212,168,74,0.1);
+  background:rgba(10,10,10,0.8);
 }
-textarea{resize:vertical;min-height:80px}
+textarea{resize:vertical;min-height:90px;font-size:14px;line-height:1.5}
 
 /* RADIO OPTIONS */
-.options{display:flex;flex-wrap:wrap;gap:8px}
-.opt{
-  flex:1;min-width:calc(50% - 4px);
-}
+.options{display:flex;flex-wrap:wrap;gap:8px;position:relative;z-index:1}
+.opt{flex:1;min-width:calc(50% - 4px)}
 .opt input{display:none}
 .opt label{
   display:flex;align-items:center;justify-content:center;
-  padding:12px 8px;border:2px solid #e2e8f0;border-radius:12px;
-  font-size:14px;font-weight:500;cursor:pointer;text-align:center;
-  transition:all 0.2s;background:#f8fafc;color:#64748b;
+  padding:13px 10px;border:1px solid rgba(122,90,28,0.5);border-radius:0;
+  font-family:'Cormorant Garamond',serif;
+  font-size:15px;font-weight:500;cursor:pointer;text-align:center;
+  transition:all 0.3s;background:rgba(0,0,0,0.3);color:var(--creme-2);
   min-height:46px;
+  text-transform:none;letter-spacing:0;
 }
 .opt input:checked+label{
-  border-color:#0ea5e9;background:linear-gradient(135deg,#e0f2fe,#f0f9ff);
-  color:#0369a1;font-weight:700;
-  box-shadow:0 0 0 3px rgba(14,165,233,0.12);
+  border-color:var(--or);
+  background:linear-gradient(180deg,rgba(212,168,74,0.25),rgba(184,135,44,0.2));
+  color:var(--or-clair);font-weight:600;
+  box-shadow:0 0 0 1px var(--or),inset 0 0 12px rgba(244,217,138,0.15);
 }
 .opt label:active{transform:scale(0.97)}
 
-/* 4 columns for some questions */
 .options-4 .opt{min-width:calc(25% - 6px)}
-.options-4 .opt label{padding:12px 4px;font-size:12px}
+.options-4 .opt label{padding:12px 4px;font-size:13px}
 .options-2 .opt{min-width:calc(50% - 4px)}
 .options-3 .opt{min-width:calc(33% - 6px)}
 
-/* 5 niveaux avec aides — toujours en colonne verticale */
+/* 5 niveaux */
 .options-5{flex-direction:column;gap:8px}
 .options-5 .opt{min-width:100%;flex:none}
 .options-5 .opt label{
   display:flex;flex-direction:column;align-items:flex-start;justify-content:center;
-  text-align:left;padding:12px 14px;min-height:auto;line-height:1.3;
+  text-align:left;padding:13px 16px;min-height:auto;line-height:1.3;
 }
-.options-5 .opt-main{display:block;font-size:15px;font-weight:700;margin-bottom:2px}
-.options-5 .opt-hint{display:block;font-size:12px;color:#94a3b8;font-weight:400;font-style:italic}
-.options-5 .opt input:checked+label .opt-hint{color:#0369a1}
+.options-5 .opt-main{
+  display:block;font-family:'Cinzel',serif;
+  font-size:12px;font-weight:500;letter-spacing:2px;text-transform:uppercase;
+  margin-bottom:3px;color:var(--or);
+}
+.options-5 .opt-hint{
+  display:block;font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:13px;color:var(--creme-2);font-weight:400;opacity:0.85;
+}
+.options-5 .opt input:checked+label .opt-main{color:var(--or-clair)}
+.options-5 .opt input:checked+label .opt-hint{color:var(--creme)}
 
 /* CONSENT */
 .consent{
   display:flex;align-items:flex-start;gap:10px;
-  padding:16px;background:#f0f9ff;border-radius:12px;
-  border:1px solid #bae6fd;
+  padding:16px;background:rgba(0,0,0,0.3);border-radius:0;
+  border:1px solid rgba(122,90,28,0.4);
 }
 .consent input[type="checkbox"]{
-  width:22px;height:22px;margin-top:2px;flex-shrink:0;
-  accent-color:#0ea5e9;cursor:pointer;
+  width:20px;height:20px;margin-top:2px;flex-shrink:0;
+  accent-color:var(--or);cursor:pointer;
 }
-.consent label{font-size:12px;color:#475569;line-height:1.5;cursor:pointer}
+.consent label{
+  font-family:'Cormorant Garamond',serif;
+  font-size:13px;color:var(--creme-2);line-height:1.5;cursor:pointer;
+  letter-spacing:0;text-transform:none;
+}
 
 /* SUBMIT */
 .submit-btn{
-  width:100%;padding:16px;border:none;border-radius:14px;
-  background:linear-gradient(135deg,#0369a1,#0284c7,#0ea5e9);
-  color:#fff;font-size:17px;font-weight:700;cursor:pointer;
-  box-shadow:0 6px 20px rgba(3,105,161,0.35);
-  transition:all 0.2s;margin-top:8px;
-  font-family:inherit;
+  width:100%;padding:18px;
+  border:1px solid var(--or);border-radius:0;
+  background:linear-gradient(180deg,var(--or-clair),var(--or),var(--or-cuivre));
+  color:var(--noir);
+  font-family:'Cinzel',serif;
+  font-size:14px;font-weight:600;letter-spacing:4px;text-transform:uppercase;
+  cursor:pointer;
+  box-shadow:0 6px 20px rgba(212,168,74,0.3),inset 0 1px 0 rgba(255,255,255,0.2);
+  transition:all 0.25s;margin-top:10px;
 }
-.submit-btn:active{transform:scale(0.97);box-shadow:0 3px 10px rgba(3,105,161,0.3)}
-.submit-btn:disabled{opacity:0.6;cursor:not-allowed}
+.submit-btn:hover{box-shadow:0 8px 28px rgba(212,168,74,0.5),inset 0 1px 0 rgba(255,255,255,0.3)}
+.submit-btn:active{transform:scale(0.98);box-shadow:0 3px 10px rgba(212,168,74,0.3)}
+.submit-btn:disabled{opacity:0.5;cursor:not-allowed}
 
 /* THANK YOU */
-.thank-you{
-  display:none;text-align:center;padding:60px 20px;
-}
+.thank-you{display:none;text-align:center;padding:60px 20px}
 .thank-you.visible{display:block}
 .thank-you .check{
-  width:80px;height:80px;border-radius:50%;
-  background:linear-gradient(135deg,#10b981,#34d399);
+  width:90px;height:90px;border-radius:50%;
+  background:linear-gradient(180deg,var(--or-clair),var(--or-cuivre));
   display:flex;align-items:center;justify-content:center;
-  margin:0 auto 20px;font-size:40px;color:#fff;
+  margin:0 auto 24px;font-size:42px;color:var(--noir);
   animation:pop 0.5s cubic-bezier(0.175,0.885,0.32,1.275);
+  box-shadow:0 8px 28px rgba(212,168,74,0.4);
 }
 @keyframes pop{0%{transform:scale(0)}100%{transform:scale(1)}}
-.thank-you h2{font-size:24px;font-weight:700;color:#0369a1;margin-bottom:10px}
-.thank-you p{font-size:15px;color:#64748b;line-height:1.6}
+.thank-you h2{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:30px;font-weight:500;color:var(--or-clair);margin-bottom:14px;
+}
+.thank-you p{
+  font-family:'Cormorant Garamond',serif;font-size:16px;
+  color:var(--creme-2);line-height:1.6;
+}
 
 /* LOADING */
-.loading{display:none;text-align:center;padding:20px}
+.loading{display:none;text-align:center;padding:24px}
 .loading.visible{display:block}
 .spinner{
-  width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#0ea5e9;
-  border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 10px;
+  width:36px;height:36px;border:2px solid rgba(212,168,74,0.2);border-top-color:var(--or);
+  border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;
 }
+.loading p{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--creme-2)}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ERROR */
 .error-msg{
-  display:none;padding:12px 16px;background:#fef2f2;border:1px solid #fecaca;
-  border-radius:12px;color:#dc2626;font-size:13px;margin-top:10px;text-align:center;
+  display:none;padding:14px 18px;
+  background:rgba(60,15,15,0.6);border:1px solid #8b3a3a;border-radius:0;
+  color:#f5b5b5;font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:14px;margin-top:12px;text-align:center;
 }
 .error-msg.visible{display:block}
 
 /* FOOTER */
-.footer{text-align:center;padding:20px;font-size:11px;color:#94a3b8}
-
-/* NO APPART SCREEN */
-.no-appart{
-  text-align:center;padding:60px 20px;
+.footer{
+  text-align:center;padding:24px;
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:12px;color:var(--or-fonce);letter-spacing:1px;
 }
-.no-appart .icon{font-size:60px;margin-bottom:16px;display:block}
-.no-appart h2{font-size:20px;color:#0369a1;margin-bottom:10px}
-.no-appart p{font-size:14px;color:#64748b;line-height:1.6}
 
-/* Q5 DETAILS (conditionnel) */
+/* NO APPART */
+.no-appart{text-align:center;padding:60px 20px;position:relative;z-index:1}
+.no-appart .icon{font-size:60px;margin-bottom:16px;display:block}
+.no-appart h2{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:24px;color:var(--or-clair);margin-bottom:12px;
+}
+.no-appart p{
+  font-family:'Cormorant Garamond',serif;font-size:15px;
+  color:var(--creme-2);line-height:1.6;
+}
+
+/* Q5 / Q1 DETAILS (conditionnel) */
 .q5-details{
-  display:none;margin-top:14px;padding:16px;
-  background:linear-gradient(135deg,#fef2f2,#fff1f2);
-  border:2px solid #fecaca;border-radius:12px;
-  animation:slideDown 0.3s ease-out;
+  display:none;margin-top:16px;padding:18px;
+  background:rgba(40,15,15,0.5);
+  border:1px solid #8b3a3a;border-radius:0;
+  animation:slideDown 0.3s ease-out;position:relative;z-index:1;
 }
 .q5-details.visible{display:block}
-@keyframes slideDown{
-  from{opacity:0;transform:translateY(-6px)}
-  to{opacity:1;transform:translateY(0)}
-}
+@keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 .q5-details-title{
-  font-size:14px;font-weight:700;color:#991b1b;
-  margin-bottom:10px;display:flex;align-items:center;gap:8px;
+  font-family:'Cinzel',serif;
+  font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;
+  color:#f5b5b5;margin-bottom:10px;
+  display:flex;align-items:center;gap:8px;
 }
-.q5-details-title .ico{font-size:20px}
+.q5-details-title .ico{font-size:18px}
 .q5-details textarea{
-  background:#fff;border-color:#fecaca;
+  background:rgba(0,0,0,0.5);border-color:#8b3a3a;color:var(--creme);
 }
 .q5-details textarea:focus{
-  border-color:#dc2626;box-shadow:0 0 0 3px rgba(220,38,38,0.15);
+  border-color:#d66;box-shadow:0 0 0 1px #d66;
 }
 .q5-details .hint{
-  font-size:12px;color:#7f1d1d;margin-bottom:8px;line-height:1.4;
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:13px;color:#f5b5b5;margin-bottom:10px;line-height:1.5;opacity:0.85;
 }
 
-/* Responsive tweaks */
+/* Q5 Thanks (si très propre) */
+#q5Thanks{
+  background:linear-gradient(180deg,rgba(30,20,5,0.7),rgba(10,10,10,0.5));
+  border:1px solid var(--or);
+  padding:18px;margin-top:16px;
+  animation:slideDown 0.3s ease-out;
+}
+.q5thanks-title{
+  font-family:'Cinzel',serif;font-size:12px;font-weight:500;
+  letter-spacing:3px;text-transform:uppercase;color:var(--or-clair);margin-bottom:6px;
+}
+.q5thanks-body{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:14px;color:var(--creme);line-height:1.5;
+}
+
+/* Paragraphes dans cards (override inline styles bleu/gris) */
+.card p{
+  font-family:'Cormorant Garamond',serif !important;
+  color:var(--creme-2) !important;
+  font-size:14px !important;
+  line-height:1.6 !important;
+}
+
+/* Thank-you cards (post-submit) */
+.thank-para{
+  font-family:'Cormorant Garamond',serif;color:var(--creme-2);
+  font-size:15px;line-height:1.7;margin-bottom:16px;
+}
+.thank-para strong,.thank-para em{color:var(--or-clair);font-style:italic;font-weight:500}
+.thank-note{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:12px;color:var(--or-fonce);margin-top:12px;text-align:center;opacity:0.8;
+}
+.promo-code{
+  padding:18px;margin:4px 0;text-align:center;
+  font-family:'Cinzel',serif;font-size:22px;font-weight:600;letter-spacing:4px;
+  background:linear-gradient(180deg,var(--or-clair),var(--or),var(--or-cuivre));
+  color:var(--noir);
+  box-shadow:0 4px 18px rgba(212,168,74,0.25),inset 0 1px 0 rgba(255,255,255,0.3);
+  border:1px solid var(--or);
+}
+.thank-btn{
+  display:block;text-align:center;padding:14px;margin-top:12px;
+  font-family:'Cinzel',serif;font-size:12px;font-weight:600;
+  letter-spacing:3px;text-transform:uppercase;text-decoration:none;
+  background:linear-gradient(180deg,var(--or-clair),var(--or),var(--or-cuivre));
+  color:var(--noir);border:1px solid var(--or);
+  box-shadow:0 4px 14px rgba(212,168,74,0.25);
+  transition:all 0.2s;
+}
+.thank-btn:hover{box-shadow:0 6px 20px rgba(212,168,74,0.4)}
+.thank-btn-outline{
+  background:transparent;color:var(--or);
+  border:1px solid var(--or-cuivre);box-shadow:none;
+}
+.thank-btn-outline:hover{background:rgba(212,168,74,0.1)}
+.thank-btn-share{
+  background:linear-gradient(180deg,#2fd166,#1e8f47);color:#fff;
+  border:1px solid #2fd166;
+}
+
 @media(max-width:360px){
   .options-4 .opt{min-width:calc(50% - 4px)}
   .options-4 .opt label{font-size:13px}
+  .header .appart-name{font-size:26px}
 }
 </style>
 </head>
@@ -222,10 +376,20 @@ textarea{resize:vertical;min-height:80px}
 
   <!-- HEADER -->
   <div class="header" id="formHeader">
-    <span class="header-emoji">🏖️</span>
-    <h1>Merci pour votre s&eacute;jour !</h1>
+    <svg class="header-lys" viewBox="0 0 32 40" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="lysGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#f4d98a"/>
+          <stop offset="50%" stop-color="#d4a84a"/>
+          <stop offset="100%" stop-color="#b8872c"/>
+        </linearGradient>
+      </defs>
+      <path fill="url(#lysGrad)" d="M16 0c1.5 5 6 8 6 14-1-1-3.5-2-6-2s-5 1-6 2c0-6 4.5-9 6-14zM8 16c-2 3-2 7 0 10 1.5 2.5 4 4 8 6 4-2 6.5-3.5 8-6 2-3 2-7 0-10-2 2-5 3-8 3s-6-1-8-3zM10 34c2 2 4 3.5 6 6 2-2.5 4-4 6-6-2 .5-4 .8-6 .8s-4-.3-6-.8z"/>
+    </svg>
+    <h1>Questionnaire de satisfaction</h1>
     <span class="appart-name" id="appartName"></span>
-    <p>Quelques secondes pour nous aider &agrave; nous am&eacute;liorer ? Votre avis compte &eacute;norm&eacute;ment !</p>
+    <div class="header-sep"><div class="line"></div><div class="diamond"></div><div class="line"></div></div>
+    <p>Quelques instants pour nous aider &agrave; nous am&eacute;liorer.<br>Votre avis compte infiniment pour nous.</p>
   </div>
 
   <!-- FORM -->
@@ -336,13 +500,10 @@ textarea{resize:vertical;min-height:80px}
       </div>
 
       <!-- Message remerciement si Tr&egrave;s propre -->
-      <div id="q5Thanks" style="display:none;margin-top:14px;padding:16px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:2px solid #86efac;border-radius:12px;animation:slideDown 0.3s ease-out">
-        <div style="font-size:15px;font-weight:700;color:#166534;display:flex;align-items:center;gap:8px">
-          <span style="font-size:22px">&#x1F49A;</span>
-          <span>Merci beaucoup !</span>
-        </div>
-        <div style="font-size:13px;color:#14532d;margin-top:6px;line-height:1.5">
-          Nous transmettons imm&eacute;diatement &agrave; l'&eacute;quipe de nettoyage. Pour nous, c'est tr&egrave;s important &#x1F64F;
+      <div id="q5Thanks" style="display:none">
+        <div class="q5thanks-title">Merci beaucoup</div>
+        <div class="q5thanks-body">
+          Nous transmettons imm&eacute;diatement &agrave; l'&eacute;quipe de nettoyage. Pour nous, c'est tr&egrave;s important.
         </div>
       </div>
 
@@ -414,61 +575,51 @@ textarea{resize:vertical;min-height:80px}
     <p id="thankMsg">Votre avis nous est pr&eacute;cieux et nous aidera &agrave; am&eacute;liorer votre exp&eacute;rience.<br><br>
     Nous esp&eacute;rons vous revoir tr&egrave;s bient&ocirc;t &agrave; Berck-sur-Mer ! &#x1F30A;</p>
     <!-- PROMO + SITE (shown only if guest wants to return) -->
-    <div id="promoBlock" style="display:none;margin-top:24px">
+    <div id="promoBlock" style="display:none;margin-top:28px">
       <!-- Discover other apartments -->
-      <div style="padding:20px;background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:16px;border:2px solid #f59e0b;margin-bottom:16px">
-        <p style="font-size:15px;color:#92400e;font-weight:700;margin-bottom:10px">&#x1F3D6;&#xFE0F; Envie de revenir ? On a plein de surprises !</p>
-        <p style="font-size:13px;color:#78350f;line-height:1.7;margin-bottom:14px">
+      <div class="card thankcard">
+        <div class="card-title" style="border:none;padding:0;margin-bottom:14px">Envie de revenir ?</div>
+        <p class="thank-para">
           Notre conciergerie g&egrave;re <strong>plus de 20 appartements</strong> &agrave; Berck-sur-Mer,
-          tous situ&eacute;s <strong>&agrave; moins de 150m de la plage</strong>, face mer. &#x1F30A;
-          <br><br>
-          &#x1F46A; <strong>Vous revenez en famille ou entre amis ?</strong>
-          R&eacute;servez plusieurs appartements c&ocirc;te &agrave; c&ocirc;te et profitez ensemble du front de mer !
-          <br><br>
-          &#x1F495; <strong>Un s&eacute;jour en amoureux ?</strong>
-          D&eacute;couvrez nos Love Rooms avec baln&eacute;o et ambiance romantique&hellip;
-          <br><br>
-          &#x1F3C4; Studio, appartement familial, ou escapade cosy &mdash; il y en a pour tous les go&ucirc;ts !
+          tous situ&eacute;s <strong>&agrave; moins de 150m de la plage</strong>, face mer.<br><br>
+          <em>Vous revenez en famille ou entre amis ?</em>
+          R&eacute;servez plusieurs appartements c&ocirc;te &agrave; c&ocirc;te et profitez ensemble du front de mer.<br><br>
+          <em>Un s&eacute;jour en amoureux ?</em>
+          D&eacute;couvrez nos Love Rooms avec baln&eacute;o et ambiance romantique.<br><br>
+          Studio, appartement familial, ou escapade cosy &mdash; il y en a pour tous les go&ucirc;ts.
         </p>
-        <a href="https://appart-hotel-berck.com" target="_blank" rel="noopener"
-           style="display:block;text-align:center;padding:14px;background:linear-gradient(135deg,#92400e,#b45309);color:#fff;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none">
-          &#x1F310; D&eacute;couvrir tous nos appartements
+        <a href="https://appart-hotel-berck.com" target="_blank" rel="noopener" class="thank-btn">
+          D&eacute;couvrir tous nos appartements
         </a>
-      </div>
-      <!-- Promo code -->
-      <div style="padding:24px 20px;background:linear-gradient(135deg,#f0f9ff,#e0f2fe);border-radius:16px;border:2px solid #0ea5e9">
-        <p style="font-size:15px;color:#0369a1;font-weight:700;margin-bottom:8px">&#x1F381; Un cadeau pour votre prochain s&eacute;jour !</p>
-        <p style="font-size:13px;color:#475569;margin-bottom:14px;line-height:1.5">Pour vous remercier de votre confiance, b&eacute;n&eacute;ficiez de <strong>10% de r&eacute;duction</strong> sur votre prochaine r&eacute;servation :</p>
-        <div style="background:linear-gradient(135deg,#0369a1,#0ea5e9);color:#fff;padding:16px;border-radius:12px;text-align:center;font-size:22px;font-weight:800;letter-spacing:3px" id="promoCode">BERCK10</div>
-        <p style="font-size:11px;color:#94a3b8;margin-top:10px;text-align:center">Mentionnez ce code lors de votre r&eacute;servation sur <strong>appart-hotel-berck.com</strong></p>
       </div>
 
       <!-- PARRAINAGE G&Eacute;N&Eacute;R&Eacute; (si Q7=Oui ET Q8=Oui) -->
-      <div id="parrainGenBlock" style="display:none;margin-top:16px;padding:24px 20px;background:linear-gradient(135deg,#faf5ff,#f3e8ff);border-radius:16px;border:2px solid #a855f7">
-        <p style="font-size:16px;color:#7c3aed;font-weight:700;margin-bottom:8px">&#x1F381; Partagez et gagnez encore plus !</p>
-        <p style="font-size:13px;color:#5b21b6;margin-bottom:14px;line-height:1.6">
-          Partagez votre <strong>code parrain personnel</strong> avec vos proches. Quand ils r&eacute;servent et utilisent votre code,
-          <strong>ils auront -10%</strong> sur leur s&eacute;jour, et <strong>vous aussi -10%</strong> de plus &mdash; cumulable avec BERCK10 !
+      <div id="parrainGenBlock" class="card thankcard" style="display:none">
+        <div class="card-title" style="border:none;padding:0;margin-bottom:14px">Votre code parrain</div>
+        <p class="thank-para">
+          Partagez votre <strong>code personnel</strong> avec vos proches. Quand ils r&eacute;servent et utilisent votre code,
+          <strong>ils b&eacute;n&eacute;ficient de &minus;10%</strong> sur leur s&eacute;jour, et <strong>vous aussi</strong> lors de votre prochaine venue.
         </p>
-        <div style="background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;padding:16px;border-radius:12px;text-align:center;font-size:18px;font-weight:800;letter-spacing:2px" id="parrainCodeDisplay">BERCK-XXXX</div>
-        <a id="parrainWhatsAppBtn" href="#" target="_blank" rel="noopener"
-           style="display:block;text-align:center;padding:14px;margin-top:14px;background:#25d366;color:#fff;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none">
-          &#x1F4AC; Partager sur WhatsApp
+        <div class="promo-code" id="parrainCodeDisplay">BERCK-XXXX</div>
+        <a id="parrainWhatsAppBtn" href="#" target="_blank" rel="noopener" class="thank-btn thank-btn-share">
+          Partager sur WhatsApp
         </a>
-        <a id="parrainEmailBtn" href="#"
-           style="display:block;text-align:center;padding:12px;margin-top:8px;background:#8b5cf6;color:#fff;border-radius:12px;font-size:14px;font-weight:600;text-decoration:none">
-          &#x2709;&#xFE0F; Partager par email
+        <a id="parrainEmailBtn" href="#" class="thank-btn thank-btn-outline">
+          Partager par email
         </a>
-        <p style="font-size:11px;color:#94a3b8;margin-top:12px;text-align:center">Votre code est unique. Il est activ&eacute; d&egrave;s qu'un proche r&eacute;serve et s&eacute;journe.</p>
+        <p class="thank-note">Votre code est unique. Il est activ&eacute; d&egrave;s qu'un proche r&eacute;serve et s&eacute;journe.</p>
       </div>
 
       <!-- PARRAINAGE VALID&Eacute; (si le filleul a utilis&eacute; un code valide) -->
-      <div id="parrainValideBlock" style="display:none;margin-top:16px;padding:20px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-radius:16px;border:2px solid #10b981">
-        <p style="font-size:15px;color:#166534;font-weight:700;margin-bottom:8px">&#x2728; Parrainage valid&eacute; !</p>
-        <p style="font-size:13px;color:#14532d;line-height:1.6">
-          Votre code parrain a &eacute;t&eacute; accept&eacute;. Un mail avec votre <strong>bon -10%</strong> vous est envoy&eacute; &mdash; et votre parrain aussi !
+      <div id="parrainValideBlock" class="card thankcard" style="display:none">
+        <div class="card-title" style="border:none;padding:0;margin-bottom:10px">Parrainage valid&eacute;</div>
+        <p class="thank-para">
+          Votre code parrain a &eacute;t&eacute; accept&eacute;. Un mail avec votre <strong>bon &minus;10%</strong> vous est envoy&eacute; &mdash; et votre parrain aussi.
         </p>
       </div>
+
+      <!-- ancien code promo (masqué, gardé pour compat script) -->
+      <div id="promoCode" style="display:none">FIDELE-10</div>
     </div>
   </div>
 
