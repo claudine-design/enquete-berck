@@ -70,22 +70,11 @@ body{
 .head{text-align:center;padding-top:6mm;position:relative;z-index:2;width:100%}
 .ornement{width:100%;max-width:110mm;height:auto;margin:0 auto 4mm;display:block}
 
-.brand{
-  font-family:'Cinzel',serif;
-  font-size:22px;font-weight:600;
+.brand-url{
+  font-family:'Cinzel',serif;font-size:15px;font-weight:500;
   background:linear-gradient(180deg,var(--or-clair) 0%,var(--or) 50%,var(--or-cuivre) 100%);
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
-  letter-spacing:8px;margin-bottom:2mm;line-height:1.2;
-}
-.brand-sub{
-  font-family:'Cinzel',serif;font-size:11px;font-weight:500;
-  color:var(--or);letter-spacing:10px;text-transform:uppercase;
-  opacity:0.9;margin-bottom:3mm;
-}
-.brand-url{
-  font-family:'Cormorant Garamond',serif;font-size:11px;font-style:italic;
-  color:var(--or-clair);letter-spacing:2px;
-  padding-top:2mm;opacity:0.85;
+  letter-spacing:5px;margin-top:2mm;
 }
 
 /* Séparateur floral */
@@ -95,7 +84,11 @@ body{
 
 /* MILIEU */
 .middle{text-align:center;position:relative;z-index:2;padding:2mm 0}
-.middle .label{font-family:'Cinzel',serif;font-size:9px;color:var(--or);letter-spacing:5px;text-transform:uppercase;margin-bottom:4mm;opacity:0.8}
+.middle .title-main{
+  font-family:'Cinzel',serif;font-size:15px;font-weight:500;
+  color:var(--or);letter-spacing:6px;text-transform:uppercase;
+  line-height:1.5;margin-bottom:5mm;
+}
 .middle .appart-name{
   font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:500;font-style:italic;
   color:var(--creme);line-height:1;margin-bottom:3mm;
@@ -271,15 +264,13 @@ function generateAll() {
       card.innerHTML =
         '<div class="head">' +
           ORNEMENT_SVG +
-          '<div class="brand">Appart-H&ocirc;tel</div>' +
-          '<div class="brand-sub">Berck &middot; sur &middot; Mer</div>' +
           '<div class="brand-url">appart-hotel-berck.com</div>' +
         '</div>' +
 
         '<div class="separator"><div class="line"></div>' + SEP_SVG + '<div class="line"></div></div>' +
 
         '<div class="middle">' +
-          '<div class="label">Votre s\u00e9jour</div>' +
+          '<div class="title-main">Questionnaire<br>de satisfaction</div>' +
           '<div class="appart-name">' + nom + '</div>' +
           '<div class="residence">' + res + '</div>' +
         '</div>' +
