@@ -122,15 +122,21 @@ body::before{
 .row-head{display:flex;align-items:center;gap:10px}
 .row-head .nom{flex-shrink:0;min-width:130px}
 .row-head .avg{
-  width:30px;height:30px;flex-shrink:0;
-  border:1.5px solid var(--or);box-shadow:0 0 0 1px var(--noir),0 2px 8px rgba(0,0,0,0.5);
+  width:42px;height:42px;flex-shrink:0;
+  border:2px solid var(--or);
+  box-shadow:0 0 0 1px var(--noir),0 2px 10px rgba(0,0,0,0.6);
   background:var(--c-vide);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cinzel',serif;font-size:13px;font-weight:600;
+  color:#0a0a0a;text-shadow:0 1px 0 rgba(255,255,255,0.4);
+  font-style:normal;
 }
-.row-head .avg.tprop{background:var(--c-tprop)}
-.row-head .avg.prop{background:var(--c-prop)}
-.row-head .avg.corr{background:var(--c-corr)}
-.row-head .avg.def{background:var(--c-def)}
-.row-head .avg.sale{background:var(--c-sale)}
+.row-head .avg.tprop{background:var(--c-tprop) !important}
+.row-head .avg.prop{background:var(--c-prop) !important}
+.row-head .avg.corr{background:var(--c-corr) !important}
+.row-head .avg.def{background:var(--c-def) !important;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,0.5)}
+.row-head .avg.sale{background:var(--c-sale) !important;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,0.5)}
+.row-head .avg.cell{color:var(--or-cuivre);font-size:11px}
 .row-head .trend{
   font-family:'Cinzel',serif;font-size:18px;font-weight:600;
   width:22px;text-align:center;flex-shrink:0;
@@ -415,12 +421,13 @@ function render(data) {
         ? 'Moyenne sur 30 jours : ' + moyTxt + '/5 \u2014 ' + totalAppart + ' avis'
         : 'Aucun avis sur cette p\u00e9riode';
 
+      var avgInner = totalAppart ? moyTxt : '\u2014';
       rows += '<tr><th>'
         + '<div class="row-head">'
         +   '<span class="nom">' + appart + '</span>'
-        +   '<span class="avg ' + avgClass + '" title="' + avgTitle + '"></span>'
+        +   '<span class="avg ' + avgClass + '" title="' + avgTitle + '">' + avgInner + '</span>'
         +   '<span class="trend ' + trendCls + '" title="' + trendTitle + '">' + trendIcon + '</span>'
-        +   '<span class="meta">' + (totalAppart ? totalAppart + ' avis \u00b7 ' + moyTxt + '/5' : 'aucun avis') + '</span>'
+        +   '<span class="meta">' + (totalAppart ? totalAppart + ' avis' : 'aucun avis') + '</span>'
         + '</div>'
         + '</th>' + cells + '</tr>';
     });
