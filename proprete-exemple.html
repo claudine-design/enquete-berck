@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Propret&eacute; &mdash; EXEMPLE (donn&eacute;es fictives)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Great+Vibes&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --noir:#0a0a0a;
+  --noir-2:#141414;
+  --noir-3:#1a1a1a;
+  --or-clair:#f4d98a;
+  --or:#d4a84a;
+  --or-cuivre:#b8872c;
+  --or-fonce:#7a5a1c;
+  --creme:#f5ecd9;
+  --creme-2:#e8dcc0;
+
+  /* Echelle propret&eacute; (5 niveaux) */
+  --c-tprop:#16a34a;   /* Tr&egrave;s propre */
+  --c-prop:#86efac;    /* Propre */
+  --c-corr:#fcd34d;    /* Correct */
+  --c-def:#f87171;     /* Quelques d&eacute;fauts */
+  --c-sale:#b91c1c;    /* Tr&egrave;s sale */
+  --c-vide:#1a1a1a;    /* Aucun avis ce jour */
+}
+body{
+  font-family:'Inter',sans-serif;
+  background:radial-gradient(ellipse at top,#1a1a1a 0%,#0a0a0a 50%,#050505 100%);
+  background-attachment:fixed;
+  min-height:100vh;color:var(--creme);
+  padding:24px 16px 60px;
+}
+body::before{
+  content:"";position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:80vmin;height:80vmin;pointer-events:none;z-index:0;opacity:0.04;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 40'><path fill='%23f4d98a' d='M16 0c1.5 5 6 8 6 14-1-1-3.5-2-6-2s-5 1-6 2c0-6 4.5-9 6-14zM8 16c-2 3-2 7 0 10 1.5 2.5 4 4 8 6 4-2 6.5-3.5 8-6 2-3 2-7 0-10-2 2-5 3-8 3s-6-1-8-3zM10 34c2 2 4 3.5 6 6 2-2.5 4-4 6-6-2 .5-4 .8-6 .8s-4-.3-6-.8z'/></svg>") center/contain no-repeat;
+}
+
+.wrap{max-width:1280px;margin:0 auto;position:relative;z-index:1}
+
+.hero{text-align:center;margin-bottom:30px;padding:30px 20px;
+  background:linear-gradient(180deg,rgba(20,20,20,0.95),rgba(10,10,10,0.95));
+  border:1px solid var(--or-cuivre);position:relative;
+}
+.hero::before{content:"";position:absolute;top:6px;left:6px;right:6px;bottom:6px;
+  border:0.5px solid rgba(212,168,74,0.25);pointer-events:none;
+}
+.hero-lys{width:48px;height:60px;margin:0 auto 8px;display:block}
+.hero h1{
+  font-family:'Cinzel',serif;font-size:14px;font-weight:500;
+  letter-spacing:6px;text-transform:uppercase;color:var(--or);margin-bottom:8px;
+}
+.hero h2{
+  font-family:'Great Vibes',cursive;font-size:42px;font-weight:400;
+  background:linear-gradient(180deg,var(--or-clair),var(--or),var(--or-cuivre));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  line-height:1;margin-bottom:8px;
+}
+.hero .info{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  color:var(--creme-2);font-size:15px;line-height:1.5;
+}
+
+/* L&eacute;gende */
+.legend{
+  display:flex;justify-content:center;flex-wrap:wrap;gap:14px;
+  margin-bottom:24px;padding:16px;
+  background:rgba(20,20,20,0.7);border:1px solid var(--or-cuivre);
+}
+.legend-item{display:flex;align-items:center;gap:8px;font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--creme)}
+.legend-swatch{
+  width:18px;height:18px;border:1px solid rgba(0,0,0,0.4);
+  box-shadow:0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* Section prestataire */
+.presta-block{
+  background:linear-gradient(180deg,rgba(20,20,20,0.85),rgba(10,10,10,0.85));
+  border:1px solid var(--or-cuivre);
+  margin-bottom:28px;padding:20px;position:relative;
+}
+.presta-block::before{
+  content:"";position:absolute;top:6px;left:6px;right:6px;bottom:6px;
+  border:0.5px solid rgba(212,168,74,0.15);pointer-events:none;
+}
+.presta-head{
+  display:flex;align-items:baseline;justify-content:space-between;
+  padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid rgba(122,90,28,0.5);
+  position:relative;z-index:1;
+}
+.presta-name{
+  font-family:'Great Vibes',cursive;font-size:42px;font-weight:400;
+  color:var(--or-clair);line-height:1;
+}
+.presta-stats{
+  font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;
+  text-transform:uppercase;color:var(--or);
+}
+
+/* Heatmap */
+.heatmap-scroll{overflow-x:auto;position:relative;z-index:1;-webkit-overflow-scrolling:touch}
+.heatmap{border-collapse:separate;border-spacing:2px;width:100%;min-width:max-content}
+.heatmap th, .heatmap td{padding:0;text-align:center;font-size:10px}
+.heatmap thead th{
+  font-family:'Cinzel',serif;font-size:9px;font-weight:500;letter-spacing:1px;
+  color:var(--or-cuivre);padding:4px 0;min-width:22px;
+  text-transform:uppercase;
+}
+.heatmap thead th.weekend{color:var(--or)}
+.heatmap thead th.today{color:var(--or-clair);font-weight:600}
+.heatmap tbody th{
+  font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;
+  color:var(--creme);text-align:left;padding:6px 12px 6px 6px;
+  white-space:nowrap;font-weight:500;background:rgba(0,0,0,0.3);
+  border-left:2px solid var(--or-cuivre);
+}
+.heatmap td.cell{
+  width:22px;height:22px;background:var(--c-vide);
+  border:0.5px solid rgba(122,90,28,0.2);position:relative;cursor:default;
+  transition:transform 0.15s;
+}
+.heatmap td.cell:hover{transform:scale(1.4);z-index:2;border-color:var(--or-clair);box-shadow:0 0 0 2px rgba(244,217,138,0.3)}
+.heatmap td.cell[title]{cursor:help}
+.heatmap td.tprop{background:var(--c-tprop)}
+.heatmap td.prop{background:var(--c-prop)}
+.heatmap td.corr{background:var(--c-corr)}
+.heatmap td.def{background:var(--c-def)}
+.heatmap td.sale{background:var(--c-sale)}
+.heatmap td.weekend{border-color:rgba(212,168,74,0.3)}
+.heatmap td.today{box-shadow:inset 0 0 0 2px var(--or-clair)}
+
+.empty-msg{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  color:var(--creme-2);text-align:center;padding:24px;opacity:0.7;
+}
+
+/* Loading */
+.loading{text-align:center;padding:60px 20px}
+.spinner{
+  width:36px;height:36px;border:2px solid rgba(212,168,74,0.2);
+  border-top-color:var(--or);border-radius:50%;
+  animation:spin 0.8s linear infinite;margin:0 auto 12px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading p{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--creme-2)}
+
+.refresh-btn{
+  display:inline-block;padding:10px 24px;margin-top:16px;
+  font-family:'Cinzel',serif;font-size:11px;letter-spacing:3px;
+  text-transform:uppercase;color:var(--or);
+  background:transparent;border:1px solid var(--or-cuivre);cursor:pointer;
+  transition:all 0.2s;
+}
+.refresh-btn:hover{background:var(--or);color:var(--noir)}
+
+/* Tooltip personnalis&eacute; */
+.tip{
+  position:fixed;background:rgba(10,10,10,0.95);color:var(--creme);
+  font-family:'Cormorant Garamond',serif;font-size:13px;line-height:1.4;
+  padding:8px 12px;border:1px solid var(--or-cuivre);pointer-events:none;
+  z-index:100;box-shadow:0 4px 16px rgba(0,0,0,0.6);max-width:280px;
+  display:none;
+}
+.tip strong{color:var(--or-clair);display:block;margin-bottom:2px}
+.tip em{color:var(--creme-2);font-style:italic}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="hero">
+    <svg class="hero-lys" viewBox="0 0 32 40" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="lg" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#f4d98a"/><stop offset="50%" stop-color="#d4a84a"/><stop offset="100%" stop-color="#b8872c"/>
+      </linearGradient></defs>
+      <path fill="url(#lg)" d="M16 0c1.5 5 6 8 6 14-1-1-3.5-2-6-2s-5 1-6 2c0-6 4.5-9 6-14zM8 16c-2 3-2 7 0 10 1.5 2.5 4 4 8 6 4-2 6.5-3.5 8-6 2-3 2-7 0-10-2 2-5 3-8 3s-6-1-8-3zM10 34c2 2 4 3.5 6 6 2-2.5 4-4 6-6-2 .5-4 .8-6 .8s-4-.3-6-.8z"/>
+    </svg>
+    <h1>Exemple &mdash; Propret&eacute; par prestataire</h1>
+    <h2 id="periodLabel">30 derniers jours</h2>
+    <div class="info" style="color:#f4d98a">&#x26A0;&#xFE0F; Donn&eacute;es fictives pour visualiser le rendu<br><span style="color:var(--creme-2)">Une fois les vrais avis voyageurs re&ccedil;us, la heatmap se remplira automatiquement</span></div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="legend-swatch" style="background:var(--c-tprop)"></span>Tr&egrave;s propre</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:var(--c-prop)"></span>Propre</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:var(--c-corr)"></span>Correct</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:var(--c-def)"></span>Quelques d&eacute;fauts</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:var(--c-sale)"></span>Tr&egrave;s sale</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:var(--c-vide);border:1px solid var(--or-cuivre)"></span>Aucun avis</div>
+  </div>
+
+  <div id="content">
+    <div class="loading"><div class="spinner"></div><p>Chargement des donn&eacute;es&hellip;</p></div>
+  </div>
+
+  <div style="text-align:center;margin-top:24px">
+    <button class="refresh-btn" onclick="loadData()">&#x21bb; Actualiser</button>
+  </div>
+</div>
+
+<div class="tip" id="tooltip"></div>
+
+<script>
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyZ50d01GyAOXi4LKQteCrGKkEcq4eKzLBMh3_G9hM4TI-5IAfjhrnxDZyKZO3-0IolBA/exec';
+
+// Mapping appart -> prestataire (m&ecirc;me logique que apps-script.js)
+var APPART_TO_PRESTA = {
+  'Kitesurf':'remi','Hamac':'remi','Paddle':'remi','Surf':'remi','Famille':'remi',
+  'Balneo':'clara','Baln\u00e9o':'clara','Cocon Romantique':'clara',
+  'La Reserve':'clara','La R\u00e9serve':'clara','Kingston':'clara','Apolove':'clara','Apollo':'clara','Albatros':'clara',
+  'Face Mer':'christelle','Grand Large':'christelle',
+  'Mini Love Room':'christelle','Grande Love Room':'christelle',
+  'Jeanne':'christelle','Evasion':'christelle','\u00c9vasion':'christelle','Rotonde':'christelle','Patio':'christelle',
+  'Terrasse':'christelle','Maisonnette':'christelle'
+};
+
+var PRESTAS = {
+  remi:       { nom: 'R\u00e9mi',      apparts: ['Kitesurf','Hamac','Paddle','Surf','Famille'] },
+  clara:      { nom: 'Clara',          apparts: ['Baln\u00e9o','Cocon Romantique','La R\u00e9serve','Kingston','Apolove','Apollo','Albatros'] },
+  christelle: { nom: 'Christelle',     apparts: ['Face Mer','Grand Large','Mini Love Room','Grande Love Room','Jeanne','\u00c9vasion','Rotonde','Patio','Terrasse','Maisonnette'] }
+};
+
+// Score Q5 -> classe CSS + valeur num
+var Q5_SCORE = {
+  'Tr\u00e8s propre': { c:'tprop', v:5 },
+  'Propre':           { c:'prop',  v:4 },
+  'Correct':          { c:'corr',  v:3 },
+  'Quelques d\u00e9fauts': { c:'def', v:2 },
+  'Tr\u00e8s sale':   { c:'sale',  v:1 }
+};
+
+function parseDate(s) {
+  if (!s) return null;
+  if (s instanceof Date) return s;
+  // formats possibles : "DD/MM/YYYY HH:mm:ss" (fr) ou ISO
+  var m = String(s).match(/^(\d{2})\/(\d{2})\/(\d{4})/);
+  if (m) return new Date(+m[3], +m[2]-1, +m[1]);
+  var d = new Date(s);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function formatDay(d) {
+  return d.getDate() + '/' + (d.getMonth()+1);
+}
+function dayKey(d) {
+  return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+}
+
+// === DONNEES FICTIVES POUR EXEMPLE ===
+function genFakeData() {
+  var headers = ['Horodatage','Residence','Appartement','Prestataire','Nom','Tel','WhatsApp','Ville','Zone','Email','Q1','Q1d','Q3','Q4','Q5','Q5d','Q6','Q7','Q8','Q9','Consent'];
+  var rows = [headers];
+  var Q5_LEVELS = ['Tr\u00e8s propre','Propre','Correct','Quelques d\u00e9fauts','Tr\u00e8s sale'];
+  // Sc\u00e9narios par appart : tableau de [j, q5, nom]
+  // j = nb jours dans le pass\u00e9 (0 = aujourd\'hui, 29 = il y a 29 jours)
+  var scenarios = [
+    // Remi
+    ['Hamac', [[2,'Tr\u00e8s propre','Famille Lefebvre'],[8,'Propre','M. Dupont'],[18,'Correct','Sarah K.'],[26,'Tr\u00e8s propre','Olivier B.']]],
+    ['Kitesurf', [[5,'Propre','Julie M.'],[14,'Tr\u00e8s propre','Couple Vidal'],[22,'Propre','Romain L.']]],
+    ['Paddle', [[1,'Quelques d\u00e9fauts','Caroline P.'],[11,'Propre','Thomas R.'],[19,'Tr\u00e8s propre','Famille Boutin']]],
+    ['Surf', [[3,'Tr\u00e8s propre','Marc T.'],[16,'Propre','Anaïs D.'],[27,'Correct','Pierre H.']]],
+    ['Famille', [[6,'Tr\u00e8s propre','Famille Martin'],[20,'Propre','Famille Costa']]],
+    // Clara
+    ['Baln\u00e9o', [[4,'Tr\u00e8s propre','Mathilde G.'],[12,'Tr\u00e8s propre','Vincent S.'],[21,'Propre','Elise B.'],[28,'Tr\u00e8s propre','Hugo M.']]],
+    ['Cocon Romantique', [[7,'Tr\u00e8s propre','Lila & Jules'],[17,'Propre','Camille V.']]],
+    ['La R\u00e9serve', [[9,'Propre','Aur\u00e9lie L.'],[24,'Tr\u00e8s propre','Famille Petit']]],
+    ['Kingston', [[2,'Correct','Marc J.'],[15,'Propre','Sophie K.']]],
+    ['Apolove', [[6,'Tr\u00e8s propre','Lucas & Marine']]],
+    ['Apollo', [[10,'Propre','Benjamin T.'],[23,'Tr\u00e8s propre','Famille Bernard']]],
+    ['Albatros', [[1,'Tr\u00e8s propre','Eva R.'],[13,'Tr\u00e8s propre','Karim B.'],[25,'Propre','J\u00e9r\u00f4me F.']]],
+    // Christelle
+    ['Face Mer', [[3,'Quelques d\u00e9fauts','Famille Dubois'],[8,'Propre','Lo\u00efc M.'],[19,'Correct','Charline P.']]],
+    ['Grand Large', [[5,'Tr\u00e8s sale','M. Bourdon'],[14,'Quelques d\u00e9fauts','Anne L.'],[22,'Correct','Famille Roux']]],
+    ['Mini Love Room', [[7,'Propre','Sandra & Nico']]],
+    ['Grande Love Room', [[2,'Tr\u00e8s propre','Lisa & Tom'],[16,'Propre','Famille Henry']]],
+    ['Jeanne', [[4,'Quelques d\u00e9fauts','Yannick D.'],[18,'Correct','Sylvie M.'],[27,'Quelques d\u00e9fauts','David K.']]],
+    ['\u00c9vasion', [[9,'Propre','C\u00e9line B.'],[24,'Tr\u00e8s propre','Mathieu G.']]],
+    ['Rotonde', [[1,'Tr\u00e8s sale','Jean-Pierre L.'],[11,'Quelques d\u00e9fauts','Patricia F.'],[20,'Correct','Famille Garnier']]],
+    ['Patio', [[6,'Correct','Antoine R.'],[13,'Propre','Florence M.'],[26,'Tr\u00e8s propre','Marc B.']]],
+    ['Terrasse', [[3,'Propre','Famille Lemaire'],[15,'Tr\u00e8s propre','Iris D.']]],
+    ['Maisonnette', [[10,'Correct','Stephane K.']]]
+  ];
+  var PRESTAS_NOM = {
+    'Hamac':'R\u00e9mi','Kitesurf':'R\u00e9mi','Paddle':'R\u00e9mi','Surf':'R\u00e9mi','Famille':'R\u00e9mi',
+    'Baln\u00e9o':'Clara','Cocon Romantique':'Clara','La R\u00e9serve':'Clara','Kingston':'Clara','Apolove':'Clara','Apollo':'Clara','Albatros':'Clara',
+    'Face Mer':'Christelle','Grand Large':'Christelle','Mini Love Room':'Christelle','Grande Love Room':'Christelle','Jeanne':'Christelle','\u00c9vasion':'Christelle','Rotonde':'Christelle','Patio':'Christelle','Terrasse':'Christelle','Maisonnette':'Christelle'
+  };
+  var today = new Date();
+  scenarios.forEach(function(sc){
+    var appart = sc[0], avis = sc[1];
+    avis.forEach(function(a){
+      var d = new Date(today);
+      d.setDate(today.getDate() - a[0]);
+      var ts = ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear()+' 14:30:00';
+      rows.push([ts,'',appart,PRESTAS_NOM[appart]||'',a[2],'','','','','','','','','',a[1],'','','','','','']);
+    });
+  });
+  return rows;
+}
+
+function loadData() {
+  // Mode exemple : on simule directement
+  setTimeout(function(){ render(genFakeData()); }, 200);
+}
+
+function render(data) {
+  if (!data || data.length < 2) {
+    document.getElementById('content').innerHTML =
+      '<div class="empty-msg">Aucun avis enregistr\u00e9 pour le moment.</div>';
+    return;
+  }
+
+  var headers = data[0];
+  var idxDate    = 0;  // Horodatage
+  var idxAppart  = 2;  // Appartement
+  var idxPresta  = 3;  // Prestataire (nom)
+  var idxQ5      = 14; // Q5 Proprete
+
+  // Construire la fen&ecirc;tre 30 jours
+  var today = new Date();
+  today.setHours(0,0,0,0);
+  var days = [];
+  for (var i = 29; i >= 0; i--) {
+    var d = new Date(today);
+    d.setDate(today.getDate() - i);
+    days.push(d);
+  }
+
+  // Index des avis : appart -> dayKey -> {worst score, count, items[]}
+  var idx = {}; // idx[appart][dayKey] = { class, count, list }
+  for (var r = 1; r < data.length; r++) {
+    var row = data[r];
+    var d = parseDate(row[idxDate]);
+    if (!d) continue;
+    d.setHours(0,0,0,0);
+    if (d < days[0] || d > today) continue;
+
+    var appart = row[idxAppart];
+    var q5 = row[idxQ5];
+    if (!appart || !q5) continue;
+    var sc = Q5_SCORE[q5];
+    if (!sc) continue;
+
+    var key = dayKey(d);
+    if (!idx[appart]) idx[appart] = {};
+    if (!idx[appart][key]) idx[appart][key] = { class:sc.c, score:sc.v, count:0, list:[] };
+    // pire note prend le dessus (score le + bas)
+    if (sc.v < idx[appart][key].score) {
+      idx[appart][key].class = sc.c;
+      idx[appart][key].score = sc.v;
+    }
+    idx[appart][key].count++;
+    idx[appart][key].list.push({ q5:q5, name:row[4]||'', date:d });
+  }
+
+  // Construire les blocs prestataires
+  var html = '';
+  ['remi','clara','christelle'].forEach(function(pkey){
+    var p = PRESTAS[pkey];
+    var avisCount = 0, sums = 0, n = 0;
+
+    var rows = '';
+    p.apparts.forEach(function(appart){
+      var cells = '';
+      var totalAppart = 0, sumAppart = 0;
+      days.forEach(function(d){
+        var key = dayKey(d);
+        var entry = idx[appart] && idx[appart][key];
+        var cls = 'cell';
+        var title = '';
+        var classes = ['cell'];
+        var dow = d.getDay();
+        if (dow === 0 || dow === 6) classes.push('weekend');
+        if (dayKey(d) === dayKey(today)) classes.push('today');
+        if (entry) {
+          classes.push(entry.class);
+          totalAppart++;
+          sumAppart += entry.score;
+          n++;
+          sums += entry.score;
+          var lst = entry.list.map(function(a){ return a.q5 + (a.name ? ' \u2014 ' + a.name : ''); }).join(' / ');
+          title = formatDay(d) + ' \u2014 ' + appart + ' \u2014 ' + lst;
+        } else {
+          title = formatDay(d) + ' \u2014 ' + appart + ' \u2014 aucun avis';
+        }
+        cells += '<td class="' + classes.join(' ') + '" title="' + title.replace(/"/g,'&quot;') + '"></td>';
+      });
+      avisCount += totalAppart;
+      var moy = totalAppart ? (sumAppart/totalAppart).toFixed(1) : '\u2014';
+      rows += '<tr><th>' + appart + '<span style="color:var(--or-cuivre);font-size:11px;font-style:normal;margin-left:8px">' + (totalAppart? totalAppart+' avis \u00b7 moy. '+moy : 'aucun avis') + '</span></th>' + cells + '</tr>';
+    });
+
+    // Header dates (jours)
+    var thDays = '';
+    days.forEach(function(d){
+      var dow = d.getDay();
+      var cls = '';
+      if (dow === 0 || dow === 6) cls = 'weekend';
+      if (dayKey(d) === dayKey(today)) cls = 'today';
+      thDays += '<th class="' + cls + '">' + d.getDate() + '</th>';
+    });
+
+    // Score moyen prestataire
+    var moyPresta = n ? (sums/n).toFixed(1) : '\u2014';
+    var nbAlertes = 0;
+    p.apparts.forEach(function(a){
+      if (idx[a]) for (var k in idx[a]) if (idx[a][k].score <= 2) nbAlertes++;
+    });
+
+    html += '<div class="presta-block">'
+      + '<div class="presta-head">'
+      +   '<div class="presta-name">' + p.nom + '</div>'
+      +   '<div class="presta-stats">' + p.apparts.length + ' apparts &middot; ' + avisCount + ' avis &middot; moy. ' + moyPresta + '/5'
+      +     (nbAlertes ? ' &middot; <span style="color:var(--c-def)">' + nbAlertes + ' alerte' + (nbAlertes>1?'s':'') + '</span>' : '')
+      +   '</div>'
+      + '</div>'
+      + '<div class="heatmap-scroll">'
+      +   '<table class="heatmap"><thead><tr><th></th>' + thDays + '</tr></thead><tbody>' + rows + '</tbody></table>'
+      + '</div>'
+      + '</div>';
+  });
+
+  // Label p&eacute;riode
+  var first = days[0], last = days[days.length-1];
+  document.getElementById('periodLabel').textContent =
+    'Du ' + formatDay(first) + ' au ' + formatDay(last);
+
+  document.getElementById('content').innerHTML = html;
+
+  // Tooltip riche au survol
+  attachTooltip();
+}
+
+function attachTooltip() {
+  var tip = document.getElementById('tooltip');
+  document.querySelectorAll('.heatmap td.cell').forEach(function(td){
+    td.addEventListener('mouseenter', function(e){
+      var t = td.getAttribute('title');
+      if (!t) return;
+      td.removeAttribute('title');
+      td.setAttribute('data-title', t);
+      // formater
+      var parts = t.split(' \u2014 ');
+      var html = '<strong>' + (parts[0]||'') + '</strong>'
+        + '<em>' + (parts[1]||'') + '</em><br>'
+        + (parts.slice(2).join(' \u2014 '));
+      tip.innerHTML = html;
+      tip.style.display = 'block';
+    });
+    td.addEventListener('mousemove', function(e){
+      tip.style.left = (e.clientX + 14) + 'px';
+      tip.style.top = (e.clientY + 14) + 'px';
+    });
+    td.addEventListener('mouseleave', function(){
+      tip.style.display = 'none';
+      var dt = td.getAttribute('data-title');
+      if (dt) { td.setAttribute('title', dt); td.removeAttribute('data-title'); }
+    });
+  });
+}
+
+loadData();
+// pas d'auto-refresh en mode exemple
+</script>
+</body>
+</html>
