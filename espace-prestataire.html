@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Espace prestataire &mdash; Appart-H&ocirc;tel Berck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Great+Vibes&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --noir:#0a0a0a;--noir-2:#141414;
+  --or-clair:#f4d98a;--or:#d4a84a;--or-cuivre:#b8872c;--or-fonce:#7a5a1c;
+  --creme:#f5ecd9;--creme-2:#e8dcc0;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',sans-serif;
+  background:radial-gradient(ellipse at top,#1a1a1a 0%,#0a0a0a 50%,#050505 100%);
+  background-attachment:fixed;
+  min-height:100vh;color:var(--creme);padding:20px 16px 50px;
+}
+body::before{
+  content:"";position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:80vmin;height:80vmin;pointer-events:none;z-index:0;opacity:0.05;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 40'><path fill='%23f4d98a' d='M16 0c1.5 5 6 8 6 14-1-1-3.5-2-6-2s-5 1-6 2c0-6 4.5-9 6-14zM8 16c-2 3-2 7 0 10 1.5 2.5 4 4 8 6 4-2 6.5-3.5 8-6 2-3 2-7 0-10-2 2-5 3-8 3s-6-1-8-3zM10 34c2 2 4 3.5 6 6 2-2.5 4-4 6-6-2 .5-4 .8-6 .8s-4-.3-6-.8z'/></svg>") center/contain no-repeat;
+}
+.wrap{max-width:560px;margin:0 auto;position:relative;z-index:1}
+
+/* Header */
+.hero{
+  text-align:center;padding:32px 24px 28px;margin-bottom:24px;
+  background:linear-gradient(180deg,rgba(20,20,20,0.95),rgba(10,10,10,0.95));
+  border:1px solid var(--or-cuivre);position:relative;
+}
+.hero::before{
+  content:"";position:absolute;top:5px;left:5px;right:5px;bottom:5px;
+  border:0.5px solid rgba(212,168,74,0.25);pointer-events:none;
+}
+.hero-lys{width:54px;height:66px;display:block;margin:0 auto 12px}
+.brand-line{
+  font-family:'Cinzel',serif;font-size:11px;font-weight:500;
+  letter-spacing:6px;text-transform:uppercase;color:var(--or);margin-bottom:8px;
+}
+.greeting{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:16px;color:var(--creme-2);line-height:1.4;margin-bottom:6px;
+}
+.presta-name{
+  font-family:'Great Vibes',cursive;font-size:54px;font-weight:400;line-height:1;
+  background:linear-gradient(180deg,var(--or-clair),var(--or),var(--or-cuivre));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  margin:6px 0 10px;
+}
+.sep{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;position:relative;z-index:1}
+.sep .line{width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--or-cuivre),transparent)}
+.sep .diamond{width:6px;height:6px;background:var(--or);transform:rotate(45deg)}
+
+/* Grille de boutons */
+.btn-grid{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:520px){.btn-grid{grid-template-columns:1fr 1fr}}
+
+.tile{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:28px 18px;text-align:center;text-decoration:none;
+  background:linear-gradient(180deg,rgba(20,20,20,0.85),rgba(10,10,10,0.85));
+  border:1px solid var(--or-cuivre);position:relative;
+  transition:all 0.25s ease;cursor:pointer;min-height:170px;
+  color:var(--creme);
+}
+.tile::before{
+  content:"";position:absolute;top:5px;left:5px;right:5px;bottom:5px;
+  border:0.5px solid rgba(212,168,74,0.2);pointer-events:none;
+  transition:border-color 0.25s;
+}
+.tile:hover, .tile:active{
+  transform:translateY(-2px);
+  background:linear-gradient(180deg,rgba(30,25,15,0.95),rgba(15,12,5,0.95));
+  border-color:var(--or);
+  box-shadow:0 8px 24px rgba(212,168,74,0.2);
+}
+.tile:hover::before, .tile:active::before{border-color:rgba(244,217,138,0.4)}
+.tile.disabled{opacity:0.5;pointer-events:none;filter:grayscale(0.5)}
+.tile.disabled .tile-status{display:block}
+
+.tile-icon{
+  font-size:42px;margin-bottom:14px;line-height:1;
+  filter:drop-shadow(0 2px 6px rgba(212,168,74,0.3));
+  position:relative;z-index:1;
+}
+.tile-title{
+  font-family:'Cinzel',serif;font-size:13px;font-weight:500;
+  letter-spacing:3px;text-transform:uppercase;color:var(--or-clair);
+  margin-bottom:6px;position:relative;z-index:1;
+}
+.tile-sub{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:13px;color:var(--creme-2);line-height:1.3;
+  position:relative;z-index:1;
+}
+.tile-status{
+  display:none;font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;
+  color:var(--or-cuivre);margin-top:8px;text-transform:uppercase;
+  position:relative;z-index:1;
+}
+
+.footer{
+  text-align:center;margin-top:30px;
+  font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;
+  color:var(--or-fonce);letter-spacing:1px;
+}
+
+.no-presta{
+  text-align:center;padding:40px 20px;
+  background:rgba(20,20,20,0.85);border:1px solid var(--or-cuivre);
+}
+.no-presta h2{
+  font-family:'Great Vibes',cursive;font-size:36px;
+  color:var(--or-clair);margin-bottom:12px;
+}
+.no-presta p{font-family:'Cormorant Garamond',serif;color:var(--creme-2);font-size:15px;line-height:1.6}
+.no-presta .links{margin-top:20px;display:flex;flex-direction:column;gap:10px}
+.no-presta .links a{
+  display:inline-block;padding:12px 24px;
+  font-family:'Cinzel',serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--or);background:transparent;border:1px solid var(--or-cuivre);
+  text-decoration:none;transition:all 0.2s;
+}
+.no-presta .links a:hover{background:var(--or);color:var(--noir)}
+</style>
+</head>
+<body>
+
+<div class="wrap" id="wrap">
+
+  <div id="content"></div>
+
+  <div class="footer">Appart-H&ocirc;tel Berck-sur-Mer &middot; Princesse d'Opale</div>
+</div>
+
+<script>
+var PRESTAS = {
+  remi:       { nom:'R\u00e9mi',      bonjour:'Bonjour R\u00e9mi'      },
+  clara:      { nom:'Clara',          bonjour:'Bonjour Clara'          },
+  christelle: { nom:'Christelle',     bonjour:'Bonjour Christelle'     }
+};
+
+// URLs de chaque service
+var URLS = {
+  proprete:    'https://claudine-design.github.io/enquete-berck/proprete.html?presta=', // + presta key
+  calendrier:  'https://lighthearted-klepon-30ad25.netlify.app/?presta=',                // + presta key
+  reassort:    'https://reassort-berck.netlify.app',  // TODO: \u00e0 confirmer / mettre \u00e0 jour
+  checklist:   'https://checklist-menage-berck.netlify.app'
+};
+
+var prestaKey = (new URLSearchParams(location.search).get('presta') || '').toLowerCase();
+var presta = PRESTAS[prestaKey];
+
+var content = document.getElementById('content');
+
+if (!presta) {
+  // Page de choix prestataire (au cas o\u00f9 quelqu'un atterrirait sans param)
+  content.innerHTML =
+    '<div class="no-presta">' +
+      '<h2>Espace prestataire</h2>' +
+      '<p>S\u00e9lectionnez votre espace personnel</p>' +
+      '<div class="links">' +
+        '<a href="?presta=remi">R\u00e9mi</a>' +
+        '<a href="?presta=clara">Clara</a>' +
+        '<a href="?presta=christelle">Christelle</a>' +
+      '</div>' +
+    '</div>';
+} else {
+  var lysSvg =
+    '<svg class="hero-lys" viewBox="0 0 32 40" xmlns="http://www.w3.org/2000/svg">' +
+      '<defs><linearGradient id="lg" x1="0%" y1="0%" x2="0%" y2="100%">' +
+        '<stop offset="0%" stop-color="#f4d98a"/><stop offset="50%" stop-color="#d4a84a"/><stop offset="100%" stop-color="#b8872c"/>' +
+      '</linearGradient></defs>' +
+      '<path fill="url(#lg)" d="M16 0c1.5 5 6 8 6 14-1-1-3.5-2-6-2s-5 1-6 2c0-6 4.5-9 6-14zM8 16c-2 3-2 7 0 10 1.5 2.5 4 4 8 6 4-2 6.5-3.5 8-6 2-3 2-7 0-10-2 2-5 3-8 3s-6-1-8-3zM10 34c2 2 4 3.5 6 6 2-2.5 4-4 6-6-2 .5-4 .8-6 .8s-4-.3-6-.8z"/>' +
+    '</svg>';
+
+  var hero =
+    '<div class="hero">' +
+      lysSvg +
+      '<div class="brand-line">Appart-H&ocirc;tel &middot; Berck</div>' +
+      '<div class="greeting">' + presta.bonjour + '</div>' +
+      '<div class="presta-name">' + presta.nom + '</div>' +
+      '<div class="sep"><div class="line"></div><div class="diamond"></div><div class="line"></div></div>' +
+    '</div>';
+
+  var tiles =
+    '<div class="btn-grid">' +
+      tile('\uD83D\uDCC5', 'Mon planning', 'Calendrier des m\u00e9nages \u00e0 venir', URLS.calendrier + prestaKey) +
+      tile('\u2728', 'Propret\u00e9', 'Avis voyageurs &mdash; 30 derniers jours', URLS.proprete + prestaKey) +
+      tile('\uD83D\uDED2', 'R\u00e9assort', 'Articles manquants par logement', URLS.reassort, false) +
+      tile('\uD83D\uDCD6', 'Tuto m\u00e9nage', 'Checklist photo par appartement', URLS.checklist) +
+    '</div>';
+
+  content.innerHTML = hero + tiles;
+}
+
+function tile(icon, title, sub, href, enabled) {
+  if (enabled === false) {
+    return '<a href="' + href + '" target="_blank" rel="noopener" class="tile">' +
+      '<div class="tile-icon">' + icon + '</div>' +
+      '<div class="tile-title">' + title + '</div>' +
+      '<div class="tile-sub">' + sub + '</div>' +
+    '</a>';
+  }
+  return '<a href="' + href + '" target="_blank" rel="noopener" class="tile">' +
+    '<div class="tile-icon">' + icon + '</div>' +
+    '<div class="tile-title">' + title + '</div>' +
+    '<div class="tile-sub">' + sub + '</div>' +
+  '</a>';
+}
+</script>
+</body>
+</html>
