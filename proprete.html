@@ -126,6 +126,11 @@ body::before{
   border:1.5px solid var(--or);box-shadow:0 0 0 1px var(--noir),0 2px 8px rgba(0,0,0,0.5);
   background:var(--c-vide);
 }
+.row-head .avg.tprop{background:var(--c-tprop)}
+.row-head .avg.prop{background:var(--c-prop)}
+.row-head .avg.corr{background:var(--c-corr)}
+.row-head .avg.def{background:var(--c-def)}
+.row-head .avg.sale{background:var(--c-sale)}
 .row-head .trend{
   font-family:'Cinzel',serif;font-size:18px;font-weight:600;
   width:22px;text-align:center;flex-shrink:0;
@@ -336,9 +341,18 @@ function render(data) {
     idx[appart][key].list.push({ q5:q5, name:row[4]||'', date:d });
   }
 
+  // Filtre prestataire via URL ?presta=remi|clara|christelle
+  var urlPresta = (new URLSearchParams(location.search).get('presta') || '').toLowerCase();
+  var prestasToShow = ['remi','clara','christelle'];
+  if (urlPresta && PRESTAS[urlPresta]) {
+    prestasToShow = [urlPresta];
+    document.getElementById('periodLabel').textContent = PRESTAS[urlPresta].nom + ' \u2014 30 derniers jours';
+    document.querySelector('.hero h1').textContent = 'Propret\u00e9 de vos appartements';
+  }
+
   // Construire les blocs prestataires
   var html = '';
-  ['remi','clara','christelle'].forEach(function(pkey){
+  prestasToShow.forEach(function(pkey){
     var p = PRESTAS[pkey];
     var avisCount = 0, sums = 0, n = 0;
 
