@@ -119,6 +119,25 @@ body::before{
   white-space:nowrap;font-weight:500;background:rgba(0,0,0,0.3);
   border-left:2px solid var(--or-cuivre);
 }
+.row-head{display:flex;align-items:center;gap:10px}
+.row-head .nom{flex-shrink:0;min-width:130px}
+.row-head .avg{
+  width:30px;height:30px;flex-shrink:0;
+  border:1.5px solid var(--or);box-shadow:0 0 0 1px var(--noir),0 2px 8px rgba(0,0,0,0.5);
+  background:var(--c-vide);
+}
+.row-head .trend{
+  font-family:'Cinzel',serif;font-size:18px;font-weight:600;
+  width:22px;text-align:center;flex-shrink:0;
+}
+.row-head .trend.up{color:#16a34a}
+.row-head .trend.down{color:#dc2626}
+.row-head .trend.flat{color:var(--or-cuivre);font-size:14px}
+.row-head .trend.none{color:var(--or-fonce);opacity:0.4}
+.row-head .meta{
+  color:var(--or-cuivre);font-size:11px;font-style:normal;
+  font-family:'Inter',sans-serif;letter-spacing:0.5px;
+}
 .heatmap td.cell{
   width:22px;height:22px;background:var(--c-vide);
   border:0.5px solid rgba(122,90,28,0.2);position:relative;cursor:default;
@@ -327,7 +346,9 @@ function render(data) {
     p.apparts.forEach(function(appart){
       var cells = '';
       var totalAppart = 0, sumAppart = 0;
-      days.forEach(function(d){
+      var firstHalf = { sum:0, n:0 };
+      var secondHalf = { sum:0, n:0 };
+      days.forEach(function(d, dayIdx){
         var key = dayKey(d);
         var entry = idx[appart] && idx[appart][key];
         var cls = 'cell';
@@ -342,6 +363,8 @@ function render(data) {
           sumAppart += entry.score;
           n++;
           sums += entry.score;
+          if (dayIdx < 15) { firstHalf.sum += entry.score; firstHalf.n++; }
+          else             { secondHalf.sum += entry.score; secondHalf.n++; }
           var lst = entry.list.map(function(a){ return a.q5 + (a.name ? ' \u2014 ' + a.name : ''); }).join(' / ');
           title = formatDay(d) + ' \u2014 ' + appart + ' \u2014 ' + lst;
         } else {
@@ -350,8 +373,42 @@ function render(data) {
         cells += '<td class="' + classes.join(' ') + '" title="' + title.replace(/"/g,'&quot;') + '"></td>';
       });
       avisCount += totalAppart;
-      var moy = totalAppart ? (sumAppart/totalAppart).toFixed(1) : '\u2014';
-      rows += '<tr><th>' + appart + '<span style="color:var(--or-cuivre);font-size:11px;font-style:normal;margin-left:8px">' + (totalAppart? totalAppart+' avis \u00b7 moy. '+moy : 'aucun avis') + '</span></th>' + cells + '</tr>';
+      var moy = totalAppart ? sumAppart/totalAppart : 0;
+      var moyTxt = totalAppart ? moy.toFixed(1) : '\u2014';
+
+      var avgClass = 'cell';
+      if (totalAppart) {
+        if (moy >= 4.5) avgClass = 'tprop';
+        else if (moy >= 3.5) avgClass = 'prop';
+        else if (moy >= 2.5) avgClass = 'corr';
+        else if (moy >= 1.5) avgClass = 'def';
+        else avgClass = 'sale';
+      }
+
+      var trendIcon = '\u2014', trendCls = 'none', trendTitle = 'Pas assez de donn\u00e9es';
+      if (firstHalf.n > 0 && secondHalf.n > 0) {
+        var avg1 = firstHalf.sum / firstHalf.n;
+        var avg2 = secondHalf.sum / secondHalf.n;
+        var diff = avg2 - avg1;
+        if (diff > 0.3)      { trendIcon = '\u2191'; trendCls = 'up';   trendTitle = 'En am\u00e9lioration ('+avg1.toFixed(1)+' \u2192 '+avg2.toFixed(1)+')'; }
+        else if (diff < -0.3){ trendIcon = '\u2193'; trendCls = 'down'; trendTitle = 'En d\u00e9gradation ('+avg1.toFixed(1)+' \u2192 '+avg2.toFixed(1)+')'; }
+        else                 { trendIcon = '\u2192'; trendCls = 'flat'; trendTitle = 'Stable ('+avg1.toFixed(1)+' \u2248 '+avg2.toFixed(1)+')'; }
+      } else if (totalAppart > 0) {
+        trendTitle = 'Tendance non calculable ('+totalAppart+' avis sur la p\u00e9riode)';
+      }
+
+      var avgTitle = totalAppart
+        ? 'Moyenne sur 30 jours : ' + moyTxt + '/5 \u2014 ' + totalAppart + ' avis'
+        : 'Aucun avis sur cette p\u00e9riode';
+
+      rows += '<tr><th>'
+        + '<div class="row-head">'
+        +   '<span class="nom">' + appart + '</span>'
+        +   '<span class="avg ' + avgClass + '" title="' + avgTitle + '"></span>'
+        +   '<span class="trend ' + trendCls + '" title="' + trendTitle + '">' + trendIcon + '</span>'
+        +   '<span class="meta">' + (totalAppart ? totalAppart + ' avis \u00b7 ' + moyTxt + '/5' : 'aucun avis') + '</span>'
+        + '</div>'
+        + '</th>' + cells + '</tr>';
     });
 
     // Header dates (jours)
