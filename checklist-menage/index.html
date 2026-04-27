@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Checklist ménage — Berck</title>
+<style>
+  :root{
+    --rose:#F8D7DA; --rose-d:#E89BA3;
+    --vert:#CDEAC0; --vert-d:#86C28A;
+    --bleu:#D6E9F8; --bleu-d:#7FB3DC;
+    --lilas:#E7D6F2; --lilas-d:#B79AD1;
+    --peche:#FDE2CF; --peche-d:#F2A57A;
+    --beige:#FBF3E4;
+    --txt:#3B3B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#FFF7F8;color:var(--txt);padding:16px;max-width:560px;margin:0 auto}
+  header{background:linear-gradient(135deg,#F6C6CE,#FBD9CF);border-radius:18px;padding:18px;text-align:center;box-shadow:0 4px 14px rgba(232,155,163,.25)}
+  header h1{margin:0;font-size:22px;color:#5A2A33}
+  header p{margin:4px 0 0;font-size:13px;color:#7a3b46}
+  .pick{margin:14px 0;background:white;border-radius:14px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+  .pick label{font-size:13px;color:#666;display:block;margin-bottom:6px}
+  .pick select,.pick input{width:100%;padding:10px;border-radius:10px;border:1px solid #eed;background:#FFF8FA;font-size:15px}
+  .progress{margin:10px 0;height:10px;background:#fde;border-radius:10px;overflow:hidden}
+  .progress > div{height:100%;background:linear-gradient(90deg,#86C28A,#7FB3DC);width:0%;transition:width .3s}
+  .progress-text{text-align:center;font-size:13px;color:#888;margin-top:-4px;margin-bottom:8px}
+  section{border-radius:16px;padding:0;margin:14px 0;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.06)}
+  section h2{margin:0;padding:12px 16px;color:white;font-size:15px;display:flex;align-items:center;gap:10px}
+  section .body{padding:10px 12px 14px}
+  .item{display:flex;align-items:flex-start;gap:10px;padding:8px 6px;border-bottom:1px dashed rgba(0,0,0,.06);cursor:pointer}
+  .item:last-child{border-bottom:none}
+  .item input{margin-top:3px;width:20px;height:20px;accent-color:#E89BA3;flex-shrink:0}
+  .item span{font-size:14.5px;line-height:1.35}
+  .item.done span{text-decoration:line-through;color:#aaa}
+  .item .photo-tag{display:inline-block;background:#E89BA3;color:#fff;font-size:10px;padding:2px 6px;border-radius:8px;margin-left:6px;vertical-align:middle}
+  .item .thumb{display:block;margin-top:6px;max-width:140px;max-height:140px;border-radius:10px;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+  .item .photo-input{display:none}
+  .item .video-tag{display:inline-block;background:#7FB3DC;color:#fff;font-size:10px;padding:2px 6px;border-radius:8px;margin-left:6px;vertical-align:middle}
+  .item video{display:block;margin-top:6px;max-width:220px;border-radius:10px;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+  .item .col{flex:1}
+  .s1{background:var(--bleu)}.s1 h2{background:var(--bleu-d)}
+  .s2{background:var(--rose)}.s2 h2{background:var(--rose-d)}
+  .s3{background:var(--vert)}.s3 h2{background:var(--vert-d)}
+  .s4{background:var(--lilas)}.s4 h2{background:var(--lilas-d)}
+  .s5{background:var(--peche)}.s5 h2{background:var(--peche-d)}
+  .s6{background:var(--beige)}.s6 h2{background:var(--peche-d)}
+  .s7{background:var(--vert)}.s7 h2{background:var(--vert-d)}
+  details.guide{margin:14px 0;background:#fff;border-radius:16px;padding:0;box-shadow:0 3px 10px rgba(0,0,0,.06);overflow:hidden}
+  details.guide > summary{list-style:none;cursor:pointer;padding:14px 16px;background:linear-gradient(135deg,#F6C6CE,#FBD9CF);color:#5A2A33;font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:space-between}
+  details.guide > summary::-webkit-details-marker{display:none}
+  details.guide > summary::after{content:"▼";font-size:11px;transition:transform .2s}
+  details.guide[open] > summary::after{transform:rotate(180deg)}
+  details.guide .guide-body{padding:8px 16px 14px;font-size:14px;line-height:1.5}
+  details.guide h3{margin:14px 0 6px;font-size:14px;color:#5A2A33;border-left:4px solid #E89BA3;padding-left:8px}
+  details.guide h4{margin:10px 0 4px;font-size:13px;color:#7a3b46}
+  details.guide ul{margin:4px 0 8px;padding-left:20px}
+  details.guide li{margin:2px 0}
+  details.guide .tip{background:#FFF8FA;border-left:3px solid #F2A57A;padding:6px 10px;border-radius:6px;margin:6px 0;font-size:13px;color:#7a3b46}
+  .gallery{margin:14px 0;display:none}
+  .gallery.has-photos{display:block;background:#fff;border-radius:16px;padding:12px;box-shadow:0 3px 10px rgba(0,0,0,.06)}
+  .gallery h3{margin:0 0 10px;font-size:14px;color:#5A2A33;display:flex;align-items:center;gap:8px}
+  .gallery .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:6px}
+  .gallery .grid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.1);transition:transform .15s}
+  .gallery .grid img:active{transform:scale(.95)}
+  .gallery .empty{color:#999;font-size:13px;font-style:italic;text-align:center;padding:20px}
+  .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;z-index:9999;align-items:center;justify-content:center;padding:20px}
+  .lightbox.open{display:flex}
+  .lightbox img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px}
+  .lightbox .close{position:absolute;top:15px;right:20px;color:#fff;font-size:32px;background:none;border:none;cursor:pointer;line-height:1}
+  .actions{display:flex;gap:10px;margin:18px 0 30px}
+  .actions button{flex:1;padding:14px;border:none;border-radius:14px;font-size:15px;font-weight:600;cursor:pointer}
+  .reset{background:#fff;color:#888;border:1px solid #eed !important}
+  .send{background:linear-gradient(135deg,#E89BA3,#F2A57A);color:white;box-shadow:0 4px 12px rgba(232,155,163,.4)}
+  footer{text-align:center;color:#b88;font-size:12px;padding:10px 0 30px}
+</style>
+</head>
+<body>
+<header>
+  <h1>♥ Ma checklist ménage</h1>
+  <p>Appartements Berck-sur-Mer</p>
+</header>
+
+<div class="pick">
+  <label>Appartement</label>
+  <select id="appart">
+    <option value="">— Choisir —</option>
+    <optgroup label="Le 23 rue Maréchal Juin (Rémi)">
+      <option value="kitesurf">Kitesurf</option>
+      <option value="hamac">Hamac</option>
+      <option value="paddle">Paddle</option>
+      <option value="surf">Surf</option>
+      <option value="famille">Famille</option>
+    </optgroup>
+    <optgroup label="Le 25 rue Maréchal Juin (Clara)">
+      <option value="balneo">Balnéo</option>
+      <option value="cocon-romantique">Cocon Romantique</option>
+    </optgroup>
+    <optgroup label="Terrasse / Face Mer (Christelle)">
+      <option value="terrasse">Terrasse</option>
+      <option value="maisonnette">Maisonnette</option>
+      <option value="face-mer">Face Mer</option>
+    </optgroup>
+    <optgroup label="Apollo · Albatros (Clara)">
+      <option value="apollo">Apollo</option>
+      <option value="apolove">Apolove</option>
+      <option value="kingston">Kingston</option>
+      <option value="reserve">La Réserve</option>
+      <option value="albatros">Albatros</option>
+    </optgroup>
+    <optgroup label="59 Esplanade (Christelle)">
+      <option value="mini-love-room">Mini Love Room</option>
+      <option value="grande-love-room">Grande Love Room</option>
+    </optgroup>
+    <optgroup label="Rue Jeanne (Christelle)">
+      <option value="jeanne">Jeanne</option>
+      <option value="evasion">Évasion</option>
+      <option value="rotonde">Rotonde</option>
+      <option value="patio">Patio</option>
+    </optgroup>
+    <optgroup label="Grand Large (Christelle)">
+      <option value="grand-large">Grand Large</option>
+    </optgroup>
+    <optgroup label="Conciergerie">
+      <option value="helene">Studio Hélène</option>
+    </optgroup>
+  </select>
+  <label style="margin-top:10px">Prestataire</label>
+  <input id="nom" placeholder="Votre prénom">
+</div>
+
+<div id="gallery" class="gallery"></div>
+
+<details class="guide" open>
+  <summary>📋 Procédure de ménage — à lire avant de commencer</summary>
+  <div class="guide-body">
+
+    <h3>📥 Avant ménage</h3>
+    <h4>Matériel à emporter</h4>
+    <ul>
+      <li>Sac ménage + sac pressing + pack de linge (si besoin)</li>
+      <li>Panier de linge sale depuis le local ménage (si machine à faire)</li>
+    </ul>
+    <h4>À l'arrivée dans l'appartement</h4>
+    <ul>
+      <li>Vider son sac de ménage à un endroit (table, canapé, chaise)</li>
+      <li>Ramasser le linge sale des précédents locataires :
+        <ul>
+          <li>Tapis, torchon, essuie-mains, éponge → <b>sac ménage</b></li>
+          <li>Linge de lit → <b>sac pressing</b></li>
+        </ul>
+      </li>
+      <li>Ouvrir le placard ménage</li>
+      <li>📷 <b>Prendre en photo le questionnaire rempli</b></li>
+    </ul>
+    <h4>Sortir du placard ménage</h4>
+    <ul>
+      <li>🛁 <b>SDB</b> : produit WC, anti-calcaire, javel, sac poubelle</li>
+      <li>🍳 <b>Cuisine</b> : café, thé, sucre, pastille lave-vaisselle, sac poubelle</li>
+      <li>🛋️ <b>Salon</b> : questionnaire (si besoin), produit vitres, produit magique (vinaigre)</li>
+    </ul>
+
+    <h3>🧽 Ménage — avant de commencer</h3>
+    <ul>
+      <li>Lancer la machine à laver si besoin (linge sale du local ménage)</li>
+      <li>Mettre l'<b>anti-calcaire</b> sur toute la robinetterie (SDB + cuisine) + pare-douche ou baignoire</li>
+      <li>Mettre la <b>javel</b> sur les joints de la salle de bain</li>
+      <li>Produit WC dans les toilettes</li>
+      <li>Radiateurs : <b>12° l'hiver</b>, <b>éteints l'été</b></li>
+    </ul>
+
+    <h3>🛏️ Chambre</h3>
+    <ul>
+      <li>Vérifier l'alèse</li>
+      <li>Refaire le lit + déco</li>
+      <li>Déposer le pack de linge si besoin</li>
+      <li>Vérifier sous le lit</li>
+      <li>Poussière des meubles</li>
+      <li>Ouvrir la table de nuit</li>
+      <li>Faire les vitres si nécessaire</li>
+    </ul>
+
+    <h3>🛁 Salle de bain</h3>
+    <ul>
+      <li>Miroir</li>
+      <li>Plan de travail</li>
+      <li>Lavabo et robinet</li>
+      <li>Vérifier savon pour les mains + coton / coton-tige</li>
+      <li>Mettre en plus le tapis</li>
+      <li>Vérifier poubelle + remettre un sac propre si besoin</li>
+      <li>Rincer la douche</li>
+      <li>Vérifier le gel douche</li>
+      <li>Nettoyer paroi / robinetterie / bac de douche</li>
+      <li><b>Nettoyer la bonde de douche</b> et enlever les cheveux</li>
+    </ul>
+
+    <h3>🚽 Toilette</h3>
+    <ul>
+      <li>Vérifier papier toilette (<b>2 rouleaux</b>)</li>
+      <li>Nettoyer les WC + tirer la chasse</li>
+    </ul>
+
+    <h3>🍳 Cuisine</h3>
+    <ul>
+      <li>Ouvrir tous les placards (vérifier qu'il n'y a pas de nourriture oubliée)</li>
+      <li>Nettoyer l'électroménager :
+        <ul>
+          <li><b>Micro-onde</b> : intérieur + plaque tournante</li>
+          <li><b>Lave-vaisselle</b> : ouvrir, allumer, vérifier liquide de rinçage (☀️) + sel (flèches)</li>
+          <li><b>Four</b> : ouvrir + vérifier la plaque</li>
+          <li><b>Bouilloire</b> : vider l'eau, détartrer au vinaigre si calcaire, rincer</li>
+          <li><b>Senseo</b> : pas de capsule, nettoyer porteurs + récipient</li>
+        </ul>
+      </li>
+      <li>Nettoyer le plan de travail</li>
+      <li>Évier + robinet + vérifier évacuation (buse en place)</li>
+    </ul>
+    <h4>🎁 Panier d'accueil</h4>
+    <ul>
+      <li>Dépliant info</li>
+      <li>Liquide vaisselle</li>
+      <li>Torchon, essuie-main, éponge</li>
+      <li>Pastille lave-vaisselle</li>
+      <li>Café / thé / sucre — <b>selon le nombre de couchages</b> (ex : 4 pers = 4 café / 4 thé / 4 sucres)</li>
+      <li>Gâteaux / chocolat</li>
+    </ul>
+    <ul>
+      <li>Vérifier la poubelle (nettoyer l'intérieur si besoin) + sac poubelle</li>
+      <li>Faire les vitres si nécessaire</li>
+    </ul>
+
+    <h3>🍽️ Salle à manger</h3>
+    <ul>
+      <li>Nettoyer table et chaises</li>
+      <li>Nettoyer les <b>surfaces utiles, plan de travail et table</b></li>
+    </ul>
+
+    <h3>🛋️ Salon</h3>
+    <ul>
+      <li>Vérifier l'alèse du canapé</li>
+      <li>Refaire la déco du canapé</li>
+      <li>Poussière des meubles + table basse</li>
+      <li>Sur la table basse : livret d'accueil, questionnaire, télécommande</li>
+      <li>Faire les vitres si nécessaire</li>
+    </ul>
+
+    <h3>🌳 Jardin / Balcon</h3>
+    <ul>
+      <li>Vérifier et remettre en place le mobilier</li>
+      <li>Vérifier le brasero</li>
+      <li>Pas de mégots ni de crottes de chien</li>
+    </ul>
+
+    <h3>🧹 Aspirateur — partout</h3>
+    <ul>
+      <li>Sous les lits</li>
+      <li>Déplacer tables de nuit / portants papier toilette et brosse WC</li>
+      <li>Sous les meubles</li>
+      <li>Derrière les portes</li>
+    </ul>
+
+    <h3>🔍 Vérifications si besoin</h3>
+    <ul>
+      <li>Tête de lit</li>
+      <li>Plinthes</li>
+      <li>Poussière sur le radiateur</li>
+    </ul>
+
+    <h3>🚪 Avant de partir de l'appartement</h3>
+    <ul>
+      <li>Mettre le spray anti-odeur</li>
+      <li>Vérification finale de l'appartement</li>
+      <li>Refermer le placard ménage</li>
+    </ul>
+
+    <h3>🏁 Fin du ménage (retour au local)</h3>
+    <ul>
+      <li>Accrocher la machine (si elle a tourné)</li>
+      <li>Refaire le sac ménage :
+        <ul>
+          <li>1 tapis</li>
+          <li>1 torchon</li>
+          <li>1 essuie-main</li>
+          <li>3 lavettes</li>
+          <li>2 rouleaux de papier toilette</li>
+          <li>1 paquet de gâteaux / chocolat</li>
+        </ul>
+      </li>
+    </ul>
+    <div class="tip">💡 Si un produit est fini ou manquant dans le logement, le noter pour la personne qui fera le prochain ménage.</div>
+  </div>
+</details>
+
+<div class="progress"><div id="bar"></div></div>
+<div class="progress-text" id="ptext">0 / 0 tâches</div>
+
+<div id="sections"></div>
+
+<div class="actions">
+  <button class="reset" onclick="reset()">Tout décocher</button>
+  <button class="send" onclick="send()">✓ Terminer</button>
+</div>
+
+<div id="lightbox" class="lightbox" onclick="this.classList.remove('open')">
+  <button class="close" onclick="document.getElementById('lightbox').classList.remove('open')">×</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<footer>Merci infiniment ♥ — Claudine</footer>
+
+<script>
+// ===== Galerie photos déco par appartement =====
+const apartPhotos = {
+  'apolove': 12, 'balneo': 14, 'cocon-romantique': 16, 'face-mer': 6,
+  'famille': 13, 'grande-love-room': 13, 'helene': 18, 'jeanne': 7,
+  'kingston': 1, 'kitesurf': 2, 'maisonnette': 12, 'mini-love-room': 9,
+  'patio': 11, 'reserve': 15
+};
+
+function renderGallery(slug){
+  const g = document.getElementById('gallery');
+  if(!slug){ g.className='gallery'; g.innerHTML=''; return; }
+  const count = apartPhotos[slug] || 0;
+  g.className = 'gallery has-photos';
+  if(count === 0){
+    g.innerHTML = '<h3>🖼️ Photos déco de référence</h3><div class="empty">Pas encore de photos pour cet appartement.<br>Demander à Claudine de les ajouter sur Trello.</div>';
+    return;
+  }
+  let html = `<h3>🖼️ Photos déco de référence <span style="font-weight:normal;font-size:12px;color:#999">(${count})</span></h3><div class="grid">`;
+  for(let i=1; i<=count; i++){
+    const n = String(i).padStart(2,'0');
+    const src = `photos-menage/${slug}/${n}.jpg`;
+    html += `<img src="${src}" alt="${slug} ${n}" loading="lazy" onclick="openLightbox(this.src)">`;
+  }
+  html += '</div>';
+  g.innerHTML = html;
+}
+
+function openLightbox(src){
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox').classList.add('open');
+}
+
+document.getElementById('appart').addEventListener('change', e => renderGallery(e.target.value));
+
+// Pour rendre une tâche obligatoire en photo : {t:"...", photo:true}
+const data = [
+  ["s1","🧺 Arrivée & préparation",[
+    "Lire le questionnaire et vérifier les annotations",
+    "Ouvrir le placard ménage 057 : matériel + produits",
+    "Lancer une machine de lavettes et tapis",
+  ]],
+  ["s2","🛁 Salle de bain — on laisse agir",[
+    "Mettre l'anti-calcaire sur robinetteries et bondes",
+    "Nettoyer le pare-douche au spray anti-calcaire",
+    "Vérifier et nettoyer la bonde de douche (cheveux, débouchée)",
+    "Asperger de javel : cuvette WC, joints jaunes, douche",
+  ]],
+  ["s3","🍳 Cuisine — on inspecte tout",[
+    "Ouvrir tout l'électroménager et les placards",
+    "Nettoyer les saletés éventuelles",
+    "Frigo / congélateur : aucune nourriture oubliée",
+    "Micro-ondes, four, plaques, cafetière, grille-pain, bouilloire",
+    "Vaisselle propre, rangée, non abîmée",
+    "Vider la poubelle et remettre un sac propre",
+  ]],
+  ["s4","🪟 Appartement — surfaces & vitres",[
+    "Tables, appuis, chaises, murs, fenêtres",
+    "Nettoyer les vitres",
+    "Vérifier les alèses (lit, matelas, oreillers, canapé)",
+  ]],
+  ["s5","🚿 Salle de bain — on rince et on essuie",[
+    "Essuyer robinetteries traitées à l'anti-calcaire",
+    "Rincer la douche (javel)",
+    "Essuyer la javel sous la cuvette + nettoyer le dessus WC",
+    "Miroir et lavabo sans traces",
+    "2 rouleaux de papier toilette neufs",
+    "Vider poubelle SDB + sac propre",
+  ]],
+  ["s6","✨ Touche finale",[
+    "Installer la déco selon photos (Trello) — panier d'accueil",
+    "Aspirer partout (sous lit, autour des chevets)",
+    "Poussières : plinthes, TV, tête de lit",
+    "Coussins / plaids propres et pliés",
+    "Odeur générale : aérer, spray textile / huile essentielle",
+  ]],
+  ["s7","🏁 Avant de partir",[
+    {t:"Vidéo OBLIGATOIRE : passer dans tout l'appartement (entrée → cuisine → salon → chambre → salle de bain)",video:true},
+    "Retour au local : étendre le linge",
+    "Remplir le sac de ménage (nécessaire + manquants)",
+  ]],
+];
+
+const root = document.getElementById('sections');
+let total = 0;
+data.forEach(([cls,title,items],si)=>{
+  const sec = document.createElement('section');
+  sec.className = cls;
+  sec.innerHTML = `<h2>${title}</h2><div class="body"></div>`;
+  const body = sec.querySelector('.body');
+  items.forEach((it,i)=>{
+    total++;
+    const id = `c_${si}_${i}`;
+    const t = typeof it==='string'?it:it.t;
+    const needPhoto = typeof it==='object' && it.photo;
+    const needVideo = typeof it==='object' && it.video;
+    const div = document.createElement('label');
+    div.className='item';
+    let tag = '';
+    if(needPhoto) tag = '<span class="photo-tag">📷 photo</span>';
+    if(needVideo) tag = '<span class="video-tag">🎥 vidéo</span>';
+    let media = '';
+    if(needPhoto) media = `<input type="file" accept="image/*" capture="environment" class="photo-input"><img class="thumb" style="display:none">`;
+    if(needVideo) media = `<input type="file" accept="video/*" capture="environment" class="photo-input"><video controls style="display:none"></video>`;
+    div.innerHTML = `<input type="checkbox" id="${id}"><div class="col"><span>${t}${tag}</span>${media}</div>`;
+    const cb = div.querySelector('input[type="checkbox"]');
+    if(needPhoto || needVideo){
+      const fi = div.querySelector('.photo-input');
+      const preview = div.querySelector(needVideo?'video':'.thumb');
+      cb.addEventListener('click',e=>{
+        if(e.target.checked && !preview.src){
+          e.preventDefault();
+          e.target.checked = false;
+          fi.click();
+        }
+      });
+      fi.addEventListener('change',e=>{
+        const f = e.target.files[0];
+        if(!f) return;
+        const url = URL.createObjectURL(f);
+        preview.src = url;
+        preview.style.display = 'block';
+        cb.checked = true;
+        div.classList.add('done');
+        update();
+        // Envoi automatique vers Google Drive (Vidéos ménage Berck)
+        const reader = new FileReader();
+        reader.onload = ()=>{
+          const b64 = reader.result.split(',')[1];
+          const stamp = new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
+          const apartVal = (document.getElementById('appart').value || 'sans-appart').replace(/[^a-z0-9-]/gi,'-');
+          const nomVal = (document.getElementById('nom').value || 'anonyme').replace(/[^a-zA-ZÀ-ÿ0-9-]/g,'-').toLowerCase();
+          const ext = (f.name && f.name.includes('.')) ? '.' + f.name.split('.').pop() : (needVideo ? '.mp4' : '.jpg');
+          const kind = needVideo ? 'video' : 'photo';
+          // Format: <appart>_<prestataire>_<date>_<kind>.<ext>
+          const payload = {file:b64, mime:f.type, name:`${apartVal}_${nomVal}_${stamp}_${kind}${ext}`};
+          fetch('https://script.google.com/macros/s/AKfycbwTCZ7TqqWJQFqt73XNKtADLXJD0D41mXpIUJJFaBv9qyATph_UkmJMxYjUaEz-mxkm/exec',{
+            method:'POST', mode:'no-cors',
+            headers:{'Content-Type':'text/plain'},
+            body: JSON.stringify(payload)
+          }).then(()=>{
+            const tag = div.querySelector('.photo-tag, .video-tag');
+            if(tag) tag.textContent += ' ✓ envoyé';
+          }).catch(()=>{});
+        };
+        reader.readAsDataURL(f);
+      });
+    }
+    cb.addEventListener('change',e=>{
+      if((needPhoto||needVideo) && !div.querySelector(needVideo?'video':'.thumb').src) return;
+      div.classList.toggle('done',e.target.checked);
+      update();
+    });
+    body.appendChild(div);
+  });
+  root.appendChild(sec);
+});
+
+function update(){
+  const checked = document.querySelectorAll('.item input:checked').length;
+  document.getElementById('bar').style.width = (checked/total*100)+'%';
+  document.getElementById('ptext').textContent = `${checked} / ${total} tâches`;
+}
+function reset(){
+  document.querySelectorAll('.item input[type="checkbox"]').forEach(i=>{i.checked=false;i.closest('.item').classList.remove('done')});
+  document.querySelectorAll('.item .thumb').forEach(img=>{img.src='';img.style.display='none'});
+  update();
+}
+function send(){
+  const videoEl = document.querySelector('.item video');
+  if(!videoEl || !videoEl.src){
+    alert("⛔ Impossible de terminer !\n\nVous devez d'abord enregistrer la vidéo finale de l'appartement (dernière tâche dans 🏁 Avant de partir).");
+    return;
+  }
+  const checked = document.querySelectorAll('.item input:checked').length;
+  const nom = document.getElementById('nom').value || 'la prestataire';
+  const appart = document.getElementById('appart').value;
+  alert(`Merci ${nom} ! ♥\n\n${checked}/${total} tâches terminées\nAppartement : ${appart}\nDate : ${new Date().toLocaleDateString('fr-FR')}\n\n✓ Vidéo envoyée sur le Drive`);
+}
+update();
+</script>
+</body>
+</html>
