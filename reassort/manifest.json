@@ -1,0 +1,9 @@
+{
+  "name": "Berck Gestion - Reassort",
+  "short_name": "Reassort",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#111827",
+  "theme_color": "#111827"
+}

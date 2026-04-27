@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#111827">
+<title>Berck Gestion</title>
+<link rel="manifest" href="manifest.json">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#111827;--surface:#1f2937;--surface2:#374151;--border:#2d3748;
+  --text:#f9fafb;--muted:#9ca3af;--accent:#6366f1;--accent2:#818cf8;
+  --green:#10b981;--red:#ef4444;--orange:#f59e0b;
+}
+html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,sans-serif}
+body{background:var(--bg);color:var(--text);display:flex;flex-direction:column}
+
+/* TABS */
+.tabs{display:flex;background:var(--surface);border-top:1px solid var(--border);flex-shrink:0;order:2;padding-bottom:env(safe-area-inset-bottom)}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 2px;cursor:pointer;border:none;background:transparent;color:var(--muted);gap:2px;transition:color 0.15s}
+.tab .t-icon{font-size:20px}
+.tab .t-label{font-size:9px;letter-spacing:0.5px;text-transform:uppercase}
+.tab.active{color:var(--accent)}
+
+/* PAGES */
+.main{flex:1;overflow-y:auto;order:1;-webkit-overflow-scrolling:touch}
+.page{display:none;min-height:100%}
+.page.active{display:block}
+
+/* HEADER */
+.ph{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;position:sticky;top:0;background:var(--bg);z-index:10}
+.back-btn{background:none;border:none;color:var(--accent2);font-size:26px;cursor:pointer;line-height:1;padding:2px 6px 2px 0}
+.ph-title{font-size:17px;font-weight:600}
+.ph-sub{font-size:12px;color:var(--muted);margin-top:1px}
+
+/* PAGE TITLE */
+.page-title{padding:16px 16px 8px;font-size:22px;font-weight:700}
+
+/* LIEUX GRID */
+.lieux-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}
+.lieu-btn{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:18px 10px;cursor:pointer;text-align:center;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all 0.15s;color:var(--text);width:100%}
+.lieu-btn:active{transform:scale(0.96);background:var(--surface2)}
+.lieu-emoji{font-size:30px}
+.lieu-nom{font-size:13px;font-weight:600}
+.lieu-badge{font-size:11px;color:var(--muted)}
+.lieu-count{font-size:11px;color:var(--orange);font-weight:700}
+.lieu-btn.alerte{border-color:var(--orange)}
+
+/* APPARTS */
+.apparts-list{padding:10px}
+.appart-btn{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:8px;cursor:pointer;text-align:left;display:flex;align-items:center;justify-content:space-between;color:var(--text);font-size:15px;font-weight:500}
+.appart-btn:active{background:var(--surface2)}
+.appart-ok{font-size:12px;color:var(--green)}
+.appart-cnt{font-size:12px;color:var(--orange);font-weight:600}
+
+/* ARTICLES */
+.articles-wrap{padding-bottom:76px}
+.cat-header{padding:8px 16px;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;background:var(--bg);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)}
+.art-item{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;user-select:none}
+.art-item:active{background:var(--surface2)}
+.art-item.checked{background:rgba(99,102,241,0.07)}
+.art-check{width:23px;height:23px;border-radius:6px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;font-size:13px;font-weight:700;color:white}
+.art-item.checked .art-check{background:var(--accent);border-color:var(--accent)}
+.art-nom{font-size:15px;flex:1}
+.art-item.checked .art-nom{color:var(--accent2)}
+
+/* SAVE BAR */
+.save-bar{position:fixed;bottom:57px;left:0;right:0;padding:8px 12px;background:var(--bg);border-top:1px solid var(--border);z-index:20;display:flex;gap:8px;align-items:center}
+.save-btn{flex:1;background:var(--accent);color:white;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:600;cursor:pointer}
+.save-btn:active{background:var(--accent2)}
+.save-btn:disabled{opacity:0.5}
+.photo-btns{display:flex;gap:6px;flex-shrink:0}
+.photo-btn{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 11px;cursor:pointer;font-size:18px;color:var(--text)}
+.photo-input{display:none}
+
+/* STATUS */
+.status{text-align:center;padding:10px 14px;font-size:13px;border-radius:8px;margin:10px 14px;display:none}
+.status.ok{background:rgba(16,185,129,0.15);color:var(--green)}
+.status.err{background:rgba(239,68,68,0.15);color:var(--red)}
+.status.loading{background:rgba(99,102,241,0.1);color:var(--accent2)}
+
+/* TRAVAUX */
+.travail-item{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border)}
+.travail-circle{width:23px;height:23px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;margin-top:1px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;transition:all 0.15s}
+.travail-item.fait .travail-circle{background:var(--green);border-color:var(--green)}
+.travail-texte{font-size:14px;flex:1;line-height:1.5}
+.travail-item.fait .travail-texte{text-decoration:line-through;color:var(--muted)}
+.travail-date{font-size:11px;color:var(--muted);margin-top:3px}
+.travail-del{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:2px 4px;flex-shrink:0}
+.travaux-form{padding:12px 14px;background:var(--bg);border-top:1px solid var(--border);position:sticky;bottom:57px}
+.travaux-ta{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-size:14px;resize:none;height:78px;font-family:inherit}
+.travaux-ta:focus{outline:none;border-color:var(--accent)}
+.travaux-add{width:100%;background:var(--accent);color:white;border:none;border-radius:10px;padding:12px;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px}
+
+/* COURSES (bilan réassort) */
+.courses-total{padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border);font-size:14px;font-weight:600;display:flex;justify-content:space-between;align-items:center}
+.courses-total .total-count{color:var(--orange);font-size:18px}
+.course-cat{padding:8px 16px;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;background:var(--bg);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)}
+.course-item{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--border)}
+.course-art{font-size:15px;flex:1;font-weight:500}
+.course-lieux{font-size:12px;color:var(--muted);margin-top:2px}
+.course-qty{background:var(--orange);color:var(--bg);font-size:12px;font-weight:700;min-width:26px;height:26px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.clear-btn{display:block;width:calc(100% - 28px);margin:14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--red);font-size:14px;cursor:pointer;text-align:center}
+
+/* RECAP */
+.recap-block{padding:12px 16px;border-bottom:2px solid var(--surface2)}
+.recap-lieu{font-size:15px;font-weight:700;margin-bottom:8px}
+.recap-ligne{font-size:13px;color:var(--muted);padding:3px 0;display:flex;gap:8px}
+.recap-ligne::before{content:"›";color:var(--orange)}
+
+/* HISTO */
+.histo-item{padding:14px 16px;border-bottom:1px solid var(--border)}
+.histo-lieu{font-size:14px;font-weight:600;margin-bottom:3px}
+.histo-articles{font-size:13px;color:var(--muted);margin-bottom:3px}
+.histo-date{font-size:11px;color:var(--surface2)}
+
+/* EMPTY */
+.empty{text-align:center;padding:48px 24px;color:var(--muted)}
+.empty-icon{font-size:52px;margin-bottom:14px}
+.empty p{font-size:14px;line-height:1.7}
+
+/* GLOBAL LOAD */
+.load-banner{text-align:center;padding:10px;font-size:13px;color:var(--accent2);background:rgba(99,102,241,0.1);display:none}
+
+@media (min-width:420px){.lieux-grid{grid-template-columns:1fr 1fr 1fr}}
+</style>
+</head>
+<body>
+
+<div class="main">
+
+  <!-- ===== RÉASSORT ===== -->
+  <div class="page active" id="page-reassort">
+
+    <div id="r-home">
+      <div class="page-title">🧹 Réassort</div>
+      <div class="lieux-grid" id="r-lieux-grid"></div>
+    </div>
+
+    <div id="r-articles" style="display:none">
+      <div class="ph">
+        <button class="back-btn" id="r-back"></button>
+        <div>
+          <div class="ph-title" id="r-art-title"></div>
+          <div class="ph-sub" id="r-art-sub"></div>
+        </div>
+      </div>
+      <div class="status" id="r-status"></div>
+      <div class="articles-wrap" id="r-art-list"></div>
+      <div class="save-bar">
+        <input type="file" accept="image/*" capture="environment" class="photo-input" id="ph-cam">
+        <input type="file" accept="image/*" class="photo-input" id="ph-gal">
+        <div class="photo-btns">
+          <button class="photo-btn" onclick="document.getElementById('ph-cam').click()" title="Appareil photo">📷</button>
+          <button class="photo-btn" onclick="document.getElementById('ph-gal').click()" title="Galerie">🖼️</button>
+        </div>
+        <button class="save-btn" id="r-save" onclick="saveManquants()">Sauvegarder</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== TRAVAUX ===== -->
+  <div class="page" id="page-travaux">
+
+    <div id="t-home">
+      <div class="page-title">🔧 Travaux</div>
+      <div class="lieux-grid" id="t-lieux-grid"></div>
+    </div>
+
+    <div id="t-apparts" style="display:none">
+      <div class="ph">
+        <button class="back-btn" onclick="tShowHome()">‹</button>
+        <div><div class="ph-title" id="t-apparts-title"></div></div>
+      </div>
+      <div class="apparts-list" id="t-apparts-list"></div>
+    </div>
+
+    <div id="t-detail" style="display:none">
+      <div class="ph">
+        <button class="back-btn" id="t-back"></button>
+        <div>
+          <div class="ph-title" id="t-det-title"></div>
+          <div class="ph-sub" id="t-det-sub"></div>
+        </div>
+      </div>
+      <div id="t-list"></div>
+      <div class="travaux-form">
+        <textarea class="travaux-ta" id="t-input" placeholder="Décrire le travail à faire…"></textarea>
+        <button class="travaux-add" onclick="addTravail()">+ Ajouter</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== RÉCAP TRAVAUX ===== -->
+  <div class="page" id="page-recap">
+    <div class="page-title">📊 Récap. Travaux</div>
+    <div id="recap-content"></div>
+  </div>
+
+  <!-- ===== COURSES (bilan réassort) ===== -->
+  <div class="page" id="page-courses">
+    <div class="page-title">🛒 Courses</div>
+    <div id="courses-content"></div>
+  </div>
+
+  <!-- ===== HISTORIQUE ===== -->
+  <div class="page" id="page-histo">
+    <div class="page-title">📋 Historique</div>
+    <div id="histo-content"></div>
+  </div>
+
+</div>
+
+<!-- TABS -->
+<nav class="tabs">
+  <button class="tab active" data-tab="reassort" onclick="switchTab('reassort')">
+    <span class="t-icon">🧹</span><span class="t-label">Réassort</span>
+  </button>
+  <button class="tab" data-tab="travaux" onclick="switchTab('travaux')">
+    <span class="t-icon">🔧</span><span class="t-label">Travaux</span>
+  </button>
+  <button class="tab" data-tab="recap" onclick="switchTab('recap')">
+    <span class="t-icon">📊</span><span class="t-label">Récap.</span>
+  </button>
+  <button class="tab" data-tab="courses" onclick="switchTab('courses')">
+    <span class="t-icon">🛒</span><span class="t-label">Courses</span>
+  </button>
+  <button class="tab" data-tab="histo" onclick="switchTab('histo')">
+    <span class="t-icon">📋</span><span class="t-label">Histo.</span>
+  </button>
+</nav>
+
+<script>
+const LIEUX = [
+  { id: 'le23',      nom: 'Le 23',      emoji: '🏠', apparts: ['Kitesurf','Hamac','Paddle','Surf','Famille','Communs'] },
+  { id: 'le25',      nom: 'Le 25',      emoji: '🛁', apparts: ['Balnéo','Spa','Communs'] },
+  { id: 'apollo',    nom: 'Apollo',     emoji: '🚀', apparts: ['La Réserve','Kingston','Apollove','Apollo','Communs'] },
+  { id: 'albatros',  nom: 'Albatros',   emoji: '🐦', apparts: null },
+  { id: 'facemer',   nom: 'Face Mer',   emoji: '🌊', apparts: null },
+  { id: 'grandlarge',nom: 'Grand Large',emoji: '⛵', apparts: null },
+  { id: 'esplanade', nom: 'Esplanade',  emoji: '💑', apparts: ['Mini Love Room','Grande Love Room','Communs'] },
+  { id: 'rujeanne',  nom: 'Ru Jeanne',  emoji: '🌿', apparts: ['Jeanne','Repos','Rotonde','Patio','Communs'] },
+  { id: 'terrasse',  nom: 'Terrasse',   emoji: '☀️', apparts: ['Terrasse','Coeur','Communs'] }
+];
+
+const CATS = [
+  { emoji: '🍪', nom: 'Gâteaux', arts: [
+    'Gauffre','Gâteaux coeur','Gâteaux apéro','Cidre','PQ'
+  ]},
+  { emoji: '🧹', nom: 'Ménager', arts: [
+    'Javel spray','Anticalcaire','Vinaigre blanc','Produit vitre','Destop','Alcool menthe','Gel WC'
+  ]},
+  { emoji: '🎁', nom: 'Invités', arts: [
+    'Éponge','Café x4','Thé x2','Sucre','Dosette lave-vaisselle','Sac poubelle 30l locataires'
+  ]},
+  { emoji: '🛁', nom: 'SDB / LV', arts: [
+    'Coton tige','Coton démaquillant','Gel douche','Savon main','Liquide rinçage',
+    'Sel lave-vaisselle','Liquide vaisselle','Petit liquide vaisselle','Sac poubelle SDB'
+  ]},
+  { emoji: '📦', nom: 'Rares', arts: [
+    'Sac poubelle cave 100l','Rouleau attrape-poils','Lessive','Spray linge',
+    'Spray huiles essentielles','Produit sol','Acide chlorhydrique'
+  ]},
+  { emoji: '🔧', nom: 'Autres', arts: [
+    'Sel','Vinaigre','Huile de table','Pile AAA petite','Pile AA grande',
+    'Sac aspi WD2','Sac aspi WD3'
+  ]},
+  { emoji: '🏠', nom: 'Literie & Équipement', arts: [
+    'Torchon cuisine','Couteau huître','Spray basic','Enquête satisfaction',
+    'Cintre','Plaids','Alèse oreiller','Alèse 90','Alèse 160','Coussin'
+  ]}
+];
+
+// ===================== STATE =====================
+let manquants = JSON.parse(localStorage.getItem('manquants') || '{}');
+let checked = new Set();  // articles sélectionnés dans la vue active
+let currentLieu = '';     // clé : nom du lieu (ex: "Le 23", "Albatros")
+let currentLieuId = '';   // id du logement
+
+let travaux = JSON.parse(localStorage.getItem('travaux') || '[]');
+let currentTLieu = '';
+
+let historique = JSON.parse(localStorage.getItem('historique') || '[]');
+
+// ===================== UTILS =====================
+function h(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ===================== TABS =====================
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + tab));
+  if (tab === 'recap')    renderRecap();
+  if (tab === 'histo')    renderHisto();
+  if (tab === 'courses')  renderCourses();
+}
+
+// ===================== RÉASSORT — LIEUX =====================
+function renderRLieux() {
+  const grid = document.getElementById('r-lieux-grid');
+  grid.innerHTML = LIEUX.map(l => {
+    const total = manquants[l.nom] ? manquants[l.nom].length : 0;
+    const badge = total > 0
+      ? '<div class="lieu-count">' + total + ' manquant' + (total > 1 ? 's' : '') + '</div>'
+      : '';
+    return '<button class="lieu-btn' + (total > 0 ? ' alerte' : '') + '" data-lid="' + l.id + '">'
+      + '<div class="lieu-emoji">' + l.emoji + '</div>'
+      + '<div class="lieu-nom">' + l.nom + '</div>'
+      + badge + '</button>';
+  }).join('');
+  grid.querySelectorAll('.lieu-btn').forEach(btn => {
+    btn.addEventListener('click', () => clickRLieu(btn.dataset.lid));
+  });
+}
+
+function clickRLieu(id) {
+  const l = LIEUX.find(x => x.id === id);
+  currentLieuId = id;
+  rOpenArticles(id);
+}
+
+function rShowHome() { rShow('home'); }
+
+function rShow(view) {
+  document.getElementById('r-home').style.display    = view === 'home'    ? '' : 'none';
+  document.getElementById('r-articles').style.display= view === 'articles'? '' : 'none';
+}
+
+// ===================== RÉASSORT — ARTICLES =====================
+function rOpenArticles(lieuId) {
+  const l = LIEUX.find(x => x.id === lieuId);
+  currentLieuId = lieuId;
+  currentLieu = l.nom;
+  document.getElementById('r-art-title').textContent = l.nom;
+  document.getElementById('r-art-sub').textContent   = '';
+  document.getElementById('r-back').onclick = rShowHome;
+  document.getElementById('r-back').textContent = '‹';
+  checked = new Set(manquants[currentLieu] || []);
+  renderArticles();
+  rHideStatus();
+  rShow('articles');
+  document.querySelector('.main').scrollTop = 0;
+}
+
+function renderArticles() {
+  const container = document.getElementById('r-art-list');
+  container.innerHTML = CATS.map(cat => {
+    const items = cat.arts.map(art => {
+      const ok = checked.has(art);
+      return '<div class="art-item' + (ok ? ' checked' : '') + '" data-art="' + h(art) + '">'
+        + '<div class="art-check">' + (ok ? '✓' : '') + '</div>'
+        + '<div class="art-nom">' + h(art) + '</div>'
+        + '</div>';
+    }).join('');
+    return '<div><div class="cat-header">' + cat.emoji + ' ' + cat.nom + '</div>' + items + '</div>';
+  }).join('');
+  container.querySelectorAll('.art-item').forEach(el => {
+    el.addEventListener('click', () => toggleArt(el.dataset.art));
+  });
+}
+
+function toggleArt(art) {
+  if (checked.has(art)) checked.delete(art); else checked.add(art);
+  renderArticles();
+}
+
+function saveManquants() {
+  const arts = Array.from(checked);
+  manquants[currentLieu] = arts;
+  localStorage.setItem('manquants', JSON.stringify(manquants));
+  renderRLieux();
+  historique.unshift({ lieu: currentLieu, articles: arts, date: new Date().toLocaleString('fr-FR') });
+  if (historique.length > 200) historique.length = 200;
+  localStorage.setItem('historique', JSON.stringify(historique));
+  rShowStatus('Sauvegardé ✓', 'ok');
+  setTimeout(rHideStatus, 3000);
+}
+
+function rShowStatus(msg, type) {
+  const el = document.getElementById('r-status');
+  el.textContent = msg;
+  el.className = 'status ' + type;
+  el.style.display = 'block';
+}
+function rHideStatus() {
+  const el = document.getElementById('r-status');
+  if (el) el.style.display = 'none';
+}
+
+// ===================== TRAVAUX — LIEUX =====================
+function renderTLieux() {
+  const grid = document.getElementById('t-lieux-grid');
+  grid.innerHTML = LIEUX.map(l => {
+    const keys = l.apparts ? l.apparts.map(a => l.nom + ' - ' + a) : [l.nom];
+    const total = travaux.filter(t => !t.fait && keys.includes(t.lieu)).length;
+    const badge = total > 0
+      ? '<div class="lieu-count">' + total + ' en cours</div>'
+      : '<div class="lieu-badge">' + (l.apparts ? l.apparts.length + ' apparts' : 'Direct') + '</div>';
+    return '<button class="lieu-btn' + (total > 0 ? ' alerte' : '') + '" data-lid="' + l.id + '">'
+      + '<div class="lieu-emoji">' + l.emoji + '</div>'
+      + '<div class="lieu-nom">' + l.nom + '</div>'
+      + badge + '</button>';
+  }).join('');
+  grid.querySelectorAll('.lieu-btn').forEach(btn => {
+    btn.addEventListener('click', () => clickTLieu(btn.dataset.lid));
+  });
+}
+
+function clickTLieu(id) {
+  const l = LIEUX.find(x => x.id === id);
+  if (l.apparts) {
+    document.getElementById('t-apparts-title').textContent = l.nom;
+    const list = document.getElementById('t-apparts-list');
+    list.innerHTML = l.apparts.map(a => {
+      const k = l.nom + ' - ' + a;
+      const cnt = travaux.filter(t => !t.fait && t.lieu === k).length;
+      return '<button class="appart-btn" data-lid="' + l.id + '" data-appart="' + h(a) + '">'
+        + '<span>' + h(a) + '</span>'
+        + (cnt > 0 ? '<span class="appart-cnt">' + cnt + ' en cours</span>' : '<span class="appart-ok">✓ OK</span>')
+        + '</button>';
+    }).join('');
+    list.querySelectorAll('.appart-btn').forEach(btn => {
+      btn.addEventListener('click', () => tOpenDetail(btn.dataset.lid, btn.dataset.appart));
+    });
+    tShow('apparts');
+  } else {
+    tOpenDetail(id, null);
+  }
+}
+
+function tShowHome() { tShow('home'); }
+
+function tShow(view) {
+  document.getElementById('t-home').style.display   = view === 'home'    ? '' : 'none';
+  document.getElementById('t-apparts').style.display= view === 'apparts' ? '' : 'none';
+  document.getElementById('t-detail').style.display = view === 'detail'  ? '' : 'none';
+}
+
+// ===================== TRAVAUX — DÉTAIL =====================
+function tOpenDetail(lieuId, appart) {
+  const l = LIEUX.find(x => x.id === lieuId);
+  currentTLieu = appart ? l.nom + ' - ' + appart : l.nom;
+  document.getElementById('t-det-title').textContent = l.nom;
+  document.getElementById('t-det-sub').textContent   = appart || '';
+  document.getElementById('t-back').onclick = l.apparts ? () => tShow('apparts') : tShowHome;
+  document.getElementById('t-back').textContent = '‹';
+  tShow('detail');
+  renderTList();
+}
+
+function renderTList() {
+  const list = document.getElementById('t-list');
+  const items = travaux.filter(t => t.lieu === currentTLieu);
+  if (items.length === 0) {
+    list.innerHTML = '<div class="empty"><div class="empty-icon">✅</div><p>Aucun travail enregistré<br>pour ce logement.</p></div>';
+    return;
+  }
+  list.innerHTML = items.map(t =>
+    '<div class="travail-item' + (t.fait ? ' fait' : '') + '" data-id="' + t.id + '">'
+    + '<div class="travail-circle" data-action="toggle">' + (t.fait ? '✓' : '') + '</div>'
+    + '<div style="flex:1"><div class="travail-texte">' + h(t.texte) + '</div><div class="travail-date">' + t.date + '</div></div>'
+    + '<button class="travail-del" data-action="del">×</button>'
+    + '</div>'
+  ).join('');
+  list.querySelectorAll('.travail-item').forEach(el => {
+    const id = el.dataset.id;
+    el.querySelector('[data-action="toggle"]').addEventListener('click', () => toggleTravail(id));
+    el.querySelector('[data-action="del"]').addEventListener('click', () => deleteTravail(id));
+  });
+}
+
+function addTravail() {
+  const input = document.getElementById('t-input');
+  const texte = input.value.trim();
+  if (!texte) return;
+  travaux.unshift({ id: Date.now().toString(), lieu: currentTLieu, texte, date: new Date().toLocaleString('fr-FR'), fait: false });
+  localStorage.setItem('travaux', JSON.stringify(travaux));
+  input.value = '';
+  renderTList();
+  renderTLieux();
+}
+
+function toggleTravail(id) {
+  const t = travaux.find(x => x.id === id);
+  if (t) { t.fait = !t.fait; localStorage.setItem('travaux', JSON.stringify(travaux)); renderTList(); renderTLieux(); }
+}
+
+function deleteTravail(id) {
+  travaux = travaux.filter(x => x.id !== id);
+  localStorage.setItem('travaux', JSON.stringify(travaux));
+  renderTList();
+  renderTLieux();
+}
+
+// ===================== RÉCAP =====================
+function renderRecap() {
+  const el = document.getElementById('recap-content');
+  const pending = travaux.filter(t => !t.fait);
+  if (pending.length === 0) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">🎉</div><p>Aucun travail en cours !</p></div>';
+    return;
+  }
+  const byLieu = {};
+  pending.forEach(t => { if (!byLieu[t.lieu]) byLieu[t.lieu] = []; byLieu[t.lieu].push(t); });
+  el.innerHTML = Object.entries(byLieu).map(([lieu, items]) =>
+    '<div class="recap-block"><div class="recap-lieu">🔧 ' + h(lieu) + '</div>'
+    + items.map(t => '<div class="recap-ligne"><span>' + h(t.texte) + '</span></div>').join('')
+    + '</div>'
+  ).join('');
+}
+
+// ===================== COURSES (bilan réassort) =====================
+function renderCourses() {
+  const el = document.getElementById('courses-content');
+  // Agréger tous les manquants par article
+  const articleMap = {}; // { article: [lieu1, lieu2, ...] }
+  for (const lieu in manquants) {
+    for (const art of manquants[lieu]) {
+      if (!articleMap[art]) articleMap[art] = [];
+      articleMap[art].push(lieu);
+    }
+  }
+  const totalArticles = Object.keys(articleMap).length;
+  if (totalArticles === 0) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">✅</div><p>Aucun article manquant.<br>Tout est en stock !</p></div>';
+    return;
+  }
+  // Grouper par catégorie
+  let html = '<div class="courses-total"><span>Articles à acheter</span><span class="total-count">' + totalArticles + '</span></div>';
+  CATS.forEach(cat => {
+    const items = cat.arts.filter(a => articleMap[a]);
+    if (items.length === 0) return;
+    html += '<div class="course-cat">' + cat.emoji + ' ' + cat.nom + '</div>';
+    items.forEach(art => {
+      const lieux = articleMap[art];
+      html += '<div class="course-item">'
+        + '<div style="flex:1"><div class="course-art">' + h(art) + '</div>'
+        + '<div class="course-lieux">' + lieux.map(l => h(l)).join(', ') + '</div></div>'
+        + '<div class="course-qty">' + lieux.length + '</div>'
+        + '</div>';
+    });
+  });
+  el.innerHTML = html;
+}
+
+// ===================== HISTORIQUE =====================
+function renderHisto() {
+  const el = document.getElementById('histo-content');
+  if (historique.length === 0) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p>Aucun historique.</p></div>';
+    return;
+  }
+  el.innerHTML = historique.map(x =>
+    '<div class="histo-item">'
+    + '<div class="histo-lieu">' + h(x.lieu) + '</div>'
+    + '<div class="histo-articles">' + (x.articles.length ? x.articles.map(a => h(a)).join(', ') : 'Aucun manquant') + '</div>'
+    + '<div class="histo-date">' + x.date + '</div>'
+    + '</div>'
+  ).join('');
+}
+
+// ===================== INIT =====================
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+renderRLieux();
+renderTLieux();
+renderCourses();
+</script>
+</body>
+</html>
