@@ -25,9 +25,19 @@
   .progress{margin:10px 0;height:10px;background:#fde;border-radius:10px;overflow:hidden}
   .progress > div{height:100%;background:linear-gradient(90deg,#86C28A,#7FB3DC);width:0%;transition:width .3s}
   .progress-text{text-align:center;font-size:13px;color:#888;margin-top:-4px;margin-bottom:8px}
-  section{border-radius:16px;padding:0;margin:14px 0;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.06)}
-  section h2{margin:0;padding:12px 16px;color:white;font-size:15px;display:flex;align-items:center;gap:10px}
-  section .body{padding:10px 12px 14px}
+  section{border-radius:16px;padding:0;margin:10px 0;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.06)}
+  section h2{margin:0;padding:14px 16px;color:white;font-size:15px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;user-select:none}
+  section h2 .arrow{font-size:11px;transition:transform .25s;opacity:.85}
+  section.open h2 .arrow{transform:rotate(180deg)}
+  section h2 .count{background:rgba(255,255,255,.25);padding:2px 9px;border-radius:10px;font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
+  section h2 .count.done{background:rgba(255,255,255,.6);color:#2e5a30}
+  section h2 .title-wrap{flex:1;display:flex;align-items:center;gap:8px;min-width:0}
+  section .body{padding:0 10px;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .25s ease}
+  section.open .body{max-height:3000px;padding:6px 10px 12px}
+  .item .info-btn{margin-left:auto;flex-shrink:0;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.07);color:#5a3b46;border:none;font-size:13px;font-weight:600;cursor:pointer;font-style:italic;font-family:Georgia,serif}
+  .item .info-btn:active{background:rgba(0,0,0,.15)}
+  .item .detail{display:none;background:rgba(255,255,255,.85);border-left:3px solid #E89BA3;padding:8px 10px;margin:6px 0 4px 30px;border-radius:6px;font-size:13px;line-height:1.45;color:#5a3b46}
+  .item.show-detail .detail{display:block}
   .item{display:flex;align-items:flex-start;gap:10px;padding:8px 6px;border-bottom:1px dashed rgba(0,0,0,.06);cursor:pointer}
   .item:last-child{border-bottom:none}
   .item input{margin-top:3px;width:20px;height:20px;accent-color:#E89BA3;flex-shrink:0}
@@ -148,165 +158,6 @@
 
 <div id="gallery" class="gallery"></div>
 
-<details class="guide" open>
-  <summary>📋 Procédure de ménage — à lire avant de commencer</summary>
-  <div class="guide-body">
-
-    <h3>📥 Avant ménage</h3>
-    <h4>Matériel à emporter</h4>
-    <ul>
-      <li>Sac ménage + sac pressing + pack de linge (si besoin)</li>
-      <li>Panier de linge sale depuis le local ménage (si machine à faire)</li>
-    </ul>
-    <h4>À l'arrivée dans l'appartement</h4>
-    <ul>
-      <li>Vider son sac de ménage à un endroit (table, canapé, chaise)</li>
-      <li>Ramasser le linge sale des précédents locataires :
-        <ul>
-          <li>Tapis, torchon, essuie-mains, éponge → <b>sac ménage</b></li>
-          <li>Linge de lit → <b>sac pressing</b></li>
-        </ul>
-      </li>
-      <li>Ouvrir le placard ménage</li>
-      <li>📷 <b>Prendre en photo le questionnaire rempli</b></li>
-    </ul>
-    <h4>Sortir du placard ménage</h4>
-    <ul>
-      <li>🛁 <b>SDB</b> : produit WC, anti-calcaire, javel, sac poubelle</li>
-      <li>🍳 <b>Cuisine</b> : café, thé, sucre, pastille lave-vaisselle, sac poubelle</li>
-      <li>🛋️ <b>Salon</b> : questionnaire (si besoin), produit vitres, produit magique (vinaigre)</li>
-    </ul>
-
-    <h3>🧽 Ménage — avant de commencer</h3>
-    <ul>
-      <li>Lancer la machine à laver si besoin (linge sale du local ménage)</li>
-      <li>Mettre l'<b>anti-calcaire</b> sur toute la robinetterie (SDB + cuisine) + pare-douche ou baignoire</li>
-      <li>Mettre la <b>javel</b> sur les joints de la salle de bain</li>
-      <li>Produit WC dans les toilettes</li>
-      <li>Radiateurs : <b>12° l'hiver</b>, <b>éteints l'été</b></li>
-    </ul>
-
-    <h3>🛏️ Chambre</h3>
-    <ul>
-      <li>Vérifier l'alèse</li>
-      <li>Refaire le lit + déco</li>
-      <li>Déposer le pack de linge si besoin</li>
-      <li>Vérifier sous le lit</li>
-      <li>Poussière des meubles</li>
-      <li>Ouvrir la table de nuit</li>
-      <li>Faire les vitres si nécessaire</li>
-    </ul>
-
-    <h3>🛁 Salle de bain</h3>
-    <ul>
-      <li>Miroir</li>
-      <li>Plan de travail</li>
-      <li>Lavabo et robinet</li>
-      <li>Vérifier savon pour les mains + coton / coton-tige</li>
-      <li>Mettre en plus le tapis</li>
-      <li>Vérifier poubelle + remettre un sac propre si besoin</li>
-      <li>Rincer la douche</li>
-      <li>Vérifier le gel douche</li>
-      <li>Nettoyer paroi / robinetterie / bac de douche</li>
-      <li><b>Nettoyer la bonde de douche</b> et enlever les cheveux</li>
-    </ul>
-
-    <h3>🚽 Toilette</h3>
-    <ul>
-      <li>Vérifier papier toilette (<b>2 rouleaux</b>)</li>
-      <li>Nettoyer les WC + tirer la chasse</li>
-    </ul>
-
-    <h3>🍳 Cuisine</h3>
-    <ul>
-      <li>Ouvrir tous les placards (vérifier qu'il n'y a pas de nourriture oubliée)</li>
-      <li>Nettoyer l'électroménager :
-        <ul>
-          <li><b>Micro-onde</b> : intérieur + plaque tournante</li>
-          <li><b>Lave-vaisselle</b> : ouvrir, allumer, vérifier liquide de rinçage (☀️) + sel (flèches)</li>
-          <li><b>Four</b> : ouvrir + vérifier la plaque</li>
-          <li><b>Bouilloire</b> : vider l'eau, détartrer au vinaigre si calcaire, rincer</li>
-          <li><b>Senseo</b> : pas de capsule, nettoyer porteurs + récipient</li>
-        </ul>
-      </li>
-      <li>Nettoyer le plan de travail</li>
-      <li>Évier + robinet + vérifier évacuation (buse en place)</li>
-    </ul>
-    <h4>🎁 Panier d'accueil</h4>
-    <ul>
-      <li>Dépliant info</li>
-      <li>Liquide vaisselle</li>
-      <li>Torchon, essuie-main, éponge</li>
-      <li>Pastille lave-vaisselle</li>
-      <li>Café / thé / sucre — <b>selon le nombre de couchages</b> (ex : 4 pers = 4 café / 4 thé / 4 sucres)</li>
-      <li>Gâteaux / chocolat</li>
-    </ul>
-    <ul>
-      <li>Vérifier la poubelle (nettoyer l'intérieur si besoin) + sac poubelle</li>
-      <li>Faire les vitres si nécessaire</li>
-    </ul>
-
-    <h3>🍽️ Salle à manger</h3>
-    <ul>
-      <li>Nettoyer table et chaises</li>
-      <li>Nettoyer les <b>surfaces utiles, plan de travail et table</b></li>
-    </ul>
-
-    <h3>🛋️ Salon</h3>
-    <ul>
-      <li>Vérifier l'alèse du canapé</li>
-      <li>Refaire la déco du canapé</li>
-      <li>Poussière des meubles + table basse</li>
-      <li>Sur la table basse : livret d'accueil, questionnaire, télécommande</li>
-      <li>Faire les vitres si nécessaire</li>
-    </ul>
-
-    <h3>🌳 Jardin / Balcon</h3>
-    <ul>
-      <li>Vérifier et remettre en place le mobilier</li>
-      <li>Vérifier le brasero</li>
-      <li>Pas de mégots ni de crottes de chien</li>
-    </ul>
-
-    <h3>🧹 Aspirateur — partout</h3>
-    <ul>
-      <li>Sous les lits</li>
-      <li>Déplacer tables de nuit / portants papier toilette et brosse WC</li>
-      <li>Sous les meubles</li>
-      <li>Derrière les portes</li>
-    </ul>
-
-    <h3>🔍 Vérifications si besoin</h3>
-    <ul>
-      <li>Tête de lit</li>
-      <li>Plinthes</li>
-      <li>Poussière sur le radiateur</li>
-    </ul>
-
-    <h3>🚪 Avant de partir de l'appartement</h3>
-    <ul>
-      <li>Mettre le spray anti-odeur</li>
-      <li>Vérification finale de l'appartement</li>
-      <li>Refermer le placard ménage</li>
-    </ul>
-
-    <h3>🏁 Fin du ménage (retour au local)</h3>
-    <ul>
-      <li>Accrocher la machine (si elle a tourné)</li>
-      <li>Refaire le sac ménage :
-        <ul>
-          <li>1 tapis</li>
-          <li>1 torchon</li>
-          <li>1 essuie-main</li>
-          <li>3 lavettes</li>
-          <li>2 rouleaux de papier toilette</li>
-          <li>1 paquet de gâteaux / chocolat</li>
-        </ul>
-      </li>
-    </ul>
-    <div class="tip">💡 Si un produit est fini ou manquant dans le logement, le noter pour la personne qui fera le prochain ménage.</div>
-  </div>
-</details>
 
 <div class="progress"><div id="bar"></div></div>
 <div class="progress-text" id="ptext">0 / 0 tâches</div>
@@ -372,65 +223,82 @@ document.getElementById('appart').addEventListener('change', e => {
   renderBalneoWarning(e.target.value);
 });
 
-// Pour rendre une tâche obligatoire en photo : {t:"...", photo:true}
+// Items : string ou objet {t:"...", d:"détail optionnel", photo:true, video:true}
 const data = [
   ["s1","🧺 Arrivée & préparation",[
-    "Lire le questionnaire et vérifier les annotations",
-    "Ouvrir le placard ménage 057 : matériel + produits",
-    "Lancer une machine de lavettes et tapis",
+    {t:"Lire le questionnaire et vérifier les annotations", d:"📷 Prendre en photo le questionnaire rempli avant de commencer."},
+    {t:"Ouvrir le placard ménage 057 : matériel + produits", d:"Sortir : 🛁 SDB (produit WC, anti-calcaire, javel, sac poubelle) — 🍳 Cuisine (café, thé, sucre, pastilles lave-vaisselle) — 🛋️ Salon (produit vitres, vinaigre)."},
+    {t:"Lancer une machine de lavettes et tapis", d:"Si du linge sale est dans le local ménage à votre arrivée."},
+    {t:"Vider votre sac et ramasser le linge sale du locataire précédent", d:"Tapis, torchon, essuie-mains, éponge → sac ménage. Linge de lit → sac pressing."},
+    {t:"Régler les radiateurs", d:"12° l'hiver, éteints l'été."},
   ]],
   ["s2","🛁 Salle de bain — on laisse agir",[
-    "Mettre l'anti-calcaire sur robinetteries et bondes",
-    "Nettoyer le pare-douche au spray anti-calcaire",
-    "Vérifier et nettoyer la bonde de douche (cheveux, débouchée)",
-    "Asperger de javel : cuvette WC, joints jaunes, douche",
+    {t:"Mettre l'anti-calcaire sur robinetteries et bondes", d:"Toute la robinetterie (SDB + cuisine), pare-douche ou baignoire si présente. Laisser agir pendant qu'on fait la cuisine."},
+    {t:"Nettoyer le pare-douche au spray anti-calcaire", d:"Spray, laisser agir 5 min, frotter avec une éponge non-abrasive."},
+    {t:"Vérifier et nettoyer la bonde de douche", d:"Démonter la grille, retirer cheveux et dépôts. Sans ça, la douche déborde au prochain locataire."},
+    {t:"Asperger de javel : cuvette WC, joints jaunes, douche", d:"NE PAS oublier les joints jaunes dans les coins. Laisser agir."},
   ]],
   ["s3","🍳 Cuisine — on inspecte tout",[
-    "Ouvrir tout l'électroménager et les placards",
+    {t:"Ouvrir tout l'électroménager et les placards", d:"Vérifier qu'il n'y a aucune nourriture oubliée."},
     "Nettoyer les saletés éventuelles",
-    "Frigo / congélateur : aucune nourriture oubliée",
-    "Micro-ondes, four, plaques, cafetière, grille-pain, bouilloire",
+    {t:"Frigo / congélateur : aucune nourriture oubliée", d:"Si vide : laisser à 5° (frigo) et -18° (congel). Si nourriture : poubelle + désinfection rapide."},
+    {t:"Micro-ondes, four, plaques, cafetière, grille-pain, bouilloire", d:"Micro-ondes : intérieur + plaque tournante. Four : ouvrir + vérifier la plaque. Bouilloire : vider, détartrer au vinaigre si calcaire, rincer. Senseo : pas de capsule, nettoyer porteurs + récipient."},
+    {t:"Lave-vaisselle : ouvrir, allumer, vérifier", d:"Liquide de rinçage (☀️) + sel (flèches). Lancer un cycle si besoin."},
     "Vaisselle propre, rangée, non abîmée",
     "Vider la poubelle et remettre un sac propre",
   ]],
   ["s4","🪟 Appartement — surfaces & vitres",[
-    "Tables, appuis, chaises, murs, fenêtres",
+    {t:"Tables, appuis, chaises, murs, fenêtres", d:"Surfaces utiles, plan de travail et table : produit magique (vinaigre)."},
     "Nettoyer les vitres",
-    "Vérifier les alèses (lit, matelas, oreillers, canapé)",
+    {t:"Vérifier les alèses (lit, matelas, oreillers, canapé)", d:"Si tachées ou mouillées → pressing. Vérifier sous le lit et autour des chevets."},
+    {t:"Refaire le lit et déco", d:"Linge propre tendu et bordé. Déposer le pack de linge (serviettes, gants) si besoin."},
+    "Vérifier sous le lit et la table de nuit (rien d'oublié)",
   ]],
   ["s5","🚿 Salle de bain — on rince et on essuie",[
     "Essuyer robinetteries traitées à l'anti-calcaire",
     "Rincer la douche (javel)",
     "Essuyer la javel sous la cuvette + nettoyer le dessus WC",
     "Miroir et lavabo sans traces",
-    "2 rouleaux de papier toilette neufs",
+    {t:"2 rouleaux de papier toilette neufs", d:"Toujours 2 rouleaux entamés ou neufs visibles."},
+    {t:"Compléter savon, gel douche, coton/coton-tige", d:"Vérifier qu'il y en a pour le prochain séjour."},
     "Vider poubelle SDB + sac propre",
+    {t:"Mettre le tapis de bain propre", d:"Remplacer le tapis utilisé par un tapis sec et propre."},
   ]],
   ["s6","✨ Touche finale",[
-    "Installer la déco selon photos (Trello) — panier d'accueil",
+    {t:"Installer la déco selon photos de référence", d:"Galerie photos en haut de la page. La déco doit être identique aux photos. Compléter le panier d'accueil."},
     "Aspirer partout (sous lit, autour des chevets)",
     "Poussières : plinthes, TV, tête de lit",
     "Coussins / plaids propres et pliés",
-    "Odeur générale : aérer, spray textile / huile essentielle",
+    {t:"Odeur générale : aérer, spray textile / huile essentielle", d:"Aérer 5 min minimum. Spray anti-odeur juste avant de partir."},
   ]],
   ["s7","🏁 Avant de partir",[
-    {t:"Vidéo OBLIGATOIRE : passer dans tout l'appartement (entrée → cuisine → salon → chambre → salle de bain)",video:true},
+    {t:"Vidéo OBLIGATOIRE : tour complet de l'appartement", d:"Passer dans : entrée → cuisine → salon → chambre → salle de bain. La vidéo s'envoie automatiquement sur le Drive de Claudine.", video:true},
     "Retour au local : étendre le linge",
-    "Remplir le sac de ménage (nécessaire + manquants)",
+    {t:"Remplir le sac de ménage", d:"Contenu nécessaire pour le prochain ménage : 1 tapis, 1 torchon, 1 essuie-main, 3 lavettes, 2 rouleaux PQ, 1 paquet gâteaux. Noter ce qui manque dans les produits."},
   ]],
 ];
 
 const root = document.getElementById('sections');
 let total = 0;
+const sectionRefs = [];
 data.forEach(([cls,title,items],si)=>{
   const sec = document.createElement('section');
   sec.className = cls;
-  sec.innerHTML = `<h2>${title}</h2><div class="body"></div>`;
+  // Première section ouverte par défaut
+  if(si === 0) sec.classList.add('open');
+  sec.innerHTML = `<h2><span class="title-wrap">${title}</span><span class="count" data-section="${si}">0/${items.length}</span><span class="arrow">▼</span></h2><div class="body"></div>`;
+  // Toggle accordéon au clic sur le header
+  sec.querySelector('h2').addEventListener('click', e => {
+    if(e.target.tagName === 'INPUT' || e.target.classList.contains('info-btn')) return;
+    sec.classList.toggle('open');
+  });
+  sectionRefs.push({sec, items: items.length, si});
   const body = sec.querySelector('.body');
   items.forEach((it,i)=>{
     total++;
     const id = `c_${si}_${i}`;
     const t = typeof it==='string'?it:it.t;
+    const detail = typeof it==='object' && it.d ? it.d : null;
     const needPhoto = typeof it==='object' && it.photo;
     const needVideo = typeof it==='object' && it.video;
     const div = document.createElement('label');
@@ -441,7 +309,18 @@ data.forEach(([cls,title,items],si)=>{
     let media = '';
     if(needPhoto) media = `<input type="file" accept="image/*" capture="environment" class="photo-input"><img class="thumb" style="display:none">`;
     if(needVideo) media = `<input type="file" accept="video/*" capture="environment" class="photo-input"><video controls style="display:none"></video>`;
-    div.innerHTML = `<input type="checkbox" id="${id}"><div class="col"><span>${t}${tag}</span>${media}</div>`;
+    const infoBtn = detail ? '<button type="button" class="info-btn" aria-label="Détail">ⓘ</button>' : '';
+    const detailBlock = detail ? `<div class="detail">${detail}</div>` : '';
+    div.innerHTML = `<input type="checkbox" id="${id}"><div class="col"><div style="display:flex;align-items:flex-start"><span style="flex:1">${t}${tag}</span>${infoBtn}</div>${detailBlock}${media}</div>`;
+    // Toggle détail au clic sur le bouton info (sans cocher la case)
+    if(detail){
+      const btn = div.querySelector('.info-btn');
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        div.classList.toggle('show-detail');
+      });
+    }
     const cb = div.querySelector('input[type="checkbox"]');
     if(needPhoto || needVideo){
       const fi = div.querySelector('.photo-input');
@@ -499,6 +378,18 @@ function update(){
   const checked = document.querySelectorAll('.item input:checked').length;
   document.getElementById('bar').style.width = (checked/total*100)+'%';
   document.getElementById('ptext').textContent = `${checked} / ${total} tâches`;
+  // Compteur par section
+  sectionRefs.forEach(({sec,items,si})=>{
+    const done = sec.querySelectorAll('.item input:checked').length;
+    const cntEl = sec.querySelector('.count');
+    cntEl.textContent = `${done}/${items}`;
+    cntEl.classList.toggle('done', done === items);
+    // Auto-fermer la section quand 100% complet (sauf si déjà fermée manuellement)
+    if(done === items && sec.classList.contains('open') && !sec.dataset.userClosed){
+      // Petit délai pour laisser voir la coche
+      setTimeout(()=>{ if(sec.querySelectorAll('.item input:checked').length === items) sec.classList.remove('open'); }, 600);
+    }
+  });
 }
 function reset(){
   document.querySelectorAll('.item input[type="checkbox"]').forEach(i=>{i.checked=false;i.closest('.item').classList.remove('done')});
