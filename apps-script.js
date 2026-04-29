@@ -111,7 +111,9 @@ function handle(p) {
     }
 
     // --- Emails Marketing ---
-    if (p.consent === 'oui' && p.email) {
+    // v8 (29 avril 2026) : on ajoute TOUS les voyageurs SAUF ceux qui ont répondu Q7=Non
+    // (intérêt légitime RGPD pour ses propres clients, opt-out via lien désinscription dans les emails)
+    if (p.email && p.q7 !== 'Non') {
       var sheetM = ensureSheet(ss, 'Emails Marketing', HEAD_MARKETING, '#f59e0b');
       sheetM.appendRow([p.email, p.nom || '', p.ville || '', zone, ts]);
     }
