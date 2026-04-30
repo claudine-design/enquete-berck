@@ -196,13 +196,13 @@ body.fmt-4parA4 .grid{flex-direction:row;flex-wrap:wrap;gap:0;max-width:210mm;ju
   <p>Design noir &amp; or, inspir&eacute; de l'identit&eacute; Princesse d'Opale. Format A5 (1 par page) &mdash; pr&ecirc;t &agrave; d&eacute;couper et placer dans chaque logement.</p>
   <label for="format">Format d'impression</label>
   <select id="format" style="width:100%;padding:12px 14px;border:2px solid #e2e8f0;border-radius:10px;font-size:14px;margin-bottom:14px;background:#fff;font-family:inherit">
+    <option value="2parA4" selected>10 &times; 15 cm &mdash; 2 par A4 (&eacute;conomique)</option>
     <option value="13x18">13 &times; 18 cm &mdash; 1 par A4 (id&eacute;al cadre photo)</option>
     <option value="10x15">10 &times; 15 cm &mdash; 1 par page format photo</option>
-    <option value="2parA4">10 &times; 15 cm &mdash; 2 par A4 paysage (&eacute;conomique)</option>
     <option value="4parA4">9 &times; 13 cm &mdash; 4 par A4 portrait (tr&egrave;s &eacute;conomique)</option>
   </select>
   <label for="baseUrl">URL de base du questionnaire</label>
-  <input type="text" id="baseUrl" placeholder="https://claudine-design.github.io/enquete-berck" value="">
+  <input type="text" id="baseUrl" placeholder="https://appart-hotel-berck.com/avis" value="https://appart-hotel-berck.com/avis">
   <button onclick="generateAll()">G&eacute;n&eacute;rer les cartes</button>
 </div>
 
@@ -394,15 +394,8 @@ function stripHtml(s) {
   return d.textContent || d.innerText || '';
 }
 
-(function() {
-  var loc = window.location;
-  if (loc.protocol === 'https:' || loc.protocol === 'http:') {
-    var base = loc.origin + loc.pathname.replace(/\/qrcodes\.html.*$/,'');
-    document.getElementById('baseUrl').value = base || 'https://claudine-design.github.io/enquete-berck';
-  } else {
-    document.getElementById('baseUrl').value = 'https://claudine-design.github.io/enquete-berck';
-  }
-})();
+// L'URL de base est figée sur le domaine STABLE appart-hotel-berck.com/avis (redirige vers GitHub Pages).
+// Cette URL ne changera jamais → les QR codes imprimés sont valables à vie.
 
 // === GENERATION PDF (2 cartes par page A4 portrait) ===
 async function downloadPDF() {
