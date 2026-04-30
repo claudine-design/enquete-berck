@@ -43,7 +43,7 @@ body{
 /* GRID */
 .grid{max-width:900px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:24px}
 
-/* CARTE — Format photo 10x15cm vertical */
+/* CARTE — Format photo (10x15 par défaut, 13x18 via body.fmt-13x18) */
 .qr-card{
   width:100mm;height:150mm;
   background:radial-gradient(ellipse at center,#141414 0%,#0a0a0a 60%,#050505 100%);
@@ -131,17 +131,55 @@ body{
 .footer-msg .bonus strong{color:var(--or-clair);font-weight:600;font-size:9px}
 .signature{margin-top:2mm;font-family:'Cormorant Garamond',serif;font-size:9px;font-style:italic;color:var(--or);letter-spacing:1px;opacity:0.85}
 
-/* PRINT 10x15cm vertical */
+/* === Format 13x18 cm (1 par A4 — pour cadre photo) === */
+body.fmt-13x18 .qr-card{width:130mm;height:180mm;padding:9mm 8mm}
+body.fmt-13x18 .qr-card .lys-top{width:16mm;height:20mm}
+body.fmt-13x18 .qr-card .brand-url{font-size:14px;letter-spacing:4px}
+body.fmt-13x18 .qr-card .title-main{font-size:14px;letter-spacing:5px}
+body.fmt-13x18 .qr-card .appart-name{font-size:28px}
+body.fmt-13x18 .qr-card .qr-wrap canvas{width:70mm;height:70mm}
+body.fmt-13x18 .qr-card .quote{font-size:14px}
+
+/* === Format 10x15 cm (2 par A4 paysage, économique) === */
+body.fmt-2parA4 .qr-card{width:100mm;height:150mm}
+
+/* === Format 9x13 cm compact (4 par A4 portrait) === */
+body.fmt-4parA4 .qr-card{width:90mm;height:130mm;padding:5mm 4mm}
+body.fmt-4parA4 .qr-card .lys-top{width:10mm;height:13mm;margin-bottom:1mm}
+body.fmt-4parA4 .qr-card .brand-url{font-size:9px;letter-spacing:2px}
+body.fmt-4parA4 .qr-card .title-main{font-size:9px;letter-spacing:3px;margin-bottom:1mm}
+body.fmt-4parA4 .qr-card .appart-name{font-size:18px}
+body.fmt-4parA4 .qr-card .residence{font-size:6px}
+body.fmt-4parA4 .qr-card .qr-wrap{padding:2mm;margin:2mm 0}
+body.fmt-4parA4 .qr-card .qr-wrap canvas{width:48mm;height:48mm}
+body.fmt-4parA4 .qr-card .quote{font-size:9px;margin-bottom:1mm}
+body.fmt-4parA4 .qr-card .bonus{font-size:6px;letter-spacing:2px;padding:1mm 4mm}
+body.fmt-4parA4 .qr-card .bonus strong{font-size:8px}
+body.fmt-4parA4 .qr-card .signature{font-size:8px;margin-top:1mm}
+body.fmt-4parA4 .qr-card .separator{margin:1mm 0}
+
+/* Grille pour multi-cartes A4 */
+body.fmt-2parA4 .grid{flex-direction:row;flex-wrap:wrap;gap:0;max-width:297mm}
+body.fmt-4parA4 .grid{flex-direction:row;flex-wrap:wrap;gap:0;max-width:210mm;justify-content:center}
+
+/* PRINT */
 @media print{
   body{background:#fff;padding:0;margin:0}
   .config,.actions{display:none!important}
   .grid{gap:0;max-width:100%}
   .qr-card{
-    width:100mm;height:150mm;box-shadow:none;margin:0;
-    page-break-after:always;page-break-inside:avoid;
+    box-shadow:none;margin:0;
+    page-break-inside:avoid;
     print-color-adjust:exact;-webkit-print-color-adjust:exact;
   }
-  @page{size:100mm 150mm;margin:0}
+  /* 1 carte par page (10x15 par défaut, 13x18 si fmt-13x18) */
+  body:not(.fmt-2parA4):not(.fmt-4parA4) .qr-card{page-break-after:always}
+  body.fmt-13x18 .qr-card{width:130mm;height:180mm}
+  /* Multi sur A4 : pas de page-break entre, sauf après chaque groupe */
+  body.fmt-2parA4 .grid{flex-direction:row;flex-wrap:wrap;width:297mm;height:210mm}
+  body.fmt-2parA4 .qr-card:nth-child(2n){page-break-after:always}
+  body.fmt-4parA4 .grid{flex-direction:row;flex-wrap:wrap;width:210mm}
+  body.fmt-4parA4 .qr-card:nth-child(4n){page-break-after:always}
 }
 
 @media(max-width:600px){
@@ -154,6 +192,13 @@ body{
 <div class="config" id="config">
   <h1>Cartes QR &mdash; Enqu&ecirc;te Voyageurs</h1>
   <p>Design noir &amp; or, inspir&eacute; de l'identit&eacute; Princesse d'Opale. Format A5 (1 par page) &mdash; pr&ecirc;t &agrave; d&eacute;couper et placer dans chaque logement.</p>
+  <label for="format">Format d'impression</label>
+  <select id="format" style="width:100%;padding:12px 14px;border:2px solid #e2e8f0;border-radius:10px;font-size:14px;margin-bottom:14px;background:#fff;font-family:inherit">
+    <option value="13x18">13 &times; 18 cm &mdash; 1 par A4 (id&eacute;al cadre photo)</option>
+    <option value="10x15">10 &times; 15 cm &mdash; 1 par page format photo</option>
+    <option value="2parA4">10 &times; 15 cm &mdash; 2 par A4 paysage (&eacute;conomique)</option>
+    <option value="4parA4">9 &times; 13 cm &mdash; 4 par A4 portrait (tr&egrave;s &eacute;conomique)</option>
+  </select>
   <label for="baseUrl">URL de base du questionnaire</label>
   <input type="text" id="baseUrl" placeholder="https://claudine-design.github.io/enquete-berck" value="">
   <button onclick="generateAll()">G&eacute;n&eacute;rer les cartes</button>
@@ -262,6 +307,16 @@ var SEP_SVG = '<svg viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">' +
 function generateAll() {
   var base = document.getElementById('baseUrl').value.trim().replace(/\/$/,'');
   if (!base) { alert('Veuillez entrer l\'URL de base'); return; }
+
+  // Appliquer le format choisi sur le body + injecter @page dynamique
+  var fmt = document.getElementById('format').value;
+  document.body.classList.remove('fmt-13x18','fmt-2parA4','fmt-4parA4');
+  var pageRule = '@page{size:100mm 150mm;margin:0}';
+  if (fmt === '13x18')   { document.body.classList.add('fmt-13x18');   pageRule = '@page{size:A4 portrait;margin:8mm}'; }
+  if (fmt === '2parA4')  { document.body.classList.add('fmt-2parA4');  pageRule = '@page{size:A4 landscape;margin:5mm}'; }
+  if (fmt === '4parA4')  { document.body.classList.add('fmt-4parA4');  pageRule = '@page{size:A4 portrait;margin:5mm}'; }
+  var styleEl = document.getElementById('page-rule') || (function(){var s=document.createElement('style');s.id='page-rule';document.head.appendChild(s);return s;})();
+  styleEl.textContent = pageRule;
 
   var grid = document.getElementById('grid');
   grid.innerHTML = '';
