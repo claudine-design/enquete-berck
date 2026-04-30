@@ -194,7 +194,7 @@ if (!presta) {
       tile('\uD83D\uDCC5', 'Mon planning', 'Calendrier des m\u00e9nages \u00e0 venir', URLS.calendrier + prestaKey) +
       tile('\u2728', 'Propret\u00e9', 'Avis voyageurs &mdash; 30 derniers jours', URLS.proprete + prestaKey) +
       tile('\uD83D\uDED2', 'R\u00e9assort', 'Articles manquants par logement', URLS.reassort, false) +
-      tile('\uD83D\uDCD6', 'Tuto m\u00e9nage', 'Checklist photo par appartement', URLS.checklist) +
+      tile('\uD83D\uDCD6', 'Tuto m\u00e9nage', 'Checklist photo par appartement', URLS.checklist + '?presta=' + prestaKey) +
     '</div>';
 
   content.innerHTML = hero + tiles;

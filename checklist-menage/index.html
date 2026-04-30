@@ -139,22 +139,7 @@
   <input id="nom" placeholder="Votre prénom">
 </div>
 
-<div id="warning-balneo" style="display:none;margin:14px 16px;padding:14px 16px;background:linear-gradient(135deg,#fef2f2,#fee2e2);border:2px solid #dc2626;border-radius:12px;color:#7f1d1d">
-  <div style="display:flex;align-items:flex-start;gap:10px">
-    <span style="font-size:24px;flex-shrink:0">⚠️</span>
-    <div>
-      <div style="font-weight:700;font-size:15px;color:#991b1b;margin-bottom:6px">ATTENTION BALNÉO — appartement avec jacuzzi/balnéo</div>
-      <div style="font-size:13.5px;line-height:1.5">
-        Mettre <b>impérativement de l'anti-calcaire</b> :
-        <ul style="margin:6px 0 0 18px;padding:0">
-          <li>sur <b>toutes les buses</b> de la balnéo (chaque jet, sans exception)</li>
-          <li>sur <b>tous les éléments chrome</b> (robinetterie, têtes de jets, pourtour)</li>
-        </ul>
-        <div style="margin-top:8px;font-style:italic">Sans cet entretien, la balnéo s'abîme très vite — pièces coûteuses et risque de panne.</div>
-      </div>
-    </div>
-  </div>
-</div>
+<div id="warning-appart" style="display:none;margin:14px 16px;padding:14px 16px;border-radius:12px"></div>
 
 <div id="gallery" class="gallery"></div>
 
@@ -211,17 +196,75 @@ function openLightbox(src){
   document.getElementById('lightbox').classList.add('open');
 }
 
-// Apparts avec balnéo / jacuzzi → afficher un warning anti-calcaire
-const BALNEO_APARTS = ['balneo','cocon-romantique','evasion','patio','rotonde'];
-function renderBalneoWarning(slug){
-  document.getElementById('warning-balneo').style.display =
-    BALNEO_APARTS.includes(slug) ? 'block' : 'none';
+// ===== Caractéristiques spécifiques par appartement =====
+// balneo: a une balnéo/jacuzzi → anti-calcaire sur buses + chrome
+// peignoirs: nombre de peignoirs propres à installer (apparts balnéo/spa)
+// sauna: a un sauna → 2 grandes serviettes dans le sauna
+// tapisExtra: balnéo loin de la douche → tapis de douche supplémentaire à côté de la balnéo
+// litConditional: lit 1ère chambre installé, autres linges juste déposés (sauf si signalé sur calendrier)
+const apartFeatures = {
+  'balneo':           { balneo:true,  peignoirs:2, litConditional:true },
+  'cocon-romantique': { balneo:true,  peignoirs:2, sauna:true, tapisExtra:true, litConditional:true },
+  'evasion':          { balneo:true,  peignoirs:2, sauna:true, tapisExtra:true, litConditional:true },
+  'patio':            { balneo:true,  peignoirs:2, tapisExtra:true, litConditional:true },
+  'rotonde':          { balneo:true,  peignoirs:2, litConditional:true },
+  'mini-love-room':   { balneo:true,  peignoirs:2, tapisExtra:true },
+  'apollo':           { litConditional:true } // T3, lit 1ère chambre installé, autres déposés
+};
+
+function renderApartWarning(slug){
+  const w = document.getElementById('warning-appart');
+  const f = apartFeatures[slug];
+  if(!f){ w.style.display='none'; w.innerHTML=''; return; }
+  let bullets = [];
+  if(f.balneo){
+    bullets.push('🛁 <b>Balnéo / jacuzzi</b> — mettre <b>impérativement de l\'anti-calcaire</b> sur <b>toutes les buses</b> (chaque jet) et sur tout le <b>chrome</b> (robinetterie, têtes de jets, pourtour). Sans ça, pièces coûteuses + panne.');
+  }
+  if(f.peignoirs){
+    bullets.push('🥋 <b>' + f.peignoirs + ' peignoirs propres</b> à installer dans le logement.');
+  }
+  if(f.sauna){
+    bullets.push('🧖 <b>Sauna</b> — déposer <b>2 grandes serviettes</b> dans le sauna.');
+  }
+  if(f.tapisExtra){
+    bullets.push('🚿 La balnéo est loin de la douche → mettre un <b>tapis de douche supplémentaire à côté de la balnéo</b>.');
+  }
+  if(f.litConditional){
+    bullets.push('🛏️ <b>Lit de la 1ère chambre uniquement installé</b>. Les autres linges de lit sont <b>juste déposés</b> sauf <b>si signalé sur le calendrier</b> — dans ce cas faire les autres lits.');
+  }
+  // Style coloré selon la criticité
+  const isCritical = !!f.balneo;
+  w.style.background = isCritical
+    ? 'linear-gradient(135deg,#fef2f2,#fee2e2)'
+    : 'linear-gradient(135deg,#fef9c3,#fde68a)';
+  w.style.border = isCritical ? '2px solid #dc2626' : '2px solid #ca8a04';
+  w.style.color = isCritical ? '#7f1d1d' : '#713f12';
+  const titleColor = isCritical ? '#991b1b' : '#854d0e';
+  const titleText = isCritical ? '⚠️ ATTENTION — consignes spécifiques pour cet appartement' : '📋 Consignes spécifiques pour cet appartement';
+  w.innerHTML =
+    '<div style="font-weight:700;font-size:15px;color:'+titleColor+';margin-bottom:8px">'+titleText+'</div>' +
+    '<ul style="margin:0;padding-left:20px;font-size:13.5px;line-height:1.55;list-style:none">' +
+      bullets.map(b => '<li style="margin:8px 0;padding-left:0">'+b+'</li>').join('') +
+    '</ul>' +
+    '<div style="margin-top:10px;padding-top:10px;border-top:1px dashed currentColor;font-size:13px;font-style:italic;opacity:0.9">📸 Toujours respecter la déco — voir les photos de référence en bas de la page.</div>';
+  w.style.display = 'block';
 }
 
 document.getElementById('appart').addEventListener('change', e => {
   renderGallery(e.target.value);
-  renderBalneoWarning(e.target.value);
+  renderApartWarning(e.target.value);
 });
+
+// ===== Pré-remplissage du nom prestataire depuis ?presta=remi/clara/christelle =====
+(function preFillPresta(){
+  const params = new URLSearchParams(location.search);
+  const presta = (params.get('presta') || '').trim();
+  if(!presta) return;
+  const map = { 'remi': 'Rémi', 'clara': 'Clara', 'christelle': 'Christelle' };
+  const nice = map[presta.toLowerCase()] || (presta.charAt(0).toUpperCase() + presta.slice(1));
+  const nomInput = document.getElementById('nom');
+  if(nomInput && !nomInput.value) nomInput.value = nice;
+})();
 
 // Items : string ou objet {t:"...", d:"détail optionnel", photo:true, video:true}
 const data = [
