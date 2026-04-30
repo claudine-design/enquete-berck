@@ -397,6 +397,15 @@ function stripHtml(s) {
 // L'URL de base est figée sur le domaine STABLE appart-hotel-berck.com/avis (redirige vers GitHub Pages).
 // Cette URL ne changera jamais → les QR codes imprimés sont valables à vie.
 
+// Mode auto : ?auto=1 dans l'URL → génère les cartes immédiatement au chargement (pour PDF auto)
+(function(){
+  if (new URLSearchParams(location.search).get('auto') === '1') {
+    document.addEventListener('DOMContentLoaded', function(){
+      setTimeout(generateAll, 300);
+    });
+  }
+})();
+
 // === GENERATION PDF (2 cartes par page A4 portrait) ===
 async function downloadPDF() {
   var cards = document.querySelectorAll('.qr-card');
