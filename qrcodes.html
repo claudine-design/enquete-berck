@@ -8,6 +8,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -205,7 +207,8 @@ body.fmt-4parA4 .grid{flex-direction:row;flex-wrap:wrap;gap:0;max-width:210mm;ju
 </div>
 
 <div class="actions" id="actions" style="display:none">
-  <button onclick="window.print()" class="print-btn">&#x1F5A8;&#xFE0F; Imprimer</button>
+  <button onclick="downloadPDF()" class="print-btn">&#x1F4E5; T&eacute;l&eacute;charger PDF (2 par A4)</button>
+  <button onclick="window.print()">&#x1F5A8;&#xFE0F; Imprimer</button>
   <button onclick="document.getElementById('config').style.display='block'">Modifier l'URL</button>
 </div>
 
@@ -400,6 +403,53 @@ function stripHtml(s) {
     document.getElementById('baseUrl').value = 'https://claudine-design.github.io/enquete-berck';
   }
 })();
+
+// === GENERATION PDF (2 cartes par page A4 portrait) ===
+async function downloadPDF() {
+  var cards = document.querySelectorAll('.qr-card');
+  if (cards.length === 0) { alert('Générez d\'abord les cartes'); return; }
+
+  var btn = event.target;
+  var originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Génération en cours… (peut prendre 30s)';
+
+  try {
+    var jsPDFCtor = window.jspdf.jsPDF;
+    var pdf = new jsPDFCtor({orientation: 'portrait', unit: 'mm', format: 'a4'});
+
+    // A4 = 210 x 297 mm. On met 2 cartes 100x140 centrées
+    var cardW = 100, cardH = 140;
+    var x = (210 - cardW) / 2;
+    var marginTop = 8;
+    var gap = 5;
+    var y1 = marginTop;
+    var y2 = marginTop + cardH + gap;
+
+    for (var i = 0; i < cards.length; i++) {
+      btn.textContent = 'Génération ' + (i+1) + '/' + cards.length + '…';
+      var canvas = await html2canvas(cards[i], {
+        scale: 2,
+        backgroundColor: null,
+        useCORS: true,
+        logging: false
+      });
+      var imgData = canvas.toDataURL('image/jpeg', 0.92);
+
+      var slot = i % 2; // 0 = haut, 1 = bas
+      if (i > 0 && slot === 0) pdf.addPage();
+      pdf.addImage(imgData, 'JPEG', x, slot === 0 ? y1 : y2, cardW, cardH);
+    }
+
+    pdf.save('QR-codes-enquete-Berck.pdf');
+  } catch (err) {
+    alert('Erreur génération PDF : ' + err.message);
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+}
 </script>
 </body>
 </html>
