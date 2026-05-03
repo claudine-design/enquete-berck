@@ -632,6 +632,7 @@ textarea{resize:vertical;min-height:90px;font-size:14px;line-height:1.5}
 var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyZ50d01GyAOXi4LKQteCrGKkEcq4eKzLBMh3_G9hM4TI-5IAfjhrnxDZyKZO3-0IolBA/exec';
 
 // ===== APPARTEMENTS =====
+// RESIDENCES = mapping slug -> r\u00e9sidence (gard\u00e9 pour la logique m\u00e9tier interne)
 var RESIDENCES = {
   'Kitesurf':'Le 23','Hamac':'Le 23','Paddle':'Le 23','Surf':'Le 23','Famille':'Le 23',
   'Baln\u00e9o':'Le 25','Cocon Romantique':'Le 25',
@@ -644,6 +645,33 @@ var RESIDENCES = {
   'Terrasse':'Terrasse','Maisonnette':'Terrasse'
 };
 
+// NOMS_COMMERCIAUX = mapping slug URL -> nom commercial complet (Booking/Airbnb)
+// Source : C:\Users\claud\Downloads\livret-accueil\recap-apparts.xlsx (valid\u00e9 Claudine 2 mai 2026)
+var NOMS_COMMERCIAUX = {
+  'Kitesurf':'Kitesurf',
+  'Hamac':'Hamac',
+  'Paddle':'Paddle',
+  'Surf':'Surf',
+  'Famille':'3 Chambres 100m Plage',
+  'Baln\u00e9o':'Baln\u00e9o Garden',
+  'Cocon Romantique':'Cocon Romantique',
+  'La R\u00e9serve':'La R\u00e9serve',
+  'Kingston':'Face Mer Exceptionnel',
+  'Apolove':'Suite Romantique Face Mer',
+  'Apollo':'Panoramique 2 Chambres',
+  'Albatros':'Hamac Chic Vue Mer',
+  'Face Mer':'Face Mer Esplanade',
+  'Grand Large':'Hamac Face Mer',
+  'Mini Love Room':'Baln\u00e9o Face Mer',
+  'Grande Love Room':'Romantique Face Mer',
+  'Jeanne':'C\u0153ur de Berck',
+  'Evasion':'L\u2019\u00c9vasion Baln\u00e9o & Sauna',
+  'Rotonde':'La Rotonde du Bien-\u00eatre',
+  'Patio':'Patio Romantique Chic',
+  'Terrasse':'La Terrasse',
+  'Maisonnette':'C\u0153ur des Sables'
+};
+
 // ===== INIT =====
 var params = new URLSearchParams(window.location.search);
 var appart = params.get('appart');
@@ -653,7 +681,8 @@ if (!appart || !RESIDENCES[appart]) {
   document.getElementById('surveyForm').style.display = 'none';
   document.getElementById('noAppart').style.display = 'block';
 } else {
-  document.getElementById('appartName').textContent = appart + ' \u2014 ' + RESIDENCES[appart];
+  // Affiche le nom commercial complet (au lieu de juste le slug)
+  document.getElementById('appartName').textContent = NOMS_COMMERCIAUX[appart] || appart;
 }
 
 // ===== Q1 DETAILS TOGGLE (si Tr\u00e8s d\u00e9cevant) =====

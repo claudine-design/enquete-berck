@@ -215,16 +215,42 @@ body.fmt-4parA4 .grid{flex-direction:row;flex-wrap:wrap;gap:0;max-width:210mm;ju
 <div class="grid" id="grid"></div>
 
 <script>
-var APPARTEMENTS = {
-  'Le 23 &mdash; Mar\u00e9chal Juin': ['Kitesurf', 'Hamac', 'Paddle', 'Surf', 'Famille'],
-  'Le 25 &mdash; Mar\u00e9chal Juin': ['Baln\u00e9o', 'Cocon Romantique'],
-  'R\u00e9sidence Apollo': ['La R\u00e9serve', 'Kingston', 'Apolove', 'Apollo'],
-  'R\u00e9sidence Albatros': ['Albatros'],
-  'R\u00e9sidence Face Mer': ['Face Mer'],
-  'R\u00e9sidence Grand Large': ['Grand Large'],
-  'Esplanade': ['Mini Love Room', 'Grande Love Room'],
-  'Rue Jeanne': ['Jeanne', '\u00c9vasion', 'Rotonde', 'Patio'],
-  'Terrasse': ['Terrasse', 'Maisonnette']
+// Liste plate des slugs URL des 22 apparts (le slug reste tel quel pour ne pas casser les QR codes existants)
+var SLUGS = [
+  'Kitesurf','Hamac','Paddle','Surf','Famille',
+  'Baln\u00e9o','Cocon Romantique',
+  'La R\u00e9serve','Kingston','Apolove','Apollo',
+  'Albatros','Face Mer','Grand Large',
+  'Mini Love Room','Grande Love Room',
+  'Jeanne','\u00c9vasion','Rotonde','Patio',
+  'Terrasse','Maisonnette'
+];
+
+// Mapping slug URL -> nom commercial complet (Booking/Airbnb)
+// Source : recap-apparts.xlsx, valid\u00e9 Claudine 2 mai 2026
+var NOMS_COMMERCIAUX = {
+  'Kitesurf':'Kitesurf',
+  'Hamac':'Hamac',
+  'Paddle':'Paddle',
+  'Surf':'Surf',
+  'Famille':'3 Chambres 100m Plage',
+  'Baln\u00e9o':'Baln\u00e9o Garden',
+  'Cocon Romantique':'Cocon Romantique',
+  'La R\u00e9serve':'La R\u00e9serve',
+  'Kingston':'Face Mer Exceptionnel',
+  'Apolove':'Suite Romantique Face Mer',
+  'Apollo':'Panoramique 2 Chambres',
+  'Albatros':'Hamac Chic Vue Mer',
+  'Face Mer':'Face Mer Esplanade',
+  'Grand Large':'Hamac Face Mer',
+  'Mini Love Room':'Baln\u00e9o Face Mer',
+  'Grande Love Room':'Romantique Face Mer',
+  'Jeanne':'C\u0153ur de Berck',
+  '\u00c9vasion':'L\u2019\u00c9vasion Baln\u00e9o & Sauna',
+  'Rotonde':'La Rotonde du Bien-\u00eatre',
+  'Patio':'Patio Romantique Chic',
+  'Terrasse':'La Terrasse',
+  'Maisonnette':'C\u0153ur des Sables'
 };
 
 // Fleur de lys grande (filigrane fond)
@@ -327,31 +353,29 @@ function generateAll() {
   document.getElementById('actions').style.display = 'flex';
 
   var idx = 0;
-  for (var res in APPARTEMENTS) {
-    var apparts = APPARTEMENTS[res];
-    for (var i = 0; i < apparts.length; i++) {
-      var nom = apparts[i];
-      var url = base + '/?appart=' + encodeURIComponent(stripHtml(nom));
+  for (var i = 0; i < SLUGS.length; i++) {
+    var slug = SLUGS[i];
+    var nomCommercial = NOMS_COMMERCIAUX[slug] || slug;
+    var url = base + '/?appart=' + encodeURIComponent(slug);
 
-      var card = document.createElement('div');
-      card.className = 'qr-card';
-      var qrId = 'qr-' + idx;
-      idx++;
+    var card = document.createElement('div');
+    card.className = 'qr-card';
+    var qrId = 'qr-' + idx;
+    idx++;
 
-      card.innerHTML =
-        LYS_BG_SVG +
-        '<div class="head">' +
-          LYS_TOP_SVG +
-          '<div class="brand-url">appart-hotel-berck.com</div>' +
-        '</div>' +
+    card.innerHTML =
+      LYS_BG_SVG +
+      '<div class="head">' +
+        LYS_TOP_SVG +
+        '<div class="brand-url">appart-hotel-berck.com</div>' +
+      '</div>' +
 
-        '<div class="separator"><div class="line"></div>' + SEP_SVG + '<div class="line"></div></div>' +
+      '<div class="separator"><div class="line"></div>' + SEP_SVG + '<div class="line"></div></div>' +
 
-        '<div class="middle">' +
-          '<div class="title-main">Questionnaire<br>de satisfaction</div>' +
-          '<div class="appart-name">' + nom + '</div>' +
-          '<div class="residence">' + res + '</div>' +
-        '</div>' +
+      '<div class="middle">' +
+        '<div class="title-main">Questionnaire<br>de satisfaction</div>' +
+        '<div class="appart-name">' + nomCommercial + '</div>' +
+      '</div>' +
 
         '<div class="qr-wrap" id="' + qrId + '"></div>' +
 
@@ -384,7 +408,6 @@ function generateAll() {
         }
       }
       document.getElementById(qrId).appendChild(canvas);
-    }
   }
 }
 

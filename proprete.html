@@ -256,6 +256,17 @@ var PRESTAS = {
   christelle: { nom: 'Christelle',     apparts: ['Face Mer','Grand Large','Mini Love Room','Grande Love Room','Jeanne','\u00c9vasion','Rotonde','Patio','Terrasse','Maisonnette'] }
 };
 
+// Slug -> nom commercial complet (Booking/Airbnb), valid\u00e9 Claudine 2 mai 2026
+var NOMS_COMMERCIAUX = {
+  'Kitesurf':'Kitesurf','Hamac':'Hamac','Paddle':'Paddle','Surf':'Surf','Famille':'3 Chambres 100m Plage',
+  'Baln\u00e9o':'Baln\u00e9o Garden','Cocon Romantique':'Cocon Romantique',
+  'La R\u00e9serve':'La R\u00e9serve','Kingston':'Face Mer Exceptionnel','Apolove':'Suite Romantique Face Mer','Apollo':'Panoramique 2 Chambres','Albatros':'Hamac Chic Vue Mer',
+  'Face Mer':'Face Mer Esplanade','Grand Large':'Hamac Face Mer',
+  'Mini Love Room':'Baln\u00e9o Face Mer','Grande Love Room':'Romantique Face Mer',
+  'Jeanne':'C\u0153ur de Berck','\u00c9vasion':'L\u2019\u00c9vasion Baln\u00e9o & Sauna','Rotonde':'La Rotonde du Bien-\u00eatre','Patio':'Patio Romantique Chic',
+  'Terrasse':'La Terrasse','Maisonnette':'C\u0153ur des Sables'
+};
+
 // Score Q5 -> classe CSS + valeur num
 var Q5_SCORE = {
   'Tr\u00e8s propre': { c:'tprop', v:5 },
@@ -424,7 +435,7 @@ function render(data) {
       var avgInner = totalAppart ? moyTxt : '\u2014';
       rows += '<tr><th>'
         + '<div class="row-head">'
-        +   '<span class="nom">' + appart + '</span>'
+        +   '<span class="nom" title="' + appart + '">' + (NOMS_COMMERCIAUX[appart] || appart) + '</span>'
         +   '<span class="avg ' + avgClass + '" title="' + avgTitle + '">' + avgInner + '</span>'
         +   '<span class="trend ' + trendCls + '" title="' + trendTitle + '">' + trendIcon + '</span>'
         +   '<span class="meta">' + (totalAppart ? totalAppart + ' avis' : 'aucun avis') + '</span>'
