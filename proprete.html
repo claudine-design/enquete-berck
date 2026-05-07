@@ -300,7 +300,21 @@ function loadData() {
   fetch(SCRIPT_URL + '?action=getStats')
     .then(function(r){ return r.json(); })
     .then(function(res){
-      render(res.data || []);
+      // Filtre des avis tests (email @example.com, test-, et autres marqueurs de test)
+      var data = res.data || [];
+      if (data.length > 1) {
+        var emailIdx = data[0].indexOf('Email');
+        if (emailIdx === -1) emailIdx = 9; // fallback colonne J
+        var header = data[0];
+        var filtered = data.slice(1).filter(function(row){
+          var email = String(row[emailIdx] || '').toLowerCase();
+          return !email.endsWith('@example.com') && !email.endsWith('@example.org')
+              && !email.startsWith('test-') && !email.startsWith('test@')
+              && email.indexOf('+test') === -1;
+        });
+        data = [header].concat(filtered);
+      }
+      render(data);
     })
     .catch(function(err){
       document.getElementById('content').innerHTML =

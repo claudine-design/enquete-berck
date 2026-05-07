@@ -155,7 +155,21 @@ function loadData() {
   fetch(SCRIPT_URL + '?action=getStats&t=' + Date.now())
     .then(function(r) { return r.json(); })
     .then(function(resp) {
-      rawData = resp.data || [];
+      // Filtre des avis tests (@example.com, test-, etc.)
+      var data = resp.data || [];
+      if (data.length > 1) {
+        var emailIdx = data[0].indexOf('Email');
+        if (emailIdx === -1) emailIdx = 9;
+        var header = data[0];
+        var filtered = data.slice(1).filter(function(row){
+          var email = String(row[emailIdx] || '').toLowerCase();
+          return !email.endsWith('@example.com') && !email.endsWith('@example.org')
+              && !email.startsWith('test-') && !email.startsWith('test@')
+              && email.indexOf('+test') === -1;
+        });
+        data = [header].concat(filtered);
+      }
+      rawData = data;
       document.getElementById('refreshTime').textContent = 'Dernière mise à jour : ' + new Date().toLocaleString('fr-FR');
       render();
     })
