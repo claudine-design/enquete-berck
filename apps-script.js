@@ -61,12 +61,9 @@ var HEAD_ROUTINES = ['Date Fait', 'Appart Slug', 'Task Id', 'Task Label', 'Prest
 
 // ===== ROUTINES PERIODIQUES (entretien Sweepy-style) =====
 // Toutes les taches sont definies cote frontend ; le backend ne fait que stocker/lire l'historique.
-// On garde quand meme la liste ici pour validation (pour eviter d'enregistrer un task_id invalide).
-var ROUTINE_TASK_IDS = [
-  'radiateurs', 'interrupteurs', 'planchers', 'portes', 'luminaires',
-  'tete-lit', 'plantes', 'derriere-canape', 'cafetiere',
-  'plaids', 'coussins', 'couettes', 'rideaux'
-];
+// Validation par format (alphanumerique + tirets, 1-40 chars) pour pouvoir ajouter
+// de nouvelles routines cote frontend sans avoir a redeployer l'Apps Script.
+var ROUTINE_TASK_ID_REGEX = /^[a-z0-9-]{1,40}$/;
 
 // ===== VALEURS NEGATIVES (5 niveaux) =====
 var NEG_Q1 = 'Tr\xe8s d\xe9cevant';
@@ -220,7 +217,7 @@ function handle(p) {
     var label = (p.label || '').toString().trim();
     var presta = (p.presta || '').toString().trim();
     if (!slug || !taskId) return json({ error: 'appart et task requis' });
-    if (ROUTINE_TASK_IDS.indexOf(taskId) === -1) return json({ error: 'task_id inconnu : ' + taskId });
+    if (!ROUTINE_TASK_ID_REGEX.test(taskId)) return json({ error: 'task_id invalide : ' + taskId });
     var sheetRt = ensureSheet(ss, 'Routines', HEAD_ROUTINES, '#16a34a');
     sheetRt.appendRow([new Date(), slug, taskId, label, presta]);
     return json({ success: true, lastDone: new Date().toISOString() });
