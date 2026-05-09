@@ -448,6 +448,13 @@ document.getElementById('appart').addEventListener('change', e => {
   loadRoutinesForAppart(e.target.value);
 });
 
+// Si l'appart était DÉJÀ pré-sélectionné via ?appart= (QR code), le change event
+// a été dispatché AVANT que ce listener soit installé. On rattrape ici.
+{
+  const sel = document.getElementById('appart');
+  if(sel && sel.value) loadRoutinesForAppart(sel.value);
+}
+
 // Items : string ou objet {t:"...", d:"détail optionnel", photo:true, video:true}
 const data = [
   ["s1","🧺 Arrivée & préparation",[
