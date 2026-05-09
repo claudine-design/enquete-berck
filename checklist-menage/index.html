@@ -202,14 +202,17 @@ function openLightbox(src){
 // sauna: a un sauna → 2 grandes serviettes dans le sauna
 // tapisExtra: balnéo loin de la douche → tapis de douche supplémentaire à côté de la balnéo
 // litConditional: lit 1ère chambre installé, autres linges juste déposés (sauf si signalé sur calendrier)
+// exterieur: a jardin/terrasse/balcon/patio → vérifier mégots, déchets, mobilier remis en place
 const apartFeatures = {
-  'balneo':           { balneo:true,  peignoirs:2, litConditional:true },
-  'cocon-romantique': { balneo:true,  peignoirs:2, sauna:true, tapisExtra:true, litConditional:true },
+  'balneo':           { balneo:true,  peignoirs:2, litConditional:true, exterieur:true }, // jardin + brasero
+  'cocon-romantique': { balneo:true,  peignoirs:2, sauna:true, tapisExtra:true, litConditional:true, exterieur:true }, // brasero
   'evasion':          { balneo:true,  peignoirs:2, sauna:true, tapisExtra:true, litConditional:true },
-  'patio':            { balneo:true,  peignoirs:2, tapisExtra:true, litConditional:true },
+  'patio':            { balneo:true,  peignoirs:2, tapisExtra:true, litConditional:true, exterieur:true }, // patio
   'rotonde':          { balneo:true,  peignoirs:2, litConditional:true },
   'mini-love-room':   { balneo:true,  peignoirs:2, tapisExtra:true },
-  'apollo':           { litConditional:true } // T3, lit 1ère chambre installé, autres déposés
+  'apollo':           { litConditional:true }, // T3, lit 1ère chambre installé, autres déposés
+  'terrasse':         { exterieur:true }, // grande terrasse
+  'maisonnette':      { exterieur:true }  // petit extérieur arrière
 };
 
 function renderApartWarning(slug){
@@ -231,6 +234,9 @@ function renderApartWarning(slug){
   }
   if(f.litConditional){
     bullets.push('🛏️ <b>Lit de la 1ère chambre uniquement installé</b>. Les autres linges de lit sont <b>juste déposés</b> sauf <b>si signalé sur le calendrier</b> — dans ce cas faire les autres lits.');
+  }
+  if(f.exterieur){
+    bullets.push('🌿 <b>Espace extérieur</b> (jardin / terrasse / balcon / patio) — vérifier qu\'il n\'y a <b>pas de mégots ni de déchets</b>, et <b>remettre le mobilier</b> en place s\'il a été déplacé.');
   }
   // Style coloré selon la criticité
   const isCritical = !!f.balneo;
