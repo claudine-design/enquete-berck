@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QR codes ménage — Sacs prestataires</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Inter',sans-serif;
+  background:#1a1a1a;color:#333;padding:20px;min-height:100vh;
+}
+.config{
+  max-width:760px;margin:0 auto 24px;background:#fff;border-radius:16px;
+  padding:24px 28px;box-shadow:0 8px 32px rgba(0,0,0,0.3);
+}
+.config h1{font-family:'Cinzel',serif;font-size:22px;color:#0a0a0a;margin-bottom:6px;letter-spacing:1.5px}
+.config .sub{font-size:14px;color:#64748b;margin-bottom:16px;line-height:1.5}
+.config .actions{display:flex;gap:10px;flex-wrap:wrap}
+.config button{
+  padding:11px 22px;border:1px solid #d4a84a;border-radius:9px;
+  background:#0a0a0a;color:#d4a84a;font-size:12px;font-weight:500;cursor:pointer;
+  font-family:'Cinzel',serif;letter-spacing:1.5px;text-transform:uppercase;transition:all .2s;
+}
+.config button:hover{background:#d4a84a;color:#0a0a0a}
+.config .filter{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.config .filter label{font-size:13px;color:#475569;font-weight:600}
+.config .filter button.active{background:#d4a84a;color:#0a0a0a}
+
+/* Page A4 portrait, 6 vignettes par page (3 lignes × 2 cols) */
+.page{
+  width:210mm;min-height:297mm;
+  background:#fff;
+  margin:0 auto 12px;
+  padding:12mm 10mm;
+  display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:max-content;gap:6mm;
+  page-break-after:always;
+  box-shadow:0 6px 24px rgba(0,0,0,0.4);
+}
+.tag{
+  width:90mm;height:88mm;
+  border:2px solid #0a0a0a;border-radius:6mm;
+  padding:6mm 5mm 5mm;
+  display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+  background:#fff;color:#0a0a0a;
+  break-inside:avoid;page-break-inside:avoid;
+  position:relative;
+}
+.tag .presta-band{
+  position:absolute;top:0;left:0;right:0;height:6mm;border-top-left-radius:5mm;border-top-right-radius:5mm;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cinzel',serif;font-size:9pt;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#fff;
+}
+.tag.remi      .presta-band{background:#0369a1}
+.tag.clara     .presta-band{background:#ea580c}
+.tag.christelle .presta-band{background:#7c3aed}
+.tag.helene    .presta-band{background:#475569}
+
+.tag .nom{
+  margin-top:6mm;
+  font-family:'Cinzel',serif;font-size:18pt;font-weight:600;letter-spacing:2px;
+  text-align:center;line-height:1.1;
+}
+.tag .residence{
+  font-size:9pt;color:#64748b;margin-top:1mm;font-style:italic;
+}
+.tag .qr{
+  width:55mm;height:55mm;display:flex;align-items:center;justify-content:center;
+}
+.tag .qr img{width:100%;height:100%;display:block}
+.tag .footer{
+  font-size:7.5pt;color:#475569;text-align:center;letter-spacing:0.5px;line-height:1.3;
+}
+.tag .footer b{color:#0a0a0a;font-weight:600}
+
+@media print {
+  body{background:#fff;padding:0;margin:0}
+  .config{display:none}
+  .page{box-shadow:none;margin:0;padding:10mm}
+  @page{size:A4 portrait;margin:0}
+}
+</style>
+</head>
+<body>
+
+<div class="config">
+  <h1>QR codes ménage</h1>
+  <div class="sub">À coller sur les sacs de ménage. Le prestataire scanne → checklist du bon appart pré-sélectionnée.<br>
+  Format : 6 étiquettes par page A4. Imprimer puis découper.</div>
+  <div class="actions">
+    <button onclick="window.print()">🖨️ Imprimer</button>
+    <button onclick="filterPresta(null)" id="btn-all">Tous</button>
+  </div>
+  <div class="filter">
+    <label>Filtrer par prestataire :</label>
+    <button onclick="filterPresta('remi')" id="btn-remi">Rémi</button>
+    <button onclick="filterPresta('clara')" id="btn-clara">Clara</button>
+    <button onclick="filterPresta('christelle')" id="btn-christelle">Christelle</button>
+    <button onclick="filterPresta('helene')" id="btn-helene">Hélène</button>
+  </div>
+</div>
+
+<div id="pages"></div>
+
+<script>
+const BASE_URL = 'https://claudine-design.github.io/enquete-berck/checklist-menage/?appart=';
+
+// 22 apparts + Studio Hélène
+// (slug, label, residence, prestataire)
+const APPARTS = [
+  { slug:'kitesurf',         label:'Kitesurf',          residence:'23 rue Maréchal Juin · Le 23',         presta:'remi' },
+  { slug:'hamac',            label:'Hamac',             residence:'23 rue Maréchal Juin · Le 23',         presta:'remi' },
+  { slug:'paddle',           label:'Paddle',            residence:'23 rue Maréchal Juin · Le 23',         presta:'remi' },
+  { slug:'surf',             label:'Surf',              residence:'23 rue Maréchal Juin · Le 23',         presta:'remi' },
+  { slug:'famille',          label:'Famille',           residence:'23 rue Maréchal Juin · Le 23',         presta:'remi' },
+  { slug:'balneo',           label:'Balnéo',            residence:'25 rue Maréchal Juin · Le 25',         presta:'clara' },
+  { slug:'cocon-romantique', label:'Cocon Romantique',  residence:'25 rue Maréchal Juin · Le 25',         presta:'clara' },
+  { slug:'terrasse',         label:'Terrasse',          residence:'17 rue du Grand Hôtel',                presta:'christelle' },
+  { slug:'maisonnette',      label:'Maisonnette',       residence:'2 rue des Sables',                     presta:'christelle' },
+  { slug:'face-mer',         label:'Face Mer',          residence:'1 rue de la Plage',                    presta:'christelle' },
+  { slug:'grand-large',      label:'Grand Large',       residence:'45 Esplanade Parmentier',              presta:'christelle' },
+  { slug:'apolove',          label:'Apolove',           residence:'2 Avenue Marianne · Apollo',           presta:'clara' },
+  { slug:'apollo',           label:'Apollo',            residence:'2 Avenue Marianne · Apollo (T3)',      presta:'clara' },
+  { slug:'kingston',         label:'Kingston',          residence:'2 Avenue Marianne · Apollo (RDC)',     presta:'clara' },
+  { slug:'reserve',          label:'La Réserve',        residence:'2 Avenue Marianne · Apollo',           presta:'clara' },
+  { slug:'albatros',         label:'Albatros',          residence:'10 Avenue Marianne',                   presta:'clara' },
+  { slug:'mini-love-room',   label:'Mini Love Room',    residence:'59 Esplanade Parmentier',              presta:'christelle' },
+  { slug:'grande-love-room', label:'Grande Love Room',  residence:'59 Esplanade Parmentier',              presta:'christelle' },
+  { slug:'jeanne',           label:'Jeanne',            residence:'23 Rue Jeanne',                        presta:'christelle' },
+  { slug:'evasion',          label:'Évasion',           residence:'Rue Jeanne',                           presta:'christelle' },
+  { slug:'rotonde',          label:'Rotonde',           residence:'Rue Jeanne',                           presta:'christelle' },
+  { slug:'patio',            label:'Patio',             residence:'Rue Jeanne',                           presta:'christelle' },
+  { slug:'helene',           label:'Studio Hélène',     residence:'Conciergerie',                         presta:'helene' }
+];
+
+const PRESTA_LABELS = { remi:'RÉMI', clara:'CLARA', christelle:'CHRISTELLE', helene:'CONCIERGERIE' };
+
+function makeQR(text, sizePx){
+  const qr = qrcode(0, 'M');
+  qr.addData(text);
+  qr.make();
+  return qr.createImgTag(Math.max(2, Math.floor(sizePx/qr.getModuleCount())), 0);
+}
+
+function renderTag(a){
+  const url = BASE_URL + a.slug;
+  return `
+    <div class="tag ${a.presta}">
+      <div class="presta-band">${PRESTA_LABELS[a.presta]}</div>
+      <div>
+        <div class="nom">${a.label}</div>
+        <div class="residence">${a.residence}</div>
+      </div>
+      <div class="qr">${makeQR(url, 220)}</div>
+      <div class="footer">
+        <b>Scanner pour ouvrir</b><br>
+        la checklist ménage
+      </div>
+    </div>
+  `;
+}
+
+function render(filter){
+  const apparts = filter ? APPARTS.filter(a => a.presta === filter) : APPARTS;
+  const container = document.getElementById('pages');
+  container.innerHTML = '';
+  // 6 vignettes par page A4 (3 lignes × 2 colonnes)
+  for(let i = 0; i < apparts.length; i += 6){
+    const slice = apparts.slice(i, i+6);
+    const page = document.createElement('div');
+    page.className = 'page';
+    page.innerHTML = slice.map(renderTag).join('');
+    container.appendChild(page);
+  }
+  // Update button states
+  ['all','remi','clara','christelle','helene'].forEach(k => {
+    const btn = document.getElementById('btn-' + k);
+    if(btn) btn.classList.toggle('active', (k === 'all' && !filter) || k === filter);
+  });
+}
+
+function filterPresta(p){ render(p); }
+
+render(null);
+</script>
+</body>
+</html>

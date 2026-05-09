@@ -277,6 +277,22 @@ document.getElementById('appart').addEventListener('change', e => {
   if(nomInput && !nomInput.value) nomInput.value = nice;
 })();
 
+// ===== Pré-sélection de l'appartement depuis ?appart=<slug> =====
+// Utilisé par les QR codes collés sur les sacs de ménage.
+(function preFillAppart(){
+  const params = new URLSearchParams(location.search);
+  const slug = (params.get('appart') || '').trim().toLowerCase();
+  if(!slug) return;
+  const select = document.getElementById('appart');
+  if(!select) return;
+  const opt = Array.from(select.options).find(o => o.value === slug);
+  if(opt){
+    select.value = slug;
+    // Déclenche manuellement les rendus dépendants (warning + galerie)
+    select.dispatchEvent(new Event('change'));
+  }
+})();
+
 // Items : string ou objet {t:"...", d:"détail optionnel", photo:true, video:true}
 const data = [
   ["s1","🧺 Arrivée & préparation",[
