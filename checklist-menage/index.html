@@ -158,12 +158,6 @@
 
 <div id="gallery" class="gallery"></div>
 
-
-<div class="progress"><div id="bar"></div></div>
-<div class="progress-text" id="ptext">0 / 0 tâches</div>
-
-<div id="sections"></div>
-
 <details id="routines-block" class="guide" style="display:none;border:2px solid #16a34a;background:#f0fdf4">
   <summary style="background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;font-weight:600">
     🔄 Entretien périodique <span id="routines-summary-count" style="background:rgba(255,255,255,0.25);padding:2px 8px;border-radius:10px;font-size:11px;margin-left:8px"></span>
@@ -173,6 +167,11 @@
     <div id="routines-list"></div>
   </div>
 </details>
+
+<div class="progress"><div id="bar"></div></div>
+<div class="progress-text" id="ptext">0 / 0 tâches</div>
+
+<div id="sections"></div>
 
 <div class="actions">
   <button class="reset" onclick="reset()">Tout décocher</button>
@@ -384,6 +383,10 @@ async function loadRoutinesForAppart(slug){
   renderRoutines();
 }
 
+function escapeHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
 function renderRoutines(){
   let dueCount = 0;
   const html = ROUTINES.map(r => {
@@ -396,10 +399,10 @@ function renderRoutines(){
       <div class="routine ${st.cls}">
         <div class="r-status">${st.icon}</div>
         <div class="r-info">
-          <div class="r-label">${r.label}</div>
+          <div class="r-label">${escapeHtml(r.label)}</div>
           <div class="r-meta">${meta}</div>
         </div>
-        <button class="r-btn" onclick="markRoutineDone('${r.id}', ${JSON.stringify(r.label).slice(1,-1).replace(/'/g, '\\\'')}, this)">✓ Fait</button>
+        <button class="r-btn" data-task="${escapeHtml(r.id)}" data-label="${escapeHtml(r.label)}">✓ Fait</button>
       </div>
     `;
   }).join('');
@@ -442,6 +445,15 @@ async function markRoutineDone(taskId, label, btn){
     alert('Erreur lors de l\'enregistrement. Réessayez.');
   }
 }
+
+// Délégation d'événements pour les boutons "✓ Fait" (évite les bugs d'échappement)
+document.getElementById('routines-list').addEventListener('click', function(e){
+  const btn = e.target.closest('.r-btn');
+  if(!btn || btn.disabled) return;
+  const taskId = btn.getAttribute('data-task');
+  const label = btn.getAttribute('data-label');
+  if(taskId) markRoutineDone(taskId, label, btn);
+});
 
 // Hook : quand l'appart change, recharger les routines
 document.getElementById('appart').addEventListener('change', e => {
