@@ -44,25 +44,14 @@ body{
 .tag{
   width:90mm;height:88mm;
   border:2px solid #0a0a0a;border-radius:6mm;
-  padding:6mm 5mm 5mm;
+  padding:7mm 5mm 5mm;
   display:flex;flex-direction:column;align-items:center;justify-content:space-between;
   background:#fff;color:#0a0a0a;
   break-inside:avoid;page-break-inside:avoid;
   position:relative;
 }
-.tag .presta-band{
-  position:absolute;top:0;left:0;right:0;height:6mm;border-top-left-radius:5mm;border-top-right-radius:5mm;
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Cinzel',serif;font-size:9pt;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#fff;
-}
-.tag.remi      .presta-band{background:#0369a1}
-.tag.clara     .presta-band{background:#ea580c}
-.tag.christelle .presta-band{background:#7c3aed}
-.tag.helene    .presta-band{background:#475569}
-
 .tag .nom{
-  margin-top:6mm;
-  font-family:'Cinzel',serif;font-size:18pt;font-weight:600;letter-spacing:2px;
+  font-family:'Cinzel',serif;font-size:20pt;font-weight:600;letter-spacing:2px;
   text-align:center;line-height:1.1;
 }
 .tag .residence{
@@ -150,7 +139,6 @@ function renderTag(a){
   const url = BASE_URL + a.slug;
   return `
     <div class="tag ${a.presta}">
-      <div class="presta-band">${PRESTA_LABELS[a.presta]}</div>
       <div>
         <div class="nom">${a.label}</div>
         <div class="residence">${a.residence}</div>

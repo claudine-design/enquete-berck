@@ -67,6 +67,21 @@
   details.guide ul{margin:4px 0 8px;padding-left:20px}
   details.guide li{margin:2px 0}
   details.guide .tip{background:#FFF8FA;border-left:3px solid #F2A57A;padding:6px 10px;border-radius:6px;margin:6px 0;font-size:13px;color:#7a3b46}
+  /* ROUTINES SWEEPY */
+  .routine{display:flex;align-items:flex-start;gap:8px;padding:10px;background:#fff;border-radius:10px;margin:6px 0;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  .routine.due-overdue{background:#fef2f2;border-left:4px solid #dc2626}
+  .routine.due-soon{background:#fffbeb;border-left:4px solid #f59e0b}
+  .routine.due-ok{background:#f0fdf4;border-left:4px solid #22c55e}
+  .routine .r-status{font-size:18px;flex-shrink:0;margin-top:2px}
+  .routine .r-info{flex:1;min-width:0}
+  .routine .r-label{font-weight:600;font-size:14px;color:#3B3B3B;line-height:1.3}
+  .routine .r-meta{font-size:11px;color:#666;margin-top:3px}
+  .routine .r-meta b{color:#3B3B3B}
+  .routine .r-btn{flex-shrink:0;background:#16a34a;color:#fff;border:none;padding:7px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
+  .routine .r-btn:active{transform:scale(.95)}
+  .routine .r-btn.done{background:#94a3b8}
+  .routine .r-btn:disabled{opacity:0.5;cursor:default}
+  #routines-summary-count.due{background:rgba(255,255,255,0.4) !important;font-weight:700}
   .gallery{margin:14px 0;display:none}
   .gallery.has-photos{display:block;background:#fff;border-radius:16px;padding:12px;box-shadow:0 3px 10px rgba(0,0,0,.06)}
   .gallery h3{margin:0 0 10px;font-size:14px;color:#5A2A33;display:flex;align-items:center;gap:8px}
@@ -148,6 +163,16 @@
 <div class="progress-text" id="ptext">0 / 0 tâches</div>
 
 <div id="sections"></div>
+
+<details id="routines-block" class="guide" style="display:none;border:2px solid #16a34a;background:#f0fdf4">
+  <summary style="background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;font-weight:600">
+    🔄 Entretien périodique <span id="routines-summary-count" style="background:rgba(255,255,255,0.25);padding:2px 8px;border-radius:10px;font-size:11px;margin-left:8px"></span>
+  </summary>
+  <div class="guide-body">
+    <div style="font-size:13px;color:#166534;margin-bottom:12px;font-style:italic">Tâches à faire à fréquence régulière (pas à chaque ménage). 🔴 = en retard · 🟡 = bientôt due · 🟢 = à jour.</div>
+    <div id="routines-list"></div>
+  </div>
+</details>
 
 <div class="actions">
   <button class="reset" onclick="reset()">Tout décocher</button>
@@ -288,10 +313,135 @@ document.getElementById('appart').addEventListener('change', e => {
   const opt = Array.from(select.options).find(o => o.value === slug);
   if(opt){
     select.value = slug;
-    // Déclenche manuellement les rendus dépendants (warning + galerie)
+    // Déclenche manuellement les rendus dépendants (warning + galerie + routines)
     select.dispatchEvent(new Event('change'));
   }
 })();
+
+// ===== ROUTINES PÉRIODIQUES (entretien Sweepy-style) =====
+const ROUTINES_API_URL = 'https://script.google.com/macros/s/AKfycbyZ50d01GyAOXi4LKQteCrGKkEcq4eKzLBMh3_G9hM4TI-5IAfjhrnxDZyKZO3-0IolBA/exec';
+
+const ROUTINES = [
+  { id:'radiateurs',      label:'Nettoyer les radiateurs',                   intervalDays:15  },
+  { id:'interrupteurs',   label:'Nettoyer les interrupteurs',                intervalDays:21  },
+  { id:'planchers',       label:'Nettoyer les planchers à fond',             intervalDays:15  },
+  { id:'portes',          label:'Nettoyer portes et poignées',               intervalDays:15  },
+  { id:'luminaires',      label:'Enlever poussière des luminaires',          intervalDays:15  },
+  { id:'tete-lit',        label:'Aspirer la tête de lit',                    intervalDays:30  },
+  { id:'plantes',         label:'Nettoyer les plantes (essuyer feuilles)',   intervalDays:30  },
+  { id:'derriere-canape', label:'Aspirer derrière le canapé',                intervalDays:30  },
+  { id:'cafetiere',       label:'Détartrer cafetière + bouilloire',          intervalDays:30  },
+  { id:'plaids',          label:'Laver les plaids',                          intervalDays:30  },
+  { id:'coussins',        label:'Laver les coussins',                        intervalDays:90  },
+  { id:'couettes',        label:'Laver les couettes',                        intervalDays:180 },
+  { id:'rideaux',         label:'Laver les rideaux',                         intervalDays:180 }
+];
+
+let routinesData = {}; // { task_id: { lastDone: ISO } }
+let currentRoutinesSlug = null;
+
+function formatInterval(days){
+  if(days < 14) return 'tous les ' + days + ' jours';
+  if(days < 30) return 'toutes les ' + Math.round(days/7) + ' semaines';
+  if(days < 360) return 'tous les ' + Math.round(days/30) + ' mois';
+  return 'tous les ' + Math.round(days/30) + ' mois';
+}
+
+function formatLastDone(iso){
+  if(!iso) return 'jamais fait';
+  const d = new Date(iso);
+  const days = Math.floor((Date.now() - d.getTime()) / 86400000);
+  if(days === 0) return 'fait aujourd\'hui';
+  if(days === 1) return 'fait hier';
+  if(days < 30) return 'fait il y a ' + days + ' jours';
+  const months = Math.round(days/30);
+  return 'fait il y a ~' + months + ' mois';
+}
+
+function computeStatus(intervalDays, iso){
+  if(!iso) return { cls:'due-overdue', icon:'🔴', label:'À FAIRE', daysAgo:null };
+  const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+  if(days >= intervalDays) return { cls:'due-overdue', icon:'🔴', label:'EN RETARD', daysAgo:days };
+  if(days >= intervalDays - 3) return { cls:'due-soon', icon:'🟡', label:'BIENTÔT DUE', daysAgo:days };
+  return { cls:'due-ok', icon:'🟢', label:'À JOUR', daysAgo:days };
+}
+
+async function loadRoutinesForAppart(slug){
+  currentRoutinesSlug = slug;
+  const block = document.getElementById('routines-block');
+  if(!slug){ block.style.display = 'none'; return; }
+  block.style.display = 'block';
+  document.getElementById('routines-list').innerHTML =
+    '<div style="text-align:center;padding:20px;color:#666;font-size:13px">Chargement…</div>';
+  try {
+    const res = await fetch(ROUTINES_API_URL + '?action=getRoutines&appart=' + encodeURIComponent(slug) + '&t=' + Date.now());
+    const json = await res.json();
+    routinesData = json.data || {};
+  } catch(e) {
+    routinesData = {};
+  }
+  renderRoutines();
+}
+
+function renderRoutines(){
+  let dueCount = 0;
+  const html = ROUTINES.map(r => {
+    const last = routinesData[r.id];
+    const lastIso = last ? last.lastDone : null;
+    const st = computeStatus(r.intervalDays, lastIso);
+    if(st.cls === 'due-overdue' || st.cls === 'due-soon') dueCount++;
+    const meta = formatInterval(r.intervalDays) + ' · <b>' + formatLastDone(lastIso) + '</b>';
+    return `
+      <div class="routine ${st.cls}">
+        <div class="r-status">${st.icon}</div>
+        <div class="r-info">
+          <div class="r-label">${r.label}</div>
+          <div class="r-meta">${meta}</div>
+        </div>
+        <button class="r-btn" onclick="markRoutineDone('${r.id}', ${JSON.stringify(r.label).slice(1,-1).replace(/'/g, '\\\'')}, this)">✓ Fait</button>
+      </div>
+    `;
+  }).join('');
+  document.getElementById('routines-list').innerHTML = html;
+  // Met à jour le badge sur le summary
+  const cntEl = document.getElementById('routines-summary-count');
+  if(dueCount > 0){
+    cntEl.textContent = dueCount + ' à faire';
+    cntEl.classList.add('due');
+  } else {
+    cntEl.textContent = '✓ tout à jour';
+    cntEl.classList.remove('due');
+  }
+}
+
+async function markRoutineDone(taskId, label, btn){
+  if(!currentRoutinesSlug) return;
+  const presta = (document.getElementById('nom').value || '').trim();
+  btn.disabled = true;
+  btn.textContent = '⏳';
+  const params = new URLSearchParams({
+    action: 'markRoutineDone',
+    appart: currentRoutinesSlug,
+    task: taskId,
+    label: label,
+    presta: presta
+  });
+  try {
+    await fetch(ROUTINES_API_URL + '?' + params.toString());
+    // Maj locale optimiste
+    routinesData[taskId] = { lastDone: new Date().toISOString(), prestataire: presta };
+    renderRoutines();
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = '✓ Fait';
+    alert('Erreur lors de l\'enregistrement. Réessayez.');
+  }
+}
+
+// Hook : quand l'appart change, recharger les routines
+document.getElementById('appart').addEventListener('change', e => {
+  loadRoutinesForAppart(e.target.value);
+});
 
 // Items : string ou objet {t:"...", d:"détail optionnel", photo:true, video:true}
 const data = [

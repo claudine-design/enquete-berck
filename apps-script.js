@@ -57,6 +57,16 @@ var HEAD_VR = ['Email', 'Nom Prenom', 'Telephone', 'Ville', 'Zone Vacances', 'Ap
 var HEAD_NR = ['Email', 'Nom Prenom', 'Telephone', 'Ville', 'Zone Vacances', 'Appartement', 'Residence', 'Prestataire', 'Note Arrivee', 'Proprete', 'Details Menage', 'Ameliorations', 'Commentaire', 'Date'];
 var HEAD_PARRAINS = ['Code Parrain', 'Nom Prenom', 'Email', 'Telephone', 'Appartement', 'Residence', 'Date Creation', 'Nb Utilisations', 'Derniere Utilisation'];
 var HEAD_PARRAINAGES = ['Date Validation', 'Code Parrain Utilise', 'Parrain Nom', 'Parrain Email', 'Filleul Nom', 'Filleul Email', 'Filleul Appartement', 'Filleul Date Sejour'];
+var HEAD_ROUTINES = ['Date Fait', 'Appart Slug', 'Task Id', 'Task Label', 'Prestataire'];
+
+// ===== ROUTINES PERIODIQUES (entretien Sweepy-style) =====
+// Toutes les taches sont definies cote frontend ; le backend ne fait que stocker/lire l'historique.
+// On garde quand meme la liste ici pour validation (pour eviter d'enregistrer un task_id invalide).
+var ROUTINE_TASK_IDS = [
+  'radiateurs', 'interrupteurs', 'planchers', 'portes', 'luminaires',
+  'tete-lit', 'plantes', 'derriere-canape', 'cafetiere',
+  'plaids', 'coussins', 'couettes', 'rideaux'
+];
 
 // ===== VALEURS NEGATIVES (5 niveaux) =====
 var NEG_Q1 = 'Tr\xe8s d\xe9cevant';
@@ -166,6 +176,55 @@ function handle(p) {
 
   if (action === 'runWeeklyRecap')  { sendWeeklyRecap(); return json({ success: true }); }
   if (action === 'runMonthlyRecap') { sendMonthlyRecap(); return json({ success: true }); }
+
+  // ===== ROUTINES PERIODIQUES (Sweepy-style) =====
+  if (action === 'getRoutines') {
+    // Renvoie la derniere date de chaque routine pour un appart donne.
+    // Param : appart=<slug> (optionnel : si absent, renvoie tout)
+    var sheetRt = ss.getSheetByName('Routines');
+    if (!sheetRt) return json({ data: {} });
+    var rows = sheetRt.getDataRange().getValues();
+    if (rows.length < 2) return json({ data: {} });
+    var byAppart = {}; // { appart_slug: { task_id: { lastDone: ISO, prestataire: '...' } } }
+    for (var i = 1; i < rows.length; i++) {
+      var r = rows[i];
+      var dateFait = r[0];
+      var slug = String(r[1] || '').toLowerCase();
+      var taskId = String(r[2] || '');
+      var presta = String(r[4] || '');
+      if (!slug || !taskId || !dateFait) continue;
+      var t = (dateFait instanceof Date) ? dateFait.getTime() : new Date(dateFait).getTime();
+      if (!byAppart[slug]) byAppart[slug] = {};
+      var prev = byAppart[slug][taskId];
+      // Garder la plus recente
+      if (!prev || (prev._t || 0) < t) {
+        byAppart[slug][taskId] = { lastDone: new Date(t).toISOString(), prestataire: presta, _t: t };
+      }
+    }
+    // Cleanup _t (helper interne)
+    Object.keys(byAppart).forEach(function(s){
+      Object.keys(byAppart[s]).forEach(function(tid){ delete byAppart[s][tid]._t; });
+    });
+    var filterAppart = (p.appart || '').toString().toLowerCase().trim();
+    if (filterAppart) {
+      return json({ data: byAppart[filterAppart] || {} });
+    }
+    return json({ data: byAppart });
+  }
+
+  if (action === 'markRoutineDone') {
+    // Enregistre qu'une routine vient d'etre faite.
+    // Params : appart=<slug>, task=<taskId>, label=<task label>, presta=<nom prestataire>
+    var slug = (p.appart || '').toString().toLowerCase().trim();
+    var taskId = (p.task || '').toString().trim();
+    var label = (p.label || '').toString().trim();
+    var presta = (p.presta || '').toString().trim();
+    if (!slug || !taskId) return json({ error: 'appart et task requis' });
+    if (ROUTINE_TASK_IDS.indexOf(taskId) === -1) return json({ error: 'task_id inconnu : ' + taskId });
+    var sheetRt = ensureSheet(ss, 'Routines', HEAD_ROUTINES, '#16a34a');
+    sheetRt.appendRow([new Date(), slug, taskId, label, presta]);
+    return json({ success: true, lastDone: new Date().toISOString() });
+  }
 
   return json({ error: 'Action inconnue' });
 }
