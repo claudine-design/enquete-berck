@@ -413,6 +413,10 @@ function renderRoutines(){
     cntEl.textContent = '✓ tout à jour';
     cntEl.classList.remove('due');
   }
+  // Auto-ouvre la section s'il y a des routines dues
+  const block = document.getElementById('routines-block');
+  if(dueCount > 0) block.setAttribute('open', '');
+  else block.removeAttribute('open');
 }
 
 async function markRoutineDone(taskId, label, btn){
