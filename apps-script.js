@@ -223,6 +223,45 @@ function handle(p) {
     return json({ success: true, lastDone: new Date().toISOString() });
   }
 
+  if (action === 'undoRoutineDone') {
+    // Supprime la DERNIERE entree du sheet Routines pour ce appart+task.
+    // Utilise pour annuler un click "Fait" errone.
+    // Params : appart=<slug>, task=<taskId>
+    var slug = (p.appart || '').toString().toLowerCase().trim();
+    var taskId = (p.task || '').toString().trim();
+    if (!slug || !taskId) return json({ error: 'appart et task requis' });
+    if (!ROUTINE_TASK_ID_REGEX.test(taskId)) return json({ error: 'task_id invalide : ' + taskId });
+    var sheetRt2 = ss.getSheetByName('Routines');
+    if (!sheetRt2) return json({ error: 'Aucune routine enregistree' });
+    var data = sheetRt2.getDataRange().getValues();
+    // Cherche la derniere ligne (la plus recente) qui matche
+    var foundRow = -1;
+    var foundTime = -1;
+    for (var i = 1; i < data.length; i++) {
+      var rowSlug = String(data[i][1] || '').toLowerCase();
+      var rowTask = String(data[i][2] || '');
+      if (rowSlug === slug && rowTask === taskId) {
+        var t = (data[i][0] instanceof Date) ? data[i][0].getTime() : new Date(data[i][0]).getTime();
+        if (t > foundTime) { foundTime = t; foundRow = i + 1; } // +1 car sheet rows sont 1-indexed
+      }
+    }
+    if (foundRow === -1) return json({ error: 'Aucune entree trouvee pour cet appart+task' });
+    sheetRt2.deleteRow(foundRow);
+    // Renvoie la nouvelle "derniere date" (precedente entree restante) ou null
+    var newLast = null;
+    var dataAfter = sheetRt2.getDataRange().getValues();
+    var newTime = -1;
+    for (var j = 1; j < dataAfter.length; j++) {
+      var s2 = String(dataAfter[j][1] || '').toLowerCase();
+      var t2 = String(dataAfter[j][2] || '');
+      if (s2 === slug && t2 === taskId) {
+        var ts = (dataAfter[j][0] instanceof Date) ? dataAfter[j][0].getTime() : new Date(dataAfter[j][0]).getTime();
+        if (ts > newTime) { newTime = ts; newLast = new Date(ts).toISOString(); }
+      }
+    }
+    return json({ success: true, lastDone: newLast });
+  }
+
   return json({ error: 'Action inconnue' });
 }
 

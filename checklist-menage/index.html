@@ -77,9 +77,10 @@
   .routine .r-label{font-weight:600;font-size:14px;color:#3B3B3B;line-height:1.3}
   .routine .r-meta{font-size:11px;color:#666;margin-top:3px}
   .routine .r-meta b{color:#3B3B3B}
-  .routine .r-btn{flex-shrink:0;background:#16a34a;color:#fff;border:none;padding:7px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
+  .routine .r-btn{flex-shrink:0;background:#16a34a;color:#fff;border:none;padding:7px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;min-width:80px}
   .routine .r-btn:active{transform:scale(.95)}
-  .routine .r-btn.done{background:#94a3b8}
+  .routine .r-btn.r-btn-undo{background:#94a3b8}
+  .routine .r-btn.r-btn-undo:hover{background:#64748b}
   .routine .r-btn:disabled{opacity:0.5;cursor:default}
   #routines-summary-count.due{background:rgba(255,255,255,0.4) !important;font-weight:700}
   .gallery{margin:14px 0;display:none}
@@ -395,6 +396,12 @@ function renderRoutines(){
     const st = computeStatus(r.intervalDays, lastIso);
     if(st.cls === 'due-overdue' || st.cls === 'due-soon') dueCount++;
     const meta = formatInterval(r.intervalDays) + ' · <b>' + formatLastDone(lastIso) + '</b>';
+    // Si la routine a été marquée faite AUJOURD'HUI → bouton Annuler (gris)
+    // Sinon → bouton Fait (vert)
+    const doneToday = lastIso && (Math.floor((Date.now() - new Date(lastIso).getTime()) / 86400000) === 0);
+    const btnHtml = doneToday
+      ? `<button class="r-btn r-btn-undo" data-task="${escapeHtml(r.id)}" data-action="undo">↶ Annuler</button>`
+      : `<button class="r-btn" data-task="${escapeHtml(r.id)}" data-label="${escapeHtml(r.label)}" data-action="done">✓ Fait</button>`;
     return `
       <div class="routine ${st.cls}">
         <div class="r-status">${st.icon}</div>
@@ -402,7 +409,7 @@ function renderRoutines(){
           <div class="r-label">${escapeHtml(r.label)}</div>
           <div class="r-meta">${meta}</div>
         </div>
-        <button class="r-btn" data-task="${escapeHtml(r.id)}" data-label="${escapeHtml(r.label)}">✓ Fait</button>
+        ${btnHtml}
       </div>
     `;
   }).join('');
@@ -446,13 +453,46 @@ async function markRoutineDone(taskId, label, btn){
   }
 }
 
-// Délégation d'événements pour les boutons "✓ Fait" (évite les bugs d'échappement)
+async function undoRoutineDone(taskId, btn){
+  if(!currentRoutinesSlug) return;
+  btn.disabled = true;
+  btn.textContent = '⏳';
+  const params = new URLSearchParams({
+    action: 'undoRoutineDone',
+    appart: currentRoutinesSlug,
+    task: taskId
+  });
+  try {
+    const res = await fetch(ROUTINES_API_URL + '?' + params.toString());
+    const json = await res.json();
+    if(json.lastDone){
+      // Une entrée précédente existe encore → la garder comme "dernière fois"
+      routinesData[taskId] = { lastDone: json.lastDone, prestataire: '' };
+    } else {
+      // Plus aucune entrée → routine n'a jamais été faite
+      delete routinesData[taskId];
+    }
+    renderRoutines();
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = '↶ Annuler';
+    alert('Erreur lors de l\'annulation. Réessayez.');
+  }
+}
+
+// Délégation d'événements (évite les bugs d'échappement HTML)
 document.getElementById('routines-list').addEventListener('click', function(e){
   const btn = e.target.closest('.r-btn');
   if(!btn || btn.disabled) return;
   const taskId = btn.getAttribute('data-task');
-  const label = btn.getAttribute('data-label');
-  if(taskId) markRoutineDone(taskId, label, btn);
+  const action = btn.getAttribute('data-action');
+  if(!taskId) return;
+  if(action === 'undo'){
+    undoRoutineDone(taskId, btn);
+  } else {
+    const label = btn.getAttribute('data-label');
+    markRoutineDone(taskId, label, btn);
+  }
 });
 
 // Hook : quand l'appart change, recharger les routines
