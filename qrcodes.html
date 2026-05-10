@@ -443,7 +443,7 @@ async function downloadPDF() {
     var jsPDFCtor = window.jspdf.jsPDF;
     var pdf = new jsPDFCtor({orientation: 'portrait', unit: 'mm', format: 'a4'});
 
-    // A4 = 210 x 297 mm. On met 2 cartes 100x140 centrées
+    // A4 = 210 x 297 mm. On met 2 cartes 100x140 centrées sur fond noir plein cadre
     var cardW = 100, cardH = 140;
     var x = (210 - cardW) / 2;
     var marginTop = 8;
@@ -451,18 +451,28 @@ async function downloadPDF() {
     var y1 = marginTop;
     var y2 = marginTop + cardH + gap;
 
+    // Fonction pour peindre la page entière en noir avant d'ajouter les cartes
+    function paintBlackPage() {
+      pdf.setFillColor(10, 10, 10);
+      pdf.rect(0, 0, 210, 297, 'F');
+    }
+    paintBlackPage();
+
     for (var i = 0; i < cards.length; i++) {
       btn.textContent = 'Génération ' + (i+1) + '/' + cards.length + '…';
       var canvas = await html2canvas(cards[i], {
         scale: 2,
-        backgroundColor: null,
+        backgroundColor: '#0a0a0a',
         useCORS: true,
         logging: false
       });
       var imgData = canvas.toDataURL('image/jpeg', 0.92);
 
       var slot = i % 2; // 0 = haut, 1 = bas
-      if (i > 0 && slot === 0) pdf.addPage();
+      if (i > 0 && slot === 0) {
+        pdf.addPage();
+        paintBlackPage();
+      }
       pdf.addImage(imgData, 'JPEG', x, slot === 0 ? y1 : y2, cardW, cardH);
     }
 
