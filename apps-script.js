@@ -58,7 +58,8 @@ var HEAD_NR = ['Email', 'Nom Prenom', 'Telephone', 'Ville', 'Zone Vacances', 'Ap
 var HEAD_PARRAINS = ['Code Parrain', 'Nom Prenom', 'Email', 'Telephone', 'Appartement', 'Residence', 'Date Creation', 'Nb Utilisations', 'Derniere Utilisation'];
 var HEAD_PARRAINAGES = ['Date Validation', 'Code Parrain Utilise', 'Parrain Nom', 'Parrain Email', 'Filleul Nom', 'Filleul Email', 'Filleul Appartement', 'Filleul Date Sejour'];
 var HEAD_ROUTINES = ['Date Fait', 'Appart Slug', 'Task Id', 'Task Label', 'Prestataire'];
-var HEAD_SIGNALEMENTS = ['ID', 'Date Creation', 'Appart Slug', 'Source', 'Voyageur', 'Element', 'Description', 'Action Prestataire', 'Statut', 'Date Resolu', 'Resolu Par'];
+var HEAD_SIGNALEMENTS = ['ID', 'Date Creation', 'Appart Slug', 'Source', 'Voyageur', 'Element', 'Description', 'Action Prestataire', 'Statut', 'Date Resolu', 'Resolu Par', 'Calendar Event ID'];
+var DRAPS_CALENDAR_ID = '8e2aa92cb418bfa01e1a133d5835ef14be76315442ba4703e67431393ffca07b@group.calendar.google.com';
 
 // ===== ROUTINES PERIODIQUES (entretien Sweepy-style) =====
 // Toutes les taches sont definies cote frontend ; le backend ne fait que stocker/lire l'historique.
@@ -294,6 +295,7 @@ function handle(p) {
         statut: r[8] || 'ouvert',
         dateResolu: r[9] || null,
         resoluPar: r[10] || null,
+        eventId: r[11] || null,
         rowIndex: i + 1
       });
     }
@@ -307,20 +309,52 @@ function handle(p) {
     if (!slug2) return json({ error: 'appart requis' });
     var sheetSig2 = ensureSheet(ss, 'Signalements', HEAD_SIGNALEMENTS, '#dc2626');
     var sigId = 'sig-' + Date.now() + '-' + Math.random().toString(36).substring(2, 8);
+    // ⚠️ "action" est un param reserve (= endpoint name), donc on accepte aussi "actionPresta"
+    var actionPresta = (p.actionPresta || p.action_presta || '');
+    var element = (p.element || '');
+    var description = (p.description || '');
+    var source = (p.source || 'manuel');
+    var voyageur = (p.voyageur || '');
+
+    // Creer un event Calendar dans DraPS (best-effort, ne pas bloquer si echec)
+    var eventId = '';
+    try {
+      var cal = CalendarApp.getCalendarById(DRAPS_CALENDAR_ID);
+      if (cal) {
+        var title = '🚨 ' + slug2.toUpperCase() + ' : ' + (element || description.substring(0, 60) || 'Signalement voyageur');
+        var bodyParts = [];
+        bodyParts.push('Signalement voyageur a regler par le menage.');
+        bodyParts.push('');
+        if (voyageur) bodyParts.push('Voyageur : ' + voyageur);
+        if (source) bodyParts.push('Source : ' + source);
+        if (description) bodyParts.push('Description : ' + description);
+        if (actionPresta) bodyParts.push('');
+        if (actionPresta) bodyParts.push('Action prestataire : ' + actionPresta);
+        bodyParts.push('');
+        bodyParts.push('ID : ' + sigId);
+        var event = cal.createAllDayEvent(title, new Date(), { description: bodyParts.join('\n') });
+        eventId = event.getId();
+      }
+    } catch (calErr) {
+      // Si Calendar non accessible, on continue sans bloquer
+      eventId = 'err:' + (calErr.message || 'unknown').substring(0, 50);
+    }
+
     sheetSig2.appendRow([
       sigId,
       new Date(),
       slug2,
-      (p.source || 'manuel'),
-      (p.voyageur || ''),
-      (p.element || ''),
-      (p.description || ''),
-      (p.action || ''),
+      source,
+      voyageur,
+      element,
+      description,
+      actionPresta,
       'ouvert',
       '',
-      ''
+      '',
+      eventId
     ]);
-    return json({ success: true, id: sigId });
+    return json({ success: true, id: sigId, eventId: eventId });
   }
 
   if (action === 'markSignalementResolu') {
@@ -337,6 +371,26 @@ function handle(p) {
         sheetSig3.getRange(k + 1, 9).setValue('resolu');
         sheetSig3.getRange(k + 1, 10).setValue(new Date());
         sheetSig3.getRange(k + 1, 11).setValue((p.par || ''));
+        // Mettre a jour l'event Calendar si il existe : prefixer le titre avec ✅
+        try {
+          var existingEventId = rows3[k][11];
+          if (existingEventId && existingEventId.toString().indexOf('err:') !== 0) {
+            var cal3 = CalendarApp.getCalendarById(DRAPS_CALENDAR_ID);
+            if (cal3) {
+              var ev = cal3.getEventById(existingEventId);
+              if (ev) {
+                var oldTitle = ev.getTitle();
+                if (oldTitle.indexOf('✅') !== 0) {
+                  ev.setTitle('✅ RÉGLÉ — ' + oldTitle.replace(/^🚨\s*/, ''));
+                }
+                var oldDesc = ev.getDescription() || '';
+                ev.setDescription('✅ Réglé le ' + new Date().toISOString().substring(0,10) + ' par : ' + (p.par || 'inconnu') + '\n\n' + oldDesc);
+              }
+            }
+          }
+        } catch (calErr2) {
+          // ignore
+        }
         return json({ success: true });
       }
     }
