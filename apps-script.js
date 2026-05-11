@@ -58,6 +58,7 @@ var HEAD_NR = ['Email', 'Nom Prenom', 'Telephone', 'Ville', 'Zone Vacances', 'Ap
 var HEAD_PARRAINS = ['Code Parrain', 'Nom Prenom', 'Email', 'Telephone', 'Appartement', 'Residence', 'Date Creation', 'Nb Utilisations', 'Derniere Utilisation'];
 var HEAD_PARRAINAGES = ['Date Validation', 'Code Parrain Utilise', 'Parrain Nom', 'Parrain Email', 'Filleul Nom', 'Filleul Email', 'Filleul Appartement', 'Filleul Date Sejour'];
 var HEAD_ROUTINES = ['Date Fait', 'Appart Slug', 'Task Id', 'Task Label', 'Prestataire'];
+var HEAD_SIGNALEMENTS = ['ID', 'Date Creation', 'Appart Slug', 'Source', 'Voyageur', 'Element', 'Description', 'Statut', 'Date Resolu', 'Resolu Par'];
 
 // ===== ROUTINES PERIODIQUES (entretien Sweepy-style) =====
 // Toutes les taches sont definies cote frontend ; le backend ne fait que stocker/lire l'historique.
@@ -260,6 +261,81 @@ function handle(p) {
       }
     }
     return json({ success: true, lastDone: newLast });
+  }
+
+  // ===== SIGNALEMENTS VOYAGEURS (problemes a regler par le menage) =====
+  if (action === 'getSignalements') {
+    // Renvoie les signalements OUVERTS pour un appart (statut != 'resolu').
+    // Param : appart=<slug> (obligatoire), incluResolus=1 (optionnel)
+    var slug = (p.appart || '').toString().toLowerCase().trim();
+    var sheetSig = ss.getSheetByName('Signalements');
+    if (!sheetSig) return json({ data: [] });
+    var rows = sheetSig.getDataRange().getValues();
+    if (rows.length < 2) return json({ data: [] });
+    var includeResolved = (p.incluResolus === '1' || p.incluResolus === 'true');
+    var out = [];
+    for (var i = 1; i < rows.length; i++) {
+      var r = rows[i];
+      var rowSlug = String(r[2] || '').toLowerCase();
+      var statut = String(r[7] || '').toLowerCase();
+      if (slug && rowSlug !== slug) continue;
+      if (!includeResolved && statut === 'resolu') continue;
+      out.push({
+        id: r[0],
+        dateCreation: r[1],
+        appartSlug: r[2],
+        source: r[3],
+        voyageur: r[4],
+        element: r[5],
+        description: r[6],
+        statut: r[7] || 'ouvert',
+        dateResolu: r[8] || null,
+        resoluPar: r[9] || null,
+        rowIndex: i + 1
+      });
+    }
+    return json({ data: out });
+  }
+
+  if (action === 'addSignalement') {
+    // Cree un nouveau signalement.
+    // Params : appart, source (beds24|email|whatsapp|manuel), voyageur, element, description
+    var slug2 = (p.appart || '').toString().toLowerCase().trim();
+    if (!slug2) return json({ error: 'appart requis' });
+    var sheetSig2 = ensureSheet(ss, 'Signalements', HEAD_SIGNALEMENTS, '#dc2626');
+    var sigId = 'sig-' + Date.now() + '-' + Math.random().toString(36).substring(2, 8);
+    sheetSig2.appendRow([
+      sigId,
+      new Date(),
+      slug2,
+      (p.source || 'manuel'),
+      (p.voyageur || ''),
+      (p.element || ''),
+      (p.description || ''),
+      'ouvert',
+      '',
+      ''
+    ]);
+    return json({ success: true, id: sigId });
+  }
+
+  if (action === 'markSignalementResolu') {
+    // Marque un signalement comme resolu (par prestataire).
+    // Params : id=<sigId>, par=<nom prestataire>
+    var sigId3 = (p.id || '').toString().trim();
+    if (!sigId3) return json({ error: 'id requis' });
+    var sheetSig3 = ss.getSheetByName('Signalements');
+    if (!sheetSig3) return json({ error: 'Aucun signalement' });
+    var rows3 = sheetSig3.getDataRange().getValues();
+    for (var k = 1; k < rows3.length; k++) {
+      if (String(rows3[k][0]) === sigId3) {
+        sheetSig3.getRange(k + 1, 8).setValue('resolu');
+        sheetSig3.getRange(k + 1, 9).setValue(new Date());
+        sheetSig3.getRange(k + 1, 10).setValue((p.par || ''));
+        return json({ success: true });
+      }
+    }
+    return json({ error: 'Signalement ' + sigId3 + ' introuvable' });
   }
 
   return json({ error: 'Action inconnue' });

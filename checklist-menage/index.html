@@ -157,6 +157,12 @@
 
 <div id="warning-appart" style="display:none;margin:14px 16px;padding:14px 16px;border-radius:12px"></div>
 
+<div id="signalements-block" style="display:none;margin:14px 16px;padding:14px 16px;border-radius:12px;background:linear-gradient(135deg,#fef2f2,#fee2e2);border:2px solid #dc2626;color:#7f1d1d">
+  <div style="font-weight:700;font-size:15px;color:#991b1b;margin-bottom:8px">🚨 Signalements voyageurs récents <span id="signalements-count" style="background:#dc2626;color:#fff;border-radius:10px;padding:2px 8px;font-size:12px;margin-left:6px"></span></div>
+  <div style="font-size:12px;color:#7f1d1d;font-style:italic;margin-bottom:10px">À vérifier / corriger pendant le ménage. Cocher "✓ Réglé" une fois traité.</div>
+  <div id="signalements-list"></div>
+</div>
+
 <div id="gallery" class="gallery"></div>
 
 <details id="routines-block" class="guide" style="display:none;border:2px solid #16a34a;background:#f0fdf4">
@@ -498,13 +504,66 @@ document.getElementById('routines-list').addEventListener('click', function(e){
 // Hook : quand l'appart change, recharger les routines
 document.getElementById('appart').addEventListener('change', e => {
   loadRoutinesForAppart(e.target.value);
+  loadSignalementsForAppart(e.target.value);
+});
+
+// ===== SIGNALEMENTS VOYAGEURS (problèmes signalés à régler) =====
+async function loadSignalementsForAppart(slug){
+  const block = document.getElementById('signalements-block');
+  if(!slug){ block.style.display='none'; return; }
+  try {
+    const res = await fetch(ROUTINES_API_URL + '?action=getSignalements&appart=' + encodeURIComponent(slug) + '&t=' + Date.now());
+    const json = await res.json();
+    const sigs = json.data || [];
+    if(sigs.length === 0){ block.style.display='none'; return; }
+    block.style.display='block';
+    document.getElementById('signalements-count').textContent = sigs.length + ' à régler';
+    document.getElementById('signalements-list').innerHTML = sigs.map(s => {
+      const dateCre = s.dateCreation ? String(s.dateCreation).substring(0,10) : '';
+      const elem = s.element ? '<b>' + escapeHtml(s.element) + '</b> · ' : '';
+      const desc = escapeHtml(s.description || '');
+      const src = s.source ? '<span style="font-size:10px;background:#fee2e2;padding:1px 6px;border-radius:6px;margin-left:4px">'+escapeHtml(s.source)+'</span>' : '';
+      const voy = s.voyageur ? ' · <span style="color:#7f1d1d;opacity:0.8">' + escapeHtml(s.voyageur) + '</span>' : '';
+      return `
+        <div style="background:#fff;padding:10px 12px;border-radius:8px;margin-bottom:6px;border-left:4px solid #dc2626">
+          <div style="font-size:11px;color:#7f1d1d;opacity:0.8;margin-bottom:3px">📅 ${dateCre}${voy}${src}</div>
+          <div style="font-size:14px;color:#1e293b;margin-bottom:8px">${elem}<i>${desc}</i></div>
+          <button class="sig-btn" data-sig-id="${escapeHtml(s.id)}" style="background:#16a34a;color:#fff;border:none;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">✓ Réglé</button>
+        </div>
+      `;
+    }).join('');
+  } catch(e){
+    block.style.display='none';
+  }
+}
+
+// Délégation pour bouton "Réglé"
+document.getElementById('signalements-list').addEventListener('click', async function(e){
+  const btn = e.target.closest('.sig-btn');
+  if(!btn || btn.disabled) return;
+  const sigId = btn.getAttribute('data-sig-id');
+  const presta = (document.getElementById('nom').value || '').trim();
+  btn.disabled = true;
+  btn.textContent = '⏳';
+  try {
+    await fetch(ROUTINES_API_URL + '?action=markSignalementResolu&id=' + encodeURIComponent(sigId) + '&par=' + encodeURIComponent(presta));
+    // Refresh
+    loadSignalementsForAppart(document.getElementById('appart').value);
+  } catch(err){
+    btn.disabled = false;
+    btn.textContent = '✓ Réglé';
+    alert('Erreur. Réessayez.');
+  }
 });
 
 // Si l'appart était DÉJÀ pré-sélectionné via ?appart= (QR code), le change event
 // a été dispatché AVANT que ce listener soit installé. On rattrape ici.
 {
   const sel = document.getElementById('appart');
-  if(sel && sel.value) loadRoutinesForAppart(sel.value);
+  if(sel && sel.value) {
+    loadRoutinesForAppart(sel.value);
+    loadSignalementsForAppart(sel.value);
+  }
 }
 
 // Items : string ou objet {t:"...", d:"détail optionnel", photo:true, video:true}
