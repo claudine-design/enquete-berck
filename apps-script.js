@@ -333,6 +333,9 @@ function handle(p) {
         bodyParts.push('');
         bodyParts.push('ID : ' + sigId);
         var event = cal.createAllDayEvent(title, new Date(), { description: bodyParts.join('\n') });
+        // Supprimer les rappels par defaut du calendrier (sinon Claudine recoit popup + email = 2 notifs)
+        // L'event reste visible dans DraPS, mais sans notification intrusive
+        event.removeAllReminders();
         eventId = event.getId();
       }
     } catch (calErr) {
@@ -1036,4 +1039,43 @@ function envoyerMailFilleulValide(filleul, parrain) {
 
 function json(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
+
+// ============================================================
+// HELPERS ONE-SHOT (a executer manuellement depuis l'editeur)
+// ============================================================
+
+// A executer une fois pour autoriser l'acces au calendrier DraPS
+function authorizeCalendar() {
+  var cal = CalendarApp.getCalendarById(DRAPS_CALENDAR_ID);
+  Logger.log('Calendar trouve : ' + (cal ? cal.getName() : 'NON'));
+}
+
+// One-shot : retire les rappels de tous les events DraPS lies aux signalements OUVERTS
+// A executer apres deploiement de la nouvelle version pour nettoyer les events existants
+function cleanupSignalementsReminders() {
+  var ss = SpreadsheetApp.openById(SHEET_ID);
+  var sheet = ss.getSheetByName('Signalements');
+  if (!sheet) { Logger.log('Pas de sheet Signalements'); return; }
+  var data = sheet.getDataRange().getValues();
+  var cal = CalendarApp.getCalendarById(DRAPS_CALENDAR_ID);
+  if (!cal) { Logger.log('Calendar DraPS introuvable'); return; }
+  var count = 0;
+  for (var i = 1; i < data.length; i++) {
+    var statut = data[i][8];      // col Statut
+    var eventId = data[i][11];    // col Calendar Event ID
+    if (statut !== 'ouvert') continue;
+    if (!eventId || eventId.toString().indexOf('err:') === 0) continue;
+    try {
+      var ev = cal.getEventById(eventId);
+      if (ev) {
+        ev.removeAllReminders();
+        count++;
+        Logger.log('Rappels retires : ' + data[i][5] + ' (' + eventId + ')');
+      }
+    } catch (e) {
+      Logger.log('Erreur sur ' + eventId + ' : ' + e.message);
+    }
+  }
+  Logger.log('Total events nettoyes : ' + count);
 }
