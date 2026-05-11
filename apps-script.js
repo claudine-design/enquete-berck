@@ -58,7 +58,7 @@ var HEAD_NR = ['Email', 'Nom Prenom', 'Telephone', 'Ville', 'Zone Vacances', 'Ap
 var HEAD_PARRAINS = ['Code Parrain', 'Nom Prenom', 'Email', 'Telephone', 'Appartement', 'Residence', 'Date Creation', 'Nb Utilisations', 'Derniere Utilisation'];
 var HEAD_PARRAINAGES = ['Date Validation', 'Code Parrain Utilise', 'Parrain Nom', 'Parrain Email', 'Filleul Nom', 'Filleul Email', 'Filleul Appartement', 'Filleul Date Sejour'];
 var HEAD_ROUTINES = ['Date Fait', 'Appart Slug', 'Task Id', 'Task Label', 'Prestataire'];
-var HEAD_SIGNALEMENTS = ['ID', 'Date Creation', 'Appart Slug', 'Source', 'Voyageur', 'Element', 'Description', 'Statut', 'Date Resolu', 'Resolu Par'];
+var HEAD_SIGNALEMENTS = ['ID', 'Date Creation', 'Appart Slug', 'Source', 'Voyageur', 'Element', 'Description', 'Action Prestataire', 'Statut', 'Date Resolu', 'Resolu Par'];
 
 // ===== ROUTINES PERIODIQUES (entretien Sweepy-style) =====
 // Toutes les taches sont definies cote frontend ; le backend ne fait que stocker/lire l'historique.
@@ -279,7 +279,9 @@ function handle(p) {
       var rowSlug = String(r[2] || '').toLowerCase();
       var statut = String(r[7] || '').toLowerCase();
       if (slug && rowSlug !== slug) continue;
-      if (!includeResolved && statut === 'resolu') continue;
+      // Statut est en colonne 9 maintenant (avec action en col 8) — adapter pour anciens rows
+      var realStatut = String(r[8] || r[7] || '').toLowerCase();
+      if (!includeResolved && realStatut === 'resolu') continue;
       out.push({
         id: r[0],
         dateCreation: r[1],
@@ -288,9 +290,10 @@ function handle(p) {
         voyageur: r[4],
         element: r[5],
         description: r[6],
-        statut: r[7] || 'ouvert',
-        dateResolu: r[8] || null,
-        resoluPar: r[9] || null,
+        action: r[7] || '',
+        statut: r[8] || 'ouvert',
+        dateResolu: r[9] || null,
+        resoluPar: r[10] || null,
         rowIndex: i + 1
       });
     }
@@ -312,6 +315,7 @@ function handle(p) {
       (p.voyageur || ''),
       (p.element || ''),
       (p.description || ''),
+      (p.action || ''),
       'ouvert',
       '',
       ''
@@ -329,9 +333,10 @@ function handle(p) {
     var rows3 = sheetSig3.getDataRange().getValues();
     for (var k = 1; k < rows3.length; k++) {
       if (String(rows3[k][0]) === sigId3) {
-        sheetSig3.getRange(k + 1, 8).setValue('resolu');
-        sheetSig3.getRange(k + 1, 9).setValue(new Date());
-        sheetSig3.getRange(k + 1, 10).setValue((p.par || ''));
+        // Statut col 9, Date Resolu col 10, Resolu Par col 11
+        sheetSig3.getRange(k + 1, 9).setValue('resolu');
+        sheetSig3.getRange(k + 1, 10).setValue(new Date());
+        sheetSig3.getRange(k + 1, 11).setValue((p.par || ''));
         return json({ success: true });
       }
     }
