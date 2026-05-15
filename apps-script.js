@@ -1079,3 +1079,322 @@ function cleanupSignalementsReminders() {
   }
   Logger.log('Total events nettoyes : ' + count);
 }
+
+// ============================================================
+// SCAN BEDS24 QUOTIDIEN A 9H30
+// ============================================================
+// Filtre via Claude API les messages voyageurs des departs J-1 / J0
+// et cree automatiquement les signalements pour les vrais problemes.
+
+var BEDS24_API_URL = 'https://api.beds24.com/v2';
+var ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
+var ANTHROPIC_MODEL = 'claude-haiku-4-5';
+
+// Mapping propertyId Beds24 -> slug checklist-menage (convention dash)
+// Source : skill livret-accueil-berck §2 Beds24
+// 165649 = fantome SPA, ignore (remplace par 322705 Cocon Romantique)
+var PROPERTY_TO_SLUG = {
+  '130359': 'face-mer',         '130360': 'terrasse',
+  '139315': 'hamac',            '139457': 'paddle',
+  '139836': 'kitesurf',         '158760': 'surf',
+  '159616': 'balneo',           '189737': 'grand-large',
+  '218166': 'albatros',         '229691': 'apolove',
+  '230322': 'apollo',           '249462': 'maisonnette',
+  '257174': 'famille',          '262694': 'kingston',
+  '262835': 'jeanne',           '271266': 'grande-love-room',
+  '284349': 'mini-love-room',   '288628': 'patio',
+  '311800': 'rotonde',          '318990': 'evasion',
+  '322705': 'cocon-romantique'
+};
+
+// System prompt pour Claude API — version compacte du skill scan-feedback-voyageurs
+var SCAN_FEEDBACK_SYSTEM_PROMPT = [
+  'Tu filtres les messages voyageurs Beds24 pour decider si on doit notifier la prestataire de menage.',
+  '',
+  'NOTIFIER (notify:true) si le voyageur signale :',
+  '- Equipement casse/en panne (TV, balneo, frigo, lave-vaisselle, micro-onde, bouilloire, machine a laver, lampe, chauffage, climatisation, telecommande, serrure, robinet, douche, chasse d eau, etc.)',
+  '- Proprete insatisfaisante (taches, odeurs persistantes, cheveux, poussiere, salissures visibles)',
+  '- Element manquant qui devrait etre la (papier toilette, savon, sel/poivre, cafe/the, drap, peignoir, telecommande, mode d emploi)',
+  '- Element a remplacer/abime/use (matelas affaisse, alese tachee, serviette trouee, couette tachee, paroi douche fissuree)',
+  '- Doleance forte ou demande de remboursement/compensation',
+  '- Animaux nuisibles (cafards, punaises, fourmis)',
+  '- Securite (fuite gaz/eau, fil denude, fenetre qui ne ferme pas, serrure cassee)',
+  '',
+  'NE PAS NOTIFIER (notify:false) si :',
+  '- Politesses & remerciements ("merci beaucoup", "logement parfait", "passe un bon moment")',
+  '- Demandes pratiques sans probleme (check-in tardif, codes/cles, vinaigrettes, packs linge supplementaires, paiements)',
+  '- Sujets factuels neutres (confirmation arrivee/depart, telephone, mail, parking, transports)',
+  '- Le mot "casse" employe dans un contexte anodin (ex. "il a casse un verre en faisant la vaisselle" = excuse du voyageur, pas defaut du logement) — SAUF si remboursement ou degat',
+  '- Doleances exprimees AVANT le sejour',
+  '',
+  'EXEMPLES NEGATIFS (a NE PAS notifier) :',
+  '- "Merci beaucoup pour tout. Je suis vraiment heureuse d avoir passe ce bon moment chez vous." → notify:false (politesse)',
+  '- "Bonjour, mon ami a casse un verre en faisant la vaisselle. Combien vous dois-t-on pour cela ?" → notify:false (excuse + offre paiement, pas defaut du logement)',
+  '',
+  'REPONSE OBLIGATOIRE EN JSON STRICT :',
+  '{"notify":true|false,"category":"\\ud83d\\udd27 Casse/Panne"|"\\ud83e\\uddf9 Proprete"|"\\u274c Manquant"|"\\ud83d\\ude21 Doleance"|"\\ud83d\\udcb0 Remboursement"|"\\ud83d\\udd04 A changer"|null,"element":"balneo|TV|verre|...|null","action":"Action concrete pour la prestataire (max 200 chars). TOUJOURS inclure : (1) ce qu elle fait elle-meme (jeter, remplacer, nettoyer, verifier) et (2) le fallback \'signaler a Claudine\'. Pour equipement non remplacable (balneo, TV, frigo) : verifier puis signaler Claudine pour SAV.","reason":"Justification courte max 100 chars"}',
+  '',
+  'REGLE ABSOLUE : dans le doute, NOTIFIER plutot que IGNORER. Un faux positif (anodin remontre a la prestataire) est moins grave qu un vrai probleme ignore.'
+].join('\n');
+
+function getBeds24Token_() {
+  var refresh = PropertiesService.getScriptProperties().getProperty('BEDS24_REFRESH_TOKEN');
+  if (!refresh) throw new Error('BEDS24_REFRESH_TOKEN non configure dans PropertiesService. Lance setupScanSecrets() une fois.');
+  var resp = UrlFetchApp.fetch(BEDS24_API_URL + '/authentication/token', {
+    method: 'get',
+    headers: { 'refreshToken': refresh },
+    muteHttpExceptions: true
+  });
+  var code = resp.getResponseCode();
+  var data = JSON.parse(resp.getContentText());
+  if (code !== 200 || !data.token) {
+    throw new Error('Beds24 auth ' + code + ' : ' + resp.getContentText().substring(0, 200));
+  }
+  return data.token;
+}
+
+function getBeds24Bookings_(token, dateFrom, dateTo) {
+  // departureFrom / departureTo : on cible les departs de la periode
+  var url = BEDS24_API_URL + '/bookings?departureFrom=' + dateFrom + '&departureTo=' + dateTo + '&includeInfoItems=false';
+  var all = [];
+  var safety = 0;
+  while (url && safety < 20) {
+    safety++;
+    var resp = UrlFetchApp.fetch(url, {
+      method: 'get',
+      headers: { 'token': token },
+      muteHttpExceptions: true
+    });
+    var data = JSON.parse(resp.getContentText());
+    if (data && data.data && data.data.length) all = all.concat(data.data);
+    if (data && data.pages && data.pages.nextPageExists && data.pages.nextPageLink) {
+      url = data.pages.nextPageLink;
+      Utilities.sleep(800);
+    } else {
+      break;
+    }
+  }
+  return all;
+}
+
+function getBeds24Messages_(token, bookingIds) {
+  var byBooking = {};
+  for (var i = 0; i < bookingIds.length; i += 30) {
+    var chunk = bookingIds.slice(i, i + 30);
+    var url = BEDS24_API_URL + '/bookings/messages?bookingId=' + chunk.join(',');
+    var resp = UrlFetchApp.fetch(url, {
+      method: 'get',
+      headers: { 'token': token },
+      muteHttpExceptions: true
+    });
+    var data = JSON.parse(resp.getContentText());
+    if (data && data.data) {
+      for (var j = 0; j < data.data.length; j++) {
+        var m = data.data[j];
+        var bid = String(m.bookingId);
+        if (!byBooking[bid]) byBooking[bid] = [];
+        byBooking[bid].push(m);
+      }
+    }
+    if (i + 30 < bookingIds.length) Utilities.sleep(1500);
+  }
+  return byBooking;
+}
+
+function callClaudeFilter_(message, apartName, voyageur) {
+  var apiKey = PropertiesService.getScriptProperties().getProperty('ANTHROPIC_API_KEY');
+  if (!apiKey) throw new Error('ANTHROPIC_API_KEY non configure dans PropertiesService. Lance setupScanSecrets() une fois.');
+
+  var userPrompt = 'Appartement : ' + (apartName || 'inconnu') + '\n' +
+                   'Voyageur : ' + (voyageur || 'inconnu') + '\n\n' +
+                   '---DEBUT MESSAGE---\n' + message + '\n---FIN MESSAGE---\n\n' +
+                   'Decide notify=true/false selon les regles. Retourne UNIQUEMENT le JSON, sans markdown.';
+
+  var resp = UrlFetchApp.fetch(ANTHROPIC_API_URL, {
+    method: 'post',
+    headers: {
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'content-type': 'application/json'
+    },
+    payload: JSON.stringify({
+      model: ANTHROPIC_MODEL,
+      max_tokens: 400,
+      system: SCAN_FEEDBACK_SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: userPrompt }]
+    }),
+    muteHttpExceptions: true
+  });
+  var code = resp.getResponseCode();
+  var txt = resp.getContentText();
+  if (code !== 200) {
+    Logger.log('Anthropic ' + code + ' : ' + txt.substring(0, 300));
+    return null;
+  }
+  var data = JSON.parse(txt);
+  if (!data.content || !data.content.length) return null;
+  var raw = data.content[0].text || '';
+  var match = raw.match(/\{[\s\S]*\}/);
+  if (!match) {
+    Logger.log('Anthropic reponse sans JSON : ' + raw.substring(0, 200));
+    return null;
+  }
+  try {
+    return JSON.parse(match[0]);
+  } catch (e) {
+    Logger.log('Parse JSON echoue : ' + match[0].substring(0, 200));
+    return null;
+  }
+}
+
+// Reutilise la logique addSignalement existante de handle()
+function addSignalementInternal_(params) {
+  return handle({
+    action: 'addSignalement',
+    appart: params.appart,
+    source: params.source,
+    voyageur: params.voyageur,
+    element: params.element,
+    description: params.description,
+    actionPresta: params.actionPresta
+  });
+}
+
+// === MAIN — Scan quotidien declenche par trigger 9h30 ===
+function dailyScanBeds24() {
+  var tz = 'Europe/Paris';
+  var todayDate = new Date();
+  var yesterdayDate = new Date(todayDate.getTime() - 86400000);
+  var today = Utilities.formatDate(todayDate, tz, 'yyyy-MM-dd');
+  var yesterday = Utilities.formatDate(yesterdayDate, tz, 'yyyy-MM-dd');
+  Logger.log('=== Scan Beds24 ' + today + ' (departs ' + yesterday + ' -> ' + today + ') ===');
+
+  var token;
+  try { token = getBeds24Token_(); }
+  catch (e) { Logger.log('FAIL auth Beds24 : ' + e.message); return; }
+
+  var bookings = getBeds24Bookings_(token, yesterday, today);
+  var actifs = [];
+  for (var b = 0; b < bookings.length; b++) {
+    var st = bookings[b].status;
+    if (st !== 'cancelled' && st !== 'black' && st !== 'inquiry') actifs.push(bookings[b]);
+  }
+  Logger.log(bookings.length + ' bookings, ' + actifs.length + ' actifs (status confirmed/new)');
+  if (actifs.length === 0) { Logger.log('Aucun depart aujourd hui ou hier. Fin.'); return; }
+
+  // Recuperer les messages
+  var ids = [];
+  for (var k = 0; k < actifs.length; k++) ids.push(actifs[k].id);
+  var msgsByBooking = getBeds24Messages_(token, ids);
+
+  // Lire les signalements existants pour eviter les doublons par bookingId
+  var ss = SpreadsheetApp.openById(SHEET_ID);
+  var sigSheet = ss.getSheetByName('Signalements');
+  var seenBookings = {};
+  if (sigSheet) {
+    var sigData = sigSheet.getDataRange().getValues();
+    for (var s = 1; s < sigData.length; s++) {
+      var src = sigData[s][3] ? sigData[s][3].toString() : '';
+      var mBid = src.match(/Beds24 #(\d+)/);
+      if (mBid) seenBookings[mBid[1]] = true;
+    }
+  }
+
+  var notifyCount = 0;
+  var skipCount = 0;
+  var ignoredCount = 0;
+  var unknownProps = {};
+
+  for (var i = 0; i < actifs.length; i++) {
+    var bk = actifs[i];
+    var bid = String(bk.id);
+    if (seenBookings[bid]) { skipCount++; continue; }
+    var msgs = msgsByBooking[bid];
+    if (!msgs || msgs.length === 0) continue;
+
+    var slug = PROPERTY_TO_SLUG[String(bk.propertyId)];
+    if (!slug) {
+      unknownProps[bk.propertyId] = true;
+      Logger.log('Propriete inconnue (id=' + bk.propertyId + ') booking #' + bid + ' — non traitee');
+      continue;
+    }
+
+    var voyageur = ((bk.firstName || '') + ' ' + (bk.lastName || '')).trim() || 'Voyageur';
+
+    for (var m = 0; m < msgs.length; m++) {
+      var msg = msgs[m];
+      if (msg.source !== 'guest') continue;
+      var text = (msg.message || '').toString().trim();
+      if (text.length < 10) continue;
+
+      try {
+        var decision = callClaudeFilter_(text, slug, voyageur);
+        if (!decision) { Logger.log('  decision nulle, skip'); continue; }
+        if (!decision.notify) { ignoredCount++; continue; }
+
+        addSignalementInternal_({
+          appart: slug,
+          source: 'Beds24 #' + bid + ' (scan auto ' + today + ')',
+          voyageur: voyageur,
+          element: decision.element || '',
+          description: text.substring(0, 480),
+          actionPresta: decision.action || ''
+        });
+        notifyCount++;
+        Logger.log('+ NOTIFY ' + slug + ' / ' + (decision.element || '?') + ' / ' + (decision.reason || ''));
+      } catch (e) {
+        Logger.log('Erreur traitement message booking #' + bid + ' : ' + e.message);
+      }
+      Utilities.sleep(1200); // rate limit anthropic
+    }
+  }
+
+  Logger.log('=== FIN scan : ' + notifyCount + ' nouveaux signalements, ' +
+             ignoredCount + ' messages ignores (faux positifs LLM), ' +
+             skipCount + ' bookings deja traites');
+  var unknownKeys = Object.keys(unknownProps);
+  if (unknownKeys.length) {
+    Logger.log('PROPRIETES INCONNUES (a mapper dans PROPERTY_TO_SLUG) : ' + unknownKeys.join(', '));
+  }
+}
+
+// One-shot : configurer les secrets dans PropertiesService
+// EXECUTER UNE FOIS depuis l editeur apres avoir colle les valeurs.
+function setupScanSecrets() {
+  // ⚠️ Mettre les vraies valeurs avant d executer, puis les enlever apres
+  var BEDS24_REFRESH_TOKEN = ''; // PASTE HERE
+  var ANTHROPIC_API_KEY = '';    // PASTE HERE
+  if (!BEDS24_REFRESH_TOKEN || !ANTHROPIC_API_KEY) {
+    Logger.log('STOP — colle les 2 secrets en haut de la fonction puis re-execute.');
+    return;
+  }
+  var props = PropertiesService.getScriptProperties();
+  props.setProperty('BEDS24_REFRESH_TOKEN', BEDS24_REFRESH_TOKEN);
+  props.setProperty('ANTHROPIC_API_KEY', ANTHROPIC_API_KEY);
+  Logger.log('Secrets enregistres. Tu peux maintenant retirer les valeurs du code et sauvegarder.');
+}
+
+// One-shot : installer le trigger quotidien 9h30
+function installDailyScanTrigger() {
+  // Supprimer les anciens triggers dailyScanBeds24
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === 'dailyScanBeds24') {
+      ScriptApp.deleteTrigger(triggers[i]);
+      Logger.log('Trigger existant supprime');
+    }
+  }
+  ScriptApp.newTrigger('dailyScanBeds24')
+    .timeBased()
+    .everyDays(1)
+    .atHour(9)
+    .nearMinute(30)
+    .inTimezone('Europe/Paris')
+    .create();
+  Logger.log('Trigger dailyScanBeds24 installe : tous les jours entre 9h30 et 10h00 (heure Paris)');
+}
+
+// Pour tester le scan manuellement avant le trigger 9h30
+function testDailyScanNow() {
+  dailyScanBeds24();
+}
