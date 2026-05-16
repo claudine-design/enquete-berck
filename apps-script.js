@@ -266,7 +266,8 @@ function handle(p) {
 
   // ===== SIGNALEMENTS VOYAGEURS (problemes a regler par le menage) =====
   if (action === 'getSignalements') {
-    // Renvoie les signalements OUVERTS pour un appart (statut != 'resolu').
+    // Renvoie les signalements OUVERTS pour un appart (statut === 'ouvert').
+    // Les statuts 'fait-prestataire', 'valide-claudine', 'resolu' sont caches sauf si incluResolus=1.
     // Param : appart=<slug> (obligatoire), incluResolus=1 (optionnel)
     var slug = (p.appart || '').toString().toLowerCase().trim();
     var sheetSig = ss.getSheetByName('Signalements');
@@ -278,11 +279,10 @@ function handle(p) {
     for (var i = 1; i < rows.length; i++) {
       var r = rows[i];
       var rowSlug = String(r[2] || '').toLowerCase();
-      var statut = String(r[7] || '').toLowerCase();
       if (slug && rowSlug !== slug) continue;
-      // Statut est en colonne 9 maintenant (avec action en col 8) — adapter pour anciens rows
-      var realStatut = String(r[8] || r[7] || '').toLowerCase();
-      if (!includeResolved && realStatut === 'resolu') continue;
+      // Statut col 9 (index 8). Tout ce qui n'est pas 'ouvert' est cache du prestataire.
+      var realStatut = String(r[8] || 'ouvert').toLowerCase();
+      if (!includeResolved && realStatut !== 'ouvert') continue;
       out.push({
         id: r[0],
         dateCreation: r[1],
@@ -317,11 +317,15 @@ function handle(p) {
     var voyageur = (p.voyageur || '');
 
     // Creer un event Calendar dans DraPS (best-effort, ne pas bloquer si echec)
+    // Lifecycle : 🔴 RED (cree) -> 🟡 YELLOW (fait par prestataire) -> 🟢 GREEN (valide Claudine)
     var eventId = '';
     try {
       var cal = CalendarApp.getCalendarById(DRAPS_CALENDAR_ID);
       if (cal) {
-        var title = '🚨 ' + slug2.toUpperCase() + ' : ' + (element || description.substring(0, 60) || 'Signalement voyageur');
+        var title = '🔴 ' + slug2.toUpperCase() + ' : ' + (element || description.substring(0, 60) || 'Signalement voyageur');
+        var webAppUrl = '';
+        try { webAppUrl = ScriptApp.getService().getUrl(); } catch (urlErr) { webAppUrl = ''; }
+        var validateLink = webAppUrl ? (webAppUrl + '?action=tapValidateSignalement&id=' + encodeURIComponent(sigId)) : '';
         var bodyParts = [];
         bodyParts.push('Signalement voyageur a regler par le menage.');
         bodyParts.push('');
@@ -331,11 +335,16 @@ function handle(p) {
         if (actionPresta) bodyParts.push('');
         if (actionPresta) bodyParts.push('Action prestataire : ' + actionPresta);
         bodyParts.push('');
+        if (validateLink) {
+          bodyParts.push('✅ Quand tu valides (passage au vert) : ' + validateLink);
+          bodyParts.push('');
+        }
         bodyParts.push('ID : ' + sigId);
         var event = cal.createAllDayEvent(title, new Date(), { description: bodyParts.join('\n') });
         // Supprimer les rappels par defaut du calendrier (sinon Claudine recoit popup + email = 2 notifs)
-        // L'event reste visible dans DraPS, mais sans notification intrusive
         event.removeAllReminders();
+        // Couleur RED pour signaler "a faire"
+        try { event.setColor(CalendarApp.EventColor.RED); } catch (colErr) {}
         eventId = event.getId();
       }
     } catch (calErr) {
@@ -360,8 +369,9 @@ function handle(p) {
     return json({ success: true, id: sigId, eventId: eventId });
   }
 
-  if (action === 'markSignalementResolu') {
-    // Marque un signalement comme resolu (par prestataire).
+  if (action === 'markSignalementResolu' || action === 'markSignalementFaitPresta') {
+    // Etape 1 du lifecycle : prestataire a fait le menage et reglé le probleme.
+    // Statut 'fait-prestataire', couleur YELLOW, titre 🟡.
     // Params : id=<sigId>, par=<nom prestataire>
     var sigId3 = (p.id || '').toString().trim();
     if (!sigId3) return json({ error: 'id requis' });
@@ -371,10 +381,10 @@ function handle(p) {
     for (var k = 1; k < rows3.length; k++) {
       if (String(rows3[k][0]) === sigId3) {
         // Statut col 9, Date Resolu col 10, Resolu Par col 11
-        sheetSig3.getRange(k + 1, 9).setValue('resolu');
+        sheetSig3.getRange(k + 1, 9).setValue('fait-prestataire');
         sheetSig3.getRange(k + 1, 10).setValue(new Date());
         sheetSig3.getRange(k + 1, 11).setValue((p.par || ''));
-        // Mettre a jour l'event Calendar si il existe : prefixer le titre avec ✅
+        // Mettre a jour event Calendar : YELLOW + titre 🟡 + qui a fait
         try {
           var existingEventId = rows3[k][11];
           if (existingEventId && existingEventId.toString().indexOf('err:') !== 0) {
@@ -383,24 +393,78 @@ function handle(p) {
               var ev = cal3.getEventById(existingEventId);
               if (ev) {
                 var oldTitle = ev.getTitle();
-                if (oldTitle.indexOf('✅') !== 0) {
-                  ev.setTitle('✅ RÉGLÉ — ' + oldTitle.replace(/^🚨\s*/, ''));
-                }
+                var cleanTitle = oldTitle.replace(/^🔴\s*/, '').replace(/^🚨\s*/, '').replace(/^🟡\s*/, '').replace(/^🟢\s*/, '').replace(/^✅ RÉGLÉ — /, '').replace(/\s+— fait par .+$/, '').replace(/\s+✓$/, '');
+                ev.setTitle('🟡 ' + cleanTitle + ' — fait par ' + (p.par || 'prestataire'));
+                try { ev.setColor(CalendarApp.EventColor.YELLOW); } catch (colErr) {}
                 var oldDesc = ev.getDescription() || '';
-                ev.setDescription('✅ Réglé le ' + new Date().toISOString().substring(0,10) + ' par : ' + (p.par || 'inconnu') + '\n\n' + oldDesc);
+                ev.setDescription('🟡 Fait le ' + new Date().toISOString().substring(0,10) + ' par : ' + (p.par || 'inconnu') + ' — en attente de validation Claudine.\n\n' + oldDesc);
               }
             }
           }
         } catch (calErr2) {
           // ignore
         }
-        return json({ success: true });
+        return json({ success: true, statut: 'fait-prestataire' });
       }
     }
     return json({ error: 'Signalement ' + sigId3 + ' introuvable' });
   }
 
+  if (action === 'tapValidateSignalement') {
+    // Etape 2 du lifecycle : Claudine tape le lien dans son event Calendar pour valider.
+    // Statut 'valide-claudine', couleur GREEN, titre 🟢 ✓.
+    // Renvoie une page HTML conviviale (PAS du JSON) car click depuis Calendar.
+    // Params : id=<sigId>
+    var sigId4 = (p.id || '').toString().trim();
+    if (!sigId4) return HtmlService.createHtmlOutput(htmlSignalementResult_('❌', 'ID requis', 'Lien Calendar mal forme.'));
+    var sheetSig4 = ss.getSheetByName('Signalements');
+    if (!sheetSig4) return HtmlService.createHtmlOutput(htmlSignalementResult_('❌', 'Erreur', 'Pas de sheet Signalements.'));
+    var rows4 = sheetSig4.getDataRange().getValues();
+    for (var kk = 1; kk < rows4.length; kk++) {
+      if (String(rows4[kk][0]) === sigId4) {
+        var appartName4 = rows4[kk][2] || '';
+        var element4 = rows4[kk][5] || '';
+        // Statut col 9
+        sheetSig4.getRange(kk + 1, 9).setValue('valide-claudine');
+        // Calendar : GREEN + titre 🟢 + ✓
+        try {
+          var existingEventId4 = rows4[kk][11];
+          if (existingEventId4 && existingEventId4.toString().indexOf('err:') !== 0) {
+            var cal4 = CalendarApp.getCalendarById(DRAPS_CALENDAR_ID);
+            if (cal4) {
+              var ev4 = cal4.getEventById(existingEventId4);
+              if (ev4) {
+                var oldTitle4 = ev4.getTitle();
+                var cleanTitle4 = oldTitle4.replace(/^🔴\s*/, '').replace(/^🚨\s*/, '').replace(/^🟡\s*/, '').replace(/^🟢\s*/, '').replace(/^✅ RÉGLÉ — /, '').replace(/\s+✓$/, '');
+                ev4.setTitle('🟢 ' + cleanTitle4 + ' ✓');
+                try { ev4.setColor(CalendarApp.EventColor.GREEN); } catch (colErr3) {}
+                var oldDesc4 = ev4.getDescription() || '';
+                ev4.setDescription('🟢 Validé par Claudine le ' + new Date().toISOString().substring(0,10) + '.\n\n' + oldDesc4);
+              }
+            }
+          }
+        } catch (calErr4) {
+          // ignore
+        }
+        return HtmlService.createHtmlOutput(htmlSignalementResult_('🟢', 'Validé !', 'Signalement <strong>' + appartName4.toString().toUpperCase() + ' — ' + element4 + '</strong> marqué comme validé. L\'event Calendar est passé au vert. Tu peux fermer cet onglet.'));
+      }
+    }
+    return HtmlService.createHtmlOutput(htmlSignalementResult_('❌', 'Introuvable', 'Signalement ' + sigId4 + ' inexistant.'));
+  }
+
   return json({ error: 'Action inconnue' });
+}
+
+// Helper : genere page HTML conviviale pour les actions tap-depuis-Calendar
+function htmlSignalementResult_(emoji, title, message) {
+  var bg = emoji === '🟢' ? '#dcfce7' : (emoji === '❌' ? '#fee2e2' : '#fef3c7');
+  var fg = emoji === '🟢' ? '#166534' : (emoji === '❌' ? '#991b1b' : '#92400e');
+  return '<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">' +
+    '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+    '<title>' + title + '</title>' +
+    '<style>body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;text-align:center;padding:80px 20px;background:' + bg + ';color:' + fg + ';margin:0;min-height:100vh;box-sizing:border-box}' +
+    'h1{font-size:80px;margin:0;line-height:1}h2{font-size:32px;margin:20px 0}p{font-size:18px;line-height:1.5;max-width:500px;margin:20px auto}' +
+    '</style></head><body><h1>' + emoji + '</h1><h2>' + title + '</h2><p>' + message + '</p></body></html>';
 }
 
 // ===== ALERTES IMMEDIATES =====
@@ -1049,6 +1113,56 @@ function json(obj) {
 function authorizeCalendar() {
   var cal = CalendarApp.getCalendarById(DRAPS_CALENDAR_ID);
   Logger.log('Calendar trouve : ' + (cal ? cal.getName() : 'NON'));
+}
+
+// One-shot : applique le nouveau code couleur RED + lien tap-valider aux events existants
+// A executer apres deploiement du lifecycle 3 couleurs.
+function migrateExistingSignalementsToColorLifecycle() {
+  var ss = SpreadsheetApp.openById(SHEET_ID);
+  var sheet = ss.getSheetByName('Signalements');
+  if (!sheet) { Logger.log('Pas de sheet Signalements'); return; }
+  var data = sheet.getDataRange().getValues();
+  var cal = CalendarApp.getCalendarById(DRAPS_CALENDAR_ID);
+  if (!cal) { Logger.log('Calendar DraPS introuvable'); return; }
+  var webAppUrl = '';
+  try { webAppUrl = ScriptApp.getService().getUrl(); } catch (e) { webAppUrl = ''; }
+  var count = 0;
+  for (var i = 1; i < data.length; i++) {
+    var sigId = data[i][0];
+    var statut = (data[i][8] || 'ouvert').toString().toLowerCase();
+    var eventId = data[i][11];
+    if (!eventId || eventId.toString().indexOf('err:') === 0) continue;
+    try {
+      var ev = cal.getEventById(eventId);
+      if (!ev) continue;
+      var title = ev.getTitle();
+      var desc = ev.getDescription() || '';
+      // Color selon statut
+      if (statut === 'ouvert') {
+        ev.setColor(CalendarApp.EventColor.RED);
+        // Remplacer prefixe titre 🚨 par 🔴
+        if (title.indexOf('🚨') === 0) ev.setTitle('🔴 ' + title.substring(2).trim());
+        else if (title.indexOf('🔴') !== 0) ev.setTitle('🔴 ' + title);
+        // Ajouter lien tap-valider si pas deja present
+        if (webAppUrl && desc.indexOf('tapValidateSignalement') === -1) {
+          var validateLink = webAppUrl + '?action=tapValidateSignalement&id=' + encodeURIComponent(sigId);
+          ev.setDescription('✅ Quand tu valides (passage au vert) : ' + validateLink + '\n\n' + desc);
+        }
+      } else if (statut === 'fait-prestataire') {
+        ev.setColor(CalendarApp.EventColor.YELLOW);
+      } else if (statut === 'valide-claudine') {
+        ev.setColor(CalendarApp.EventColor.GREEN);
+      } else if (statut === 'resolu') {
+        // Legacy : on retro-classe en valide-claudine (deja fait+vu)
+        ev.setColor(CalendarApp.EventColor.GREEN);
+      }
+      count++;
+      Logger.log('Event mis a jour : ' + title + ' -> statut=' + statut);
+    } catch (e) {
+      Logger.log('Erreur sur sig ' + sigId + ' : ' + e.message);
+    }
+  }
+  Logger.log('Total events migres : ' + count);
 }
 
 // One-shot : retire les rappels de tous les events DraPS lies aux signalements OUVERTS
