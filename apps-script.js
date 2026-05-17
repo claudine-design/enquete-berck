@@ -61,6 +61,45 @@ var HEAD_ROUTINES = ['Date Fait', 'Appart Slug', 'Task Id', 'Task Label', 'Prest
 var HEAD_SIGNALEMENTS = ['ID', 'Date Creation', 'Appart Slug', 'Source', 'Voyageur', 'Element', 'Description', 'Action Prestataire', 'Statut', 'Date Resolu', 'Resolu Par', 'Calendar Event ID'];
 var DRAPS_CALENDAR_ID = '8e2aa92cb418bfa01e1a133d5835ef14be76315442ba4703e67431393ffca07b@group.calendar.google.com';
 
+// ===== CALENDRIERS PRESTATAIRES (warning event horaire 10h en plus du DraPS) =====
+// 6 calendriers prestataires partages avec princessedopale@gmail.com en ecriture.
+// A la creation d un signalement, on lookup ces calendriers pour trouver qui fait l appart le jour J
+// et on cree un event horaire 10h-11h dans CE calendrier (en plus de l event DraPS lifecycle 3 couleurs).
+var PRESTA_CALENDARS = [
+  { id: '5komu9vu780a52psebg26050mk@group.calendar.google.com',                              name: 'CLARA' },
+  { id: '4028e3ed47b85a7d6b42d587706f033e92d657bce37b448b1017b8087065c974@group.calendar.google.com', name: 'REMI' },
+  { id: 'a220b7d87ee6888b19af13544e40b144f11cbd59daac57f26225d576cf22a754@group.calendar.google.com', name: 'CHRISTELLE' },
+  { id: 'a64e7f79aab3bc750e71306871ffbf31494f3028d4601d065fa79caab3fc4bbf@group.calendar.google.com', name: 'AIMANCE' },
+  { id: 'family09571682492750317707@group.calendar.google.com',                              name: 'STEPHANIE' },
+  { id: 'appart.hotel.berck@gmail.com',                                                      name: 'CLAIRE-SEBASTIEN' }
+];
+// Mapping slug appart -> patterns texte a matcher dans le titre de l event prestataire (case + accent insensible)
+var SLUG_MATCH_PATTERNS = {
+  'face-mer':         ['face mer', 'facemer'],
+  'cocon-romantique': ['cocon'],
+  'mini-love-room':   ['mini love', 'minilove', 'mini-love'],
+  'grande-love-room': ['grande love', 'grandelove', 'grande-love'],
+  'grand-large':      ['grand large', 'grand-large'],
+  'balneo':           ['balneo', 'balneo garden'],
+  'apolove':          ['apolove'],
+  'apollo':           ['apollo'],
+  'kingston':         ['kingston'],
+  'jeanne':           ['jeanne', 'rue jeanne'],
+  'rotonde':          ['rotonde'],
+  'patio':            ['patio'],
+  'evasion':          ['evasion'],
+  'maisonnette':      ['maisonnette', 'coeur'],
+  'famille':          ['famille'],
+  'hamac':            ['hamac'],
+  'kitesurf':         ['kitesurf', 'kite'],
+  'surf':             ['surf'],
+  'paddle':           ['paddle'],
+  'albatros':         ['albatros'],
+  'reserve':          ['reserve'],
+  'terrasse':         ['terrasse'],
+  'helene':           ['helene', 'studio helene']
+};
+
 // ===== ROUTINES PERIODIQUES (entretien Sweepy-style) =====
 // Toutes les taches sont definies cote frontend ; le backend ne fait que stocker/lire l'historique.
 // Validation par format (alphanumerique + tirets, 1-40 chars) pour pouvoir ajouter
@@ -352,6 +391,16 @@ function handle(p) {
       eventId = 'err:' + (calErr.message || 'unknown').substring(0, 50);
     }
 
+    // Creer aussi un event WARNING horaire 10h-11h ROUGE 🚨 dans le calendrier
+    // du prestataire qui fait l appart le jour J (lookup dynamique sur les 6 calendriers).
+    // Best-effort : ne pas bloquer si echec.
+    var prestaEventId = '';
+    try {
+      prestaEventId = createPrestaWarningEvent_(slug2, sigId, voyageur, element, description, actionPresta);
+    } catch (prestaErr) {
+      Logger.log('addSignalement : createPrestaWarningEvent_ erreur : ' + prestaErr.message);
+    }
+
     sheetSig2.appendRow([
       sigId,
       new Date(),
@@ -366,7 +415,7 @@ function handle(p) {
       '',
       eventId
     ]);
-    return json({ success: true, id: sigId, eventId: eventId });
+    return json({ success: true, id: sigId, eventId: eventId, prestaEventId: prestaEventId });
   }
 
   if (action === 'markSignalementResolu' || action === 'markSignalementFaitPresta') {
@@ -1192,6 +1241,85 @@ function cleanupSignalementsReminders() {
     }
   }
   Logger.log('Total events nettoyes : ' + count);
+}
+
+// ============================================================
+// WARNING EVENTS PRESTATAIRES (event horaire 10h dans le calendrier du presta du jour)
+// ============================================================
+// A la creation d un signalement, en plus de l event DraPS (lifecycle 3 couleurs),
+// on cherche QUEL prestataire fait l appart le jour J (en regardant ses events all-day)
+// et on cree un event horaire 10h-11h ROUGE 🚨 dans son calendrier, sans rappel popup.
+// Le prestataire voit ainsi l alerte dans son propre agenda en haut de sa journee.
+
+function normalizeForMatch_(s) {
+  return (s || '').toString().toLowerCase()
+    .replace(/[éèêë]/g, 'e').replace(/[àâä]/g, 'a').replace(/[îï]/g, 'i')
+    .replace(/[ôö]/g, 'o').replace(/[ûü]/g, 'u').replace(/ç/g, 'c');
+}
+
+function findPrestaCalendarForSlug_(slug, dateObj) {
+  var patterns = SLUG_MATCH_PATTERNS[slug] || [slug.replace(/-/g, ' ')];
+  var normalizedPatterns = patterns.map(normalizeForMatch_);
+  for (var i = 0; i < PRESTA_CALENDARS.length; i++) {
+    var entry = PRESTA_CALENDARS[i];
+    try {
+      var cal = CalendarApp.getCalendarById(entry.id);
+      if (!cal) continue;
+      var events = cal.getEventsForDay(dateObj);
+      for (var j = 0; j < events.length; j++) {
+        var titleNorm = normalizeForMatch_(events[j].getTitle());
+        // Ignorer nos propres warning events (commencent par 🚨)
+        if (events[j].getTitle().indexOf('🚨') === 0) continue;
+        for (var k = 0; k < normalizedPatterns.length; k++) {
+          if (titleNorm.indexOf(normalizedPatterns[k]) >= 0) {
+            return { id: entry.id, name: entry.name, matchedEvent: events[j].getTitle() };
+          }
+        }
+      }
+    } catch (e) {
+      Logger.log('findPrestaCalendarForSlug_ erreur sur ' + entry.name + ' : ' + e.message);
+    }
+  }
+  return null;
+}
+
+function createPrestaWarningEvent_(slug, signalementId, voyageur, element, description, actionPresta) {
+  var tz = 'Europe/Paris';
+  var dateObj = new Date(); // jour J = aujourd hui
+  var found = findPrestaCalendarForSlug_(slug, dateObj);
+  if (!found) {
+    Logger.log('createPrestaWarningEvent_ : aucun calendrier presta trouve pour ' + slug + ' le ' + Utilities.formatDate(dateObj, tz, 'yyyy-MM-dd'));
+    return '';
+  }
+  try {
+    var cal = CalendarApp.getCalendarById(found.id);
+    var start = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), 10, 0, 0);
+    var end = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), 11, 0, 0);
+    var title = '🚨 ' + slug + ' : ' + (element || (description ? description.substring(0, 60) : 'signalement voyageur'));
+    var webAppUrl = '';
+    try { webAppUrl = ScriptApp.getService().getUrl(); } catch (e) { webAppUrl = ''; }
+    var validateLink = webAppUrl ? (webAppUrl + '?action=tapValidateSignalement&id=' + encodeURIComponent(signalementId)) : '';
+    var lines = [];
+    lines.push('🔴 Signalement voyageur — ' + slug + ' (' + found.name + ')');
+    lines.push('');
+    if (voyageur) lines.push('Voyageur : ' + voyageur);
+    if (description) lines.push('Message : ' + description);
+    lines.push('');
+    if (actionPresta) lines.push('Action : ' + actionPresta);
+    lines.push('');
+    lines.push('✅ Quand fait : clique le bouton "✓ Réglé" dans la checklist QR code de ' + slug + ',');
+    if (validateLink) lines.push('OU tape ce lien pour valider directement : ' + validateLink);
+    lines.push('');
+    lines.push('ID signalement : ' + signalementId);
+    var event = cal.createEvent(title, start, end, { description: lines.join('\n') });
+    try { event.setColor(CalendarApp.EventColor.RED); } catch (e) {}
+    try { event.removeAllReminders(); } catch (e) {}
+    Logger.log('Warning event cree dans ' + found.name + ' (match event "' + found.matchedEvent + '") : ' + event.getId());
+    return event.getId();
+  } catch (e) {
+    Logger.log('createPrestaWarningEvent_ creation echec : ' + e.message);
+    return 'err:' + (e.message || 'unknown').substring(0, 80);
+  }
 }
 
 // ============================================================
