@@ -228,6 +228,8 @@ function openLightbox(src){
 }
 
 // ===== Caractéristiques spécifiques par appartement =====
+// panier: 'classique' (1 panier + accessoires évier) | 'loveroom' (2 paniers : gourmand + petit utilitaire)
+// capacite: nombre max de personnes — pilote la quantité de dosettes/thé/sucrettes (règle: max(4, capacite))
 // balneo: a une balnéo/jacuzzi → anti-calcaire sur buses + chrome
 // peignoirs: nombre de peignoirs propres à installer (apparts balnéo/spa)
 // sauna: a un sauna → 2 grandes serviettes dans le sauna
@@ -235,20 +237,30 @@ function openLightbox(src){
 // litConditional: lit 1ère chambre installé, autres linges juste déposés (sauf si signalé sur calendrier)
 // exterieur: a jardin/terrasse/balcon/patio → vérifier mégots, déchets, mobilier remis en place
 const apartFeatures = {
-  'balneo':           { balneo:true,  peignoirs:2, litConditional:true, exterieur:true }, // jardin + brasero
-  'cocon-romantique': { balneo:true,  peignoirs:2, sauna:true, tapisExtra:true, litConditional:true, exterieur:true }, // brasero
-  'evasion':          { balneo:true,  peignoirs:2, sauna:true, tapisExtra:true, litConditional:true },
-  'patio':            { balneo:true,  peignoirs:2, tapisExtra:true, litConditional:true, exterieur:true }, // patio
-  'rotonde':          { balneo:true,  peignoirs:2, litConditional:true },
-  'mini-love-room':   { balneo:true,  peignoirs:2, tapisExtra:true },
-  'apollo':           { litConditional:true, exterieur:true }, // T3, lit 1ère chambre installé, balcon
-  'terrasse':         { exterieur:true }, // grande terrasse
-  'maisonnette':      { exterieur:true }, // petit extérieur arrière
-  'hamac':            { exterieur:true }, // balcon
-  'paddle':           { exterieur:true }, // balcon
-  'surf':             { exterieur:true }, // balcon
-  'grand-large':      { exterieur:true }, // balcon
-  'face-mer':         { exterieur:true }  // balcon
+  // ───── CLASSIQUES (14) — 1 panier + accessoires évier ─────
+  'kitesurf':         { panier:'classique', capacite:4 },
+  'hamac':            { panier:'classique', capacite:4, exterieur:true }, // balcon
+  'paddle':           { panier:'classique', capacite:4, exterieur:true }, // balcon
+  'surf':             { panier:'classique', capacite:4, exterieur:true }, // balcon
+  'famille':          { panier:'classique', capacite:6 },
+  'terrasse':         { panier:'classique', capacite:8, exterieur:true }, // grande terrasse
+  'maisonnette':      { panier:'classique', capacite:4, exterieur:true }, // petit extérieur arrière
+  'face-mer':         { panier:'classique', capacite:4, exterieur:true }, // balcon
+  'grand-large':      { panier:'classique', capacite:4, exterieur:true }, // balcon
+  'apollo':           { panier:'classique', capacite:6, litConditional:true, exterieur:true }, // T3, lit 1ère chambre installé, balcon
+  'kingston':         { panier:'classique', capacite:4 },
+  'reserve':          { panier:'classique', capacite:4 }, // capacité à confirmer
+  'albatros':         { panier:'classique', capacite:4 },
+  'jeanne':           { panier:'classique', capacite:4 },
+  // ───── LOVE ROOMS (8) — 2 paniers : gourmand + petit utilitaire ─────
+  'balneo':           { panier:'loveroom',  capacite:6, balneo:true, peignoirs:2, litConditional:true, exterieur:true }, // jardin + brasero
+  'cocon-romantique': { panier:'loveroom',  capacite:2, balneo:true, peignoirs:2, sauna:true, tapisExtra:true, litConditional:true, exterieur:true }, // brasero
+  'apolove':          { panier:'loveroom',  capacite:2 },
+  'mini-love-room':   { panier:'loveroom',  capacite:2, balneo:true, peignoirs:2, tapisExtra:true },
+  'grande-love-room': { panier:'loveroom',  capacite:2 },
+  'evasion':          { panier:'loveroom',  capacite:4, balneo:true, peignoirs:2, sauna:true, tapisExtra:true, litConditional:true },
+  'rotonde':          { panier:'loveroom',  capacite:5, balneo:true, peignoirs:2, litConditional:true },
+  'patio':            { panier:'loveroom',  capacite:6, balneo:true, peignoirs:2, tapisExtra:true, litConditional:true, exterieur:true } // patio
 };
 
 function renderApartWarning(slug){
@@ -256,6 +268,31 @@ function renderApartWarning(slug){
   const f = apartFeatures[slug];
   if(!f){ w.style.display='none'; w.innerHTML=''; return; }
   let bullets = [];
+  // 🎁 Panier de bienvenue (TOUJOURS en premier — c'est ce que le voyageur voit en arrivant)
+  if(f.panier){
+    const qty = Math.max(4, f.capacite || 4);
+    if(f.panier === 'classique'){
+      bullets.push(
+        '🎁 <b>Panier de bienvenue</b> à préparer (posé sur la table) :' +
+        '<ul style="margin:6px 0 0 0;padding-left:20px;list-style:disc">' +
+          '<li><b>' + qty + ' dosettes de café</b>, <b>' + qty + ' sachets de thé</b>, <b>' + qty + ' sucrettes</b></li>' +
+          '<li><b>1 paquet de gâteaux</b> (cadeau de bienvenue)</li>' +
+          '<li><b>1 torchon</b> + <b>1 essuie-main</b></li>' +
+        '</ul>' +
+        '<div style="margin-top:6px"><b>À côté de l\'évier</b> (hors panier) : <b>liquide vaisselle</b> + <b>1 éponge</b> avec <b>1 dosette lave-vaisselle posée dessus</b>.</div>'
+      );
+    } else if(f.panier === 'loveroom'){
+      bullets.push(
+        '🎁 <b>Panier d\'accueil gourmand</b> à préparer :' +
+        '<ul style="margin:6px 0 0 0;padding-left:20px;list-style:disc">' +
+          '<li><b>' + qty + ' dosettes de café</b>, <b>' + qty + ' sachets de thé</b>, <b>' + qty + ' sucrettes</b></li>' +
+          '<li><b>Gâteaux sucrés</b> (petits cœurs) + <b>gâteaux salés</b> (chips)</li>' +
+          '<li><b>1 petite bouteille</b></li>' +
+        '</ul>' +
+        '<div style="margin-top:6px">🧺 <b>Petit panier à côté</b> : <b>1 torchon</b> + <b>1 essuie-main</b>, <b>liquide vaisselle</b>, <b>1 éponge</b>, <b>1 dosette lave-vaisselle</b>.</div>'
+      );
+    }
+  }
   if(f.balneo){
     bullets.push('🛁 <b>Balnéo / jacuzzi</b> — mettre <b>impérativement de l\'anti-calcaire</b> sur <b>toutes les buses</b> (chaque jet) et sur tout le <b>chrome</b> (robinetterie, têtes de jets, pourtour). Sans ça, pièces coûteuses + panne.');
   }
