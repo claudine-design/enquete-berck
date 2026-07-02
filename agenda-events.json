@@ -1,19 +1,7 @@
 [
  {
-  "titre": "À LA RENCONTRE DES PHOQUES",
-  "start": "2026-06-30",
-  "date_label": "30 juin",
-  "categories": [
-   "Balades",
-   "Découverte",
-   "Visites"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=163568",
-  "source": "oukankoi.fr"
- },
- {
   "titre": "Portes Ouvertes de la Maison du Patrimoine",
-  "start": "2026-06-30",
+  "start": "2026-07-02",
   "date_label": "Jusqu'au 12/07/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=104053",
@@ -21,7 +9,7 @@
  },
  {
   "titre": "Exposition \"Horizon\" Musée Opale Sud",
-  "start": "2026-06-30",
+  "start": "2026-07-02",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128477",
@@ -29,7 +17,7 @@
  },
  {
   "titre": "Exposition \"Détours loin du Bercail\" Musée Opale Sud",
-  "start": "2026-06-30",
+  "start": "2026-07-02",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128475",
@@ -37,7 +25,7 @@
  },
  {
   "titre": "Exposition \"Le street art à travers le monde\"",
-  "start": "2026-06-30",
+  "start": "2026-07-02",
   "date_label": "Jusqu'au 30/08/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128716",
@@ -45,8 +33,8 @@
  },
  {
   "titre": "Mon Village vacances",
-  "start": "2026-07-01",
-  "date_label": "Du 01/07/2026 au 31/08/2026",
+  "start": "2026-07-02",
+  "date_label": "Jusqu'au 31/08/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=129187",
   "source": "Office de Tourisme"
@@ -176,7 +164,7 @@
   "source": "Office de Tourisme"
  },
  {
-  "titre": "Brocante annuelle du Berck Tennis de Table",
+  "titre": "ANNULE - Brocante annuelle du Berck Tennis de Table",
   "start": "2026-07-05",
   "date_label": "Le 05/07/2026",
   "categories": [],
