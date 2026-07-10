@@ -43,6 +43,9 @@
   .note-envoi { font-size:12px; color:#888; text-align:center; margin:4px 0 12px; }
   .maj { display:block; margin:10px auto 30px; background:#fff; color:var(--bleu); border:1px solid var(--bleu);
          border-radius:20px; padding:8px 22px; font-size:14px; font-weight:bold; cursor:pointer; }
+  .titre-section { font-size:14px; font-weight:bold; color:#888; margin:22px 4px 10px; }
+  .carte-lue { opacity:.85; background:#fbfbf6; }
+  .carte-lue .boutons button { padding:9px; font-size:14px; background:#8d99ae; }
 </style>
 </head>
 <body>
@@ -118,13 +121,17 @@ function charger() {
   apiGet({ action:'list' }).then(function(res) {
     if (res.error) { toast('Erreur : ' + res.error); return; }
     items = res.items || [];
-    document.getElementById('compteur').textContent = items.length;
+    var aValider = items.filter(function(it){ return it.statut === 'en_attente'; });
+    var sansReponse = items.filter(function(it){ return it.statut === 'courtoisie'; });
+    document.getElementById('compteur').textContent = aValider.length;
     document.getElementById('note-envoi').innerHTML = res.envoiActif
       ? '✅ Envoi direct Beds24 actif : 1 clic = message envoyé au voyageur'
       : '⚠️ Envoi direct pas encore activé : la validation prépare le message, envoi manuel sur Booking';
     var el = document.getElementById('liste');
     if (!items.length) { el.innerHTML = '<div class="vide">🎉 Rien à valider — tout est traité !</div>'; return; }
-    el.innerHTML = items.map(function(it, i) {
+    var html = '';
+    items.forEach(function(it, i) {
+      if (it.statut !== 'en_attente') return;
       var badge = 'b-' + (['demande','question','probleme'].indexOf(it.categorie) >= 0 ? it.categorie : 'autre');
       var opt = '';
       if (it.option_type) {
@@ -133,7 +140,7 @@ function charger() {
               (it.option_detail ? ' — ' + esc(it.option_detail) : '') +
               ' → créer l\'événement sur le calendrier DRAP / Check-in</label></div>';
       }
-      return '<div class="carte" id="carte-' + i + '">' +
+      html += '<div class="carte" data-statut="en_attente" id="carte-' + i + '">' +
         '<div class="qui">' + esc(it.appart) + ' — ' + esc(it.voyageur) +
         '<span class="badge ' + badge + '">' + esc(it.categorie) + '</span></div>' +
         '<div class="dates">Séjour ' + fdate(it.arrivee) + ' → ' + fdate(it.depart) + ' · reçu le ' + esc(it.genere_le) + '</div>' +
@@ -146,16 +153,46 @@ function charger() {
         '<button class="rej" onclick="rejeter(' + i + ')">🚫 Ignorer</button>' +
         '<button class="env" id="btn-' + i + '" onclick="valider(' + i + ')">✅ Valider &amp; envoyer</button>' +
         '</div></div>';
-    }).join('');
+    });
+    if (sansReponse.length) {
+      html += '<div class="titre-section">🕊️ Sans réponse nécessaire — à marquer « lu » (' + sansReponse.length + ')</div>';
+      items.forEach(function(it, i) {
+        if (it.statut !== 'courtoisie') return;
+        html += '<div class="carte carte-lue" data-statut="courtoisie" id="carte-' + i + '">' +
+          '<div class="qui">' + esc(it.appart) + ' — ' + esc(it.voyageur) + '</div>' +
+          '<div class="question">💬 ' + esc(it.question) + '</div>' +
+          '<details><summary>Voir toute la conversation</summary><div class="conv">' + esc(it.conversation) + '</div></details>' +
+          '<div class="boutons">' +
+          '<button class="env" id="btn-' + i + '" onclick="marquerLu(' + i + ')">✓ Conversation lue</button>' +
+          '</div></div>';
+      });
+    }
+    el.innerHTML = html || '<div class="vide">🎉 Rien à valider — tout est traité !</div>';
   }).catch(function(e){ toast('Erreur réseau : ' + e.message); });
 }
 
 function retirerCarte(i) {
   var c = document.getElementById('carte-' + i);
   if (c) c.remove();
-  var n = document.querySelectorAll('.carte').length;
-  document.getElementById('compteur').textContent = n;
-  if (!n) document.getElementById('liste').innerHTML = '<div class="vide">🎉 Rien à valider — tout est traité !</div>';
+  document.getElementById('compteur').textContent =
+    document.querySelectorAll('.carte[data-statut="en_attente"]').length;
+  if (!document.querySelectorAll('.carte').length) {
+    document.getElementById('liste').innerHTML = '<div class="vide">🎉 Rien à valider — tout est traité !</div>';
+  }
+}
+
+function marquerLu(i) {
+  var it = items[i];
+  var btn = document.getElementById('btn-' + i);
+  btn.disabled = true; btn.textContent = '…';
+  apiPost({ action:'marquerLu', id: it.id }).then(function(res) {
+    if (res.error) { throw new Error(res.error); }
+    retirerCarte(i);
+    toast('✓ Marquée lue (' + (res.marques || 0) + ' message(s))');
+  }).catch(function(e) {
+    btn.disabled = false; btn.textContent = '✓ Conversation lue';
+    toast('Erreur : ' + e.message);
+  });
 }
 
 function valider(i) {
