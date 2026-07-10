@@ -131,7 +131,7 @@ function charger() {
         opt = '<div class="opt"><label><input type="checkbox" id="cal-' + i + '" checked> ' +
               (OPTION_TXT[it.option_type] || esc(it.option_type)) +
               (it.option_detail ? ' — ' + esc(it.option_detail) : '') +
-              ' → créer l\'événement dans le calendrier DRAPS (jour d\'arrivée)</label></div>';
+              ' → créer l\'événement sur le calendrier DRAP / Check-in</label></div>';
       }
       return '<div class="carte" id="carte-' + i + '">' +
         '<div class="qui">' + esc(it.appart) + ' — ' + esc(it.voyageur) +
