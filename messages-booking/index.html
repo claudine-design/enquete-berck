@@ -44,6 +44,7 @@
   .maj { display:block; margin:10px auto 30px; background:#fff; color:var(--bleu); border:1px solid var(--bleu);
          border-radius:20px; padding:8px 22px; font-size:14px; font-weight:bold; cursor:pointer; }
   .titre-section { font-size:14px; font-weight:bold; color:#888; margin:22px 4px 10px; }
+  .hint-edit { font-size:12px; color:#999; margin:8px 0 4px; }
   .carte-lue { opacity:.85; background:#fbfbf6; }
   .carte-lue .boutons button { padding:9px; font-size:14px; background:#8d99ae; }
 </style>
@@ -148,6 +149,7 @@ function charger() {
         '<div class="question">💬 ' + esc(it.question) + '</div>' +
         '<details><summary>Voir toute la conversation</summary><div class="conv">' + esc(it.conversation) + '</div></details>' +
         opt +
+        '<div class="hint-edit">✏️ Touchez le texte pour le modifier avant d\'envoyer — le robot apprendra de votre version :</div>' +
         '<textarea id="txt-' + i + '">' + esc(it.proposition || '') + '</textarea>' +
         '<div class="boutons">' +
         '<button class="rej" onclick="rejeter(' + i + ')">🚫 Ignorer</button>' +
