@@ -61,10 +61,22 @@
 // L'URL du script est publique (protégée par le secret) ; le secret arrive par
 // le #k=... du favori et reste mémorisé sur le téléphone (localStorage).
 var API = 'https://script.google.com/macros/s/AKfycbxdZ3JNkHKvvlDJaP_7MzUJe3tC82PYUPmihH6RaRfqfFohn3GmChGm0vQQ4kikirp4/exec';
-var m = location.hash.match(/k=([\w-]+)/);
-if (m) { localStorage.setItem('mb_secret', m[1]); history.replaceState(null, '', location.pathname); }
+// La clé peut arriver via #k=… OU ?k=… (certains navigateurs mobiles gardent l'un ou l'autre).
+var m = (location.hash + '&' + location.search).match(/k=([\w-]+)/);
+if (m) {
+  localStorage.setItem('mb_secret', m[1]);
+  try { history.replaceState(null, '', location.pathname); } catch (e) {}
+}
 var SECRET = localStorage.getItem('mb_secret') || '';
 var items = [];
+
+function enregistrerCle() {
+  var v = (document.getElementById('cle-input').value || '').trim();
+  if (!v) { toast('Colle la clé d\'abord'); return; }
+  localStorage.setItem('mb_secret', v);
+  SECRET = v;
+  charger();
+}
 
 function toast(msg) {
   var t = document.getElementById('toast');
@@ -93,7 +105,13 @@ function apiPost(body) {
 function charger() {
   if (!SECRET) {
     document.getElementById('liste').innerHTML =
-      '<div class="vide">🔑 Clé manquante — ouvre cette page depuis ton favori (lien avec #k=…)</div>';
+      '<div class="vide">🔑 Première ouverture sur ce téléphone : colle ta clé une seule fois.<br><br>' +
+      '<input id="cle-input" placeholder="colle la clé ici" ' +
+      'style="width:90%;max-width:340px;padding:10px;font-size:14px;border:1px solid #ccd;border-radius:8px;">' +
+      '<br><br><button onclick="enregistrerCle()" ' +
+      'style="background:var(--bleu);color:#fff;border:0;border-radius:8px;padding:10px 24px;font-size:15px;font-weight:bold;">' +
+      'Enregistrer</button>' +
+      '<br><br><small style="color:#aaa">La clé est mémorisée : tu ne la remettras plus ensuite.</small></div>';
     return;
   }
   document.getElementById('liste').innerHTML = '<div class="vide">Chargement…</div>';
