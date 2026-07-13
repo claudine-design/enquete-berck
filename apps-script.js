@@ -1,18 +1,30 @@
 // =============================================
-// GOOGLE APPS SCRIPT — Enquete Satisfaction v6
+// GOOGLE APPS SCRIPT — Enquete Satisfaction v9
 // =============================================
-// Nouveautes v6 :
-//   - Systeme parrainage automatique : generation code BERCK-PRENOM-XXXX si Q7=Oui ET Q8=Oui
-//   - Anti-fraude natif : validation au sejour effectif du filleul (il a rempli le questionnaire)
-//   - Emails auto parrain + filleul avec code FIDELE-10 (-10% prochain sejour)
-//   - Nouvelles feuilles : Parrains + Parrainages Valides
+// Nouveautes v9 (13 juillet 2026) — parrainage branche de bout en bout :
+//   - Validation filleul ACTIVE : champ code parrain reintroduit dans le questionnaire
+//   - Fini le code generique FIDELE-10 : recompenses = BONS UNIQUES a usage unique
+//     (onglet 'Bons Fidelite', pre-crees dans Beds24 en One Time Use Voucher Codes)
+//   - Validite d'un bon : 18 mois a partir de l'attribution (decision Claudine 13/07/2026)
+//   - Anti-fraude : parrain != filleul + un filleul ne peut etre parraine qu'UNE fois
+//   - Robots : reconciliation quotidienne des bons consommes (API Beds24 read-only)
+//     + detection hebdo des bons expires (liste de purge Beds24 envoyee a Claudine)
+//   - Prenom/Nom separes dans le questionnaire (code parrain = prenom uniquement)
+// + v6 : generation code BERCK-PRENOM-XXXX si Q7=Oui ET Q8=Oui
 // + v5 : 5 niveaux Q1/Q3/Q4/Q5, mapping prestataires, recaps hebdo/mensuel
 // =============================================
 
 var SHEET_ID = '1Yqa2l_B4-mlNWI6AU14nBisEj3Xy4Kxic9qiH67Ra-k';
 var ALERT_EMAIL = 'princessedopale@gmail.com';
-var PROMO_FIDELE = 'FIDELE-10';  // code promo generique -10% (a creer dans Beds24)
 var SITE_URL = 'https://appart-hotel-berck.com';
+
+// ===== v9 : BONS FIDELITE UNIQUES =====
+// Plus AUCUN code promo generique : chaque recompense est un bon nominatif a usage
+// unique, pioche dans le pool de l'onglet 'Bons Fidelite' (statut DISPONIBLE).
+// Les memes codes doivent exister dans Beds24 : (SETTINGS) BOOKING ENGINE >
+// MULTIPLE PROPERTIES > One Time Use Voucher Codes (supprimes par Beds24 apres usage).
+var BON_VALIDITE_MOIS = 18;   // validite d'un bon a partir de son attribution
+var BON_STOCK_ALERTE = 8;     // alerte Claudine s'il reste moins de N bons disponibles
 
 // ===== MAPPING APPARTEMENT -> PRESTATAIRE =====
 // Prestataire geografique et email de contact
@@ -56,7 +68,8 @@ var HEAD_MARKETING = ['Email', 'Nom Prenom', 'Ville', 'Zone Vacances', 'Date ins
 var HEAD_VR = ['Email', 'Nom Prenom', 'Telephone', 'Ville', 'Zone Vacances', 'Appartement', 'Residence', 'Prestataire', 'Note Arrivee', 'Recommande', 'Commentaire', 'Date'];
 var HEAD_NR = ['Email', 'Nom Prenom', 'Telephone', 'Ville', 'Zone Vacances', 'Appartement', 'Residence', 'Prestataire', 'Note Arrivee', 'Proprete', 'Details Menage', 'Ameliorations', 'Commentaire', 'Date'];
 var HEAD_PARRAINS = ['Code Parrain', 'Nom Prenom', 'Email', 'Telephone', 'Appartement', 'Residence', 'Date Creation', 'Nb Utilisations', 'Derniere Utilisation'];
-var HEAD_PARRAINAGES = ['Date Validation', 'Code Parrain Utilise', 'Parrain Nom', 'Parrain Email', 'Filleul Nom', 'Filleul Email', 'Filleul Appartement', 'Filleul Date Sejour'];
+var HEAD_PARRAINAGES = ['Date Validation', 'Code Parrain Utilise', 'Parrain Nom', 'Parrain Email', 'Filleul Nom', 'Filleul Email', 'Filleul Appartement', 'Filleul Date Sejour', 'Bon Parrain', 'Bon Filleul'];
+var HEAD_BONS = ['Code Bon', 'Statut', 'Role', 'Attribue A', 'Email', 'Code Parrain Lie', 'Date Attribution', 'Date Expiration', 'Date Consommation', 'Note'];
 var HEAD_ROUTINES = ['Date Fait', 'Appart Slug', 'Task Id', 'Task Label', 'Prestataire'];
 var HEAD_SIGNALEMENTS = ['ID', 'Date Creation', 'Appart Slug', 'Source', 'Voyageur', 'Element', 'Description', 'Action Prestataire', 'Statut', 'Date Resolu', 'Resolu Par', 'Calendar Event ID'];
 var DRAPS_CALENDAR_ID = '8e2aa92cb418bfa01e1a133d5835ef14be76315442ba4703e67431393ffca07b@group.calendar.google.com';
@@ -134,6 +147,11 @@ function handle(p) {
     var prestaKey = APPART_TO_PRESTA[p.appart] || '';
     var prestaNom = (PRESTATAIRES[prestaKey] || {}).nom || '';
 
+    // v9 : prenom / nom separes dans le questionnaire (retro-compatible ancien champ unique)
+    if (p.prenom) {
+      p.nom = (String(p.prenom).trim() + ' ' + String(p.nomfamille || '').trim()).trim();
+    }
+
     // --- Reponses ---
     var sheetR = ensureSheet(ss, 'Reponses', HEAD_REPONSES, '#0369a1');
     sheetR.appendRow([
@@ -191,7 +209,6 @@ function handle(p) {
     try { sendImmediateAlerts(p, zone, prestaKey, prestaNom); } catch(err) {}
 
     // --- PARRAINAGE : generer le code parrain si voyageur tres satisfait ---
-    // Note : la validation se fait au moment de la reservation (via site/Beds24), pas dans le questionnaire.
     var parrainCodeGenere = null;
     if (p.email && p.nom && p.q7 === 'Oui' && p.q8 === 'Oui') {
       try {
@@ -199,9 +216,24 @@ function handle(p) {
       } catch(err) {}
     }
 
+    // --- PARRAINAGE v9 : valider le code parrain entre par le filleul ---
+    // La saisie dans le questionnaire (accessible uniquement dans l'appartement)
+    // prouve un sejour reel. La validation attribue 2 bons uniques (parrain + filleul).
+    var parrainValide = false;
+    if (p.email && p.parrainUtilise) {
+      try {
+        parrainValide = validerEtNotifierParrainage(ss, {
+          nom: p.nom || '',
+          email: p.email,
+          appart: p.appart || ''
+        }, p.parrainUtilise);
+      } catch(err) {}
+    }
+
     return json({
       success: true,
-      parrainCode: parrainCodeGenere
+      parrainCode: parrainCodeGenere,
+      parrainValide: parrainValide
     });
   }
 
@@ -937,8 +969,9 @@ function shadeColor(hex, percent) {
 // ===== INSTALLER LES TRIGGERS (a executer une fois manuellement) =====
 function installTriggers() {
   // Supprimer anciens triggers
+  var geres = ['sendWeeklyRecap', 'sendMonthlyRecap', 'robotReconciliationBons', 'robotExpirationBons'];
   ScriptApp.getProjectTriggers().forEach(function(t) {
-    if (t.getHandlerFunction() === 'sendWeeklyRecap' || t.getHandlerFunction() === 'sendMonthlyRecap') {
+    if (geres.indexOf(t.getHandlerFunction()) !== -1) {
       ScriptApp.deleteTrigger(t);
     }
   });
@@ -946,7 +979,10 @@ function installTriggers() {
   ScriptApp.newTrigger('sendWeeklyRecap').timeBased().onWeekDay(ScriptApp.WeekDay.MONDAY).atHour(8).create();
   // Mensuel : dernier jour du mois 18h (on met le 28, puis la fonction v\xe9rifie)
   ScriptApp.newTrigger('sendMonthlyRecap').timeBased().onMonthDay(28).atHour(18).create();
-  return 'Triggers install\xe9s : hebdo lundi 8h, mensuel le 28 du mois 18h';
+  // v9 : reconciliation quotidienne des bons consommes (6h) + expiration hebdo (lundi 7h)
+  ScriptApp.newTrigger('robotReconciliationBons').timeBased().everyDays(1).atHour(6).create();
+  ScriptApp.newTrigger('robotExpirationBons').timeBased().onWeekDay(ScriptApp.WeekDay.MONDAY).atHour(7).create();
+  return 'Triggers install\xe9s : recaps hebdo/mensuel + robots bons fid\xe9lit\xe9 (quotidien 6h + lundi 7h)';
 }
 
 function escapeHtml(s) {
@@ -972,7 +1008,8 @@ function genererOuRecupererCodeParrain(ss, p) {
   }
 
   // Generer un nouveau code unique
-  var prenom = String(p.nom || 'AMI').split(' ')[0].toUpperCase()
+  // v9 : priorite au champ prenom dedie (jamais le nom de famille dans un code qui circule)
+  var prenom = String(p.prenom || String(p.nom || 'AMI').split(' ')[0]).toUpperCase()
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .replace(/[^A-Z]/g, '').substring(0, 10);
   if (!prenom) prenom = 'AMI';
@@ -1005,8 +1042,8 @@ function codeExiste(data, code) {
 
 function envoyerMailCodeParrain(p, code) {
   var waMsg = 'Coucou ! J\'ai s\xe9journ\xe9 \xe0 Berck chez Claudine, c\'\xe9tait super ! '
-    + 'Tu peux avoir -10% en r\xe9servant en direct sur ' + SITE_URL + ' avec mon code parrain : '
-    + code + ' (et moi aussi je gagne -10% \u{1F60A})';
+    + 'R\xe9serve en direct sur ' + SITE_URL + ' et indique mon code parrain ' + code
+    + ' dans le questionnaire de fin de s\xe9jour : on gagne chacun un bon -10% \u{1F60A}';
   var waUrl = 'https://wa.me/?text=' + encodeURIComponent(waMsg);
   var mailUrl = 'mailto:?subject=' + encodeURIComponent('Mon code parrain Appart-H\xf4tel Berck (-10%)')
               + '&body=' + encodeURIComponent(waMsg);
@@ -1027,9 +1064,9 @@ function envoyerMailCodeParrain(p, code) {
     + '<h2 style="font-size:16px;color:#7c3aed;margin:20px 0 10px">Comment \xe7a marche ?</h2>'
     + '<ol style="padding-left:20px;line-height:1.8;color:#475569">'
     + '<li>Vous partagez votre code avec un proche</li>'
-    + '<li>Il r\xe9serve en direct sur <a href="' + SITE_URL + '" style="color:#7c3aed">appart-hotel-berck.com</a> et mentionne votre code</li>'
-    + '<li>D\xe8s qu\'il a s\xe9journ\xe9 et rempli le questionnaire : <strong>votre -10% est activ\xe9 automatiquement</strong></li>'
-    + '<li>Vous recevez votre code <strong>' + PROMO_FIDELE + '</strong> pour votre prochain s\xe9jour</li>'
+    + '<li>Il r\xe9serve en direct sur <a href="' + SITE_URL + '" style="color:#7c3aed">appart-hotel-berck.com</a> et s\xe9journe \xe0 Berck</li>'
+    + '<li>\xc0 la fin de son s\xe9jour, il indique votre code dans notre questionnaire de satisfaction</li>'
+    + '<li>Vous recevez chacun un <strong>bon -10% personnel</strong>, \xe0 usage unique, valable ' + BON_VALIDITE_MOIS + ' mois sur une r\xe9servation directe</li>'
     + '</ol>'
     + '<h2 style="font-size:16px;color:#7c3aed;margin:24px 0 10px">Partager votre code</h2>'
     + '<a href="' + waUrl + '" style="display:inline-block;padding:12px 20px;background:#25d366;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;margin-right:8px">\u{1F4AC} WhatsApp</a>'
@@ -1045,16 +1082,19 @@ function envoyerMailCodeParrain(p, code) {
   });
 }
 
-// ===== PARRAINAGE : validation d'un code utilise par un filleul =====
+// ===== PARRAINAGE : validation d'un code utilise par un filleul (v9) =====
 function validerEtNotifierParrainage(ss, filleul, codeUtilise) {
+  var codeNorm = String(codeUtilise || '').toUpperCase().replace(/\s+/g, '');
+  if (!codeNorm) return false;
+
   var sheetParrains = ensureSheet(ss, 'Parrains', HEAD_PARRAINS, '#a855f7');
   var data = sheetParrains.getDataRange().getValues();
 
-  // Chercher le code parrain
+  // Chercher le code parrain (insensible casse/espaces)
   var parrainRow = -1;
   var parrainInfo = null;
   for (var i = 1; i < data.length; i++) {
-    if (data[i][0] === codeUtilise) {
+    if (String(data[i][0]).toUpperCase().replace(/\s+/g, '') === codeNorm) {
       parrainRow = i + 1; // ligne reelle (1-indexed)
       parrainInfo = {
         code: data[i][0],
@@ -1070,33 +1110,60 @@ function validerEtNotifierParrainage(ss, filleul, codeUtilise) {
 
   if (!parrainInfo) return false; // code invalide
 
-  // Anti-fraude : verifier que le parrain != filleul (meme email)
-  if (String(parrainInfo.email).toLowerCase() === String(filleul.email).toLowerCase()) {
+  // Anti-fraude 1 : le parrain ne peut pas se parrainer lui-meme (meme email)
+  if (String(parrainInfo.email).toLowerCase().trim() === String(filleul.email).toLowerCase().trim()) {
     return false;
+  }
+
+  // Anti-fraude 2 (v9) : un meme filleul (email) ne peut etre parraine qu'UNE seule
+  // fois, tous codes parrains confondus — sinon le meme sejour genererait des bons en boucle.
+  var sheetPV = ensureSheet(ss, 'Parrainages Valides', HEAD_PARRAINAGES, '#10b981');
+  var pvData = sheetPV.getDataRange().getValues();
+  var filleulEmail = String(filleul.email).toLowerCase().trim();
+  for (var j = 1; j < pvData.length; j++) {
+    if (String(pvData[j][5]).toLowerCase().trim() === filleulEmail) return false;
   }
 
   // Incrementer compteur parrain
   sheetParrains.getRange(parrainRow, 8).setValue(parrainInfo.nbUtilisations + 1);
   sheetParrains.getRange(parrainRow, 9).setValue(new Date().toLocaleString('fr-FR'));
 
+  // v9 : attribuer 2 bons uniques depuis le pool (18 mois de validite chacun)
+  var bonParrain = null;
+  var bonFilleul = null;
+  try { bonParrain = attribuerBon(ss, 'PARRAIN', parrainInfo.nom, parrainInfo.email, parrainInfo.code); } catch(err) {}
+  try { bonFilleul = attribuerBon(ss, 'FILLEUL', filleul.nom, filleul.email, parrainInfo.code); } catch(err) {}
+
   // Logger dans Parrainages Valides
-  var sheetPV = ensureSheet(ss, 'Parrainages Valides', HEAD_PARRAINAGES, '#10b981');
   var ts = new Date().toLocaleString('fr-FR');
   sheetPV.appendRow([
-    ts, codeUtilise,
+    ts, parrainInfo.code,
     parrainInfo.nom, parrainInfo.email,
     filleul.nom || '', filleul.email || '',
-    filleul.appart || '', ts
+    filleul.appart || '', ts,
+    bonParrain ? bonParrain.code : 'EN ATTENTE',
+    bonFilleul ? bonFilleul.code : 'EN ATTENTE'
   ]);
 
   // Envoyer mails
-  try { envoyerMailParrainValide(parrainInfo, filleul); } catch(err) {}
-  try { envoyerMailFilleulValide(filleul, parrainInfo); } catch(err) {}
+  try { envoyerMailParrainValide(parrainInfo, filleul, bonParrain); } catch(err) {}
+  try { envoyerMailFilleulValide(filleul, parrainInfo, bonFilleul); } catch(err) {}
 
   return true;
 }
 
-function envoyerMailParrainValide(parrain, filleul) {
+function envoyerMailParrainValide(parrain, filleul, bon) {
+  var bonHtml;
+  if (bon) {
+    bonHtml = ''
+      + '<div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:2px solid #10b981;border-radius:12px;padding:20px;text-align:center;margin:20px 0">'
+      + '<p style="font-size:12px;color:#166534;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;font-weight:600">Votre bon fid\xe9lit\xe9 personnel</p>'
+      + '<div style="font-size:24px;font-weight:800;color:#10b981;letter-spacing:3px;background:#fff;padding:16px;border-radius:8px;display:inline-block">' + escapeHtml(bon.code) + '</div>'
+      + '<p style="font-size:12px;color:#64748b;margin:12px 0 0">Valable jusqu\'au <strong>' + escapeHtml(bon.expiration) + '</strong> \u2014 utilisable <strong>une seule fois</strong>, lors d\'une r\xe9servation directe sur <strong>' + SITE_URL.replace('https://','') + '</strong></p>'
+      + '</div>';
+  } else {
+    bonHtml = '<p><strong>Votre bon personnel -10% vous sera envoy\xe9 dans un email s\xe9par\xe9 tr\xe8s prochainement.</strong></p>';
+  }
   var html = ''
     + '<div style="font-family:-apple-system,sans-serif;max-width:600px;margin:0 auto;color:#1e293b">'
     + '<div style="background:linear-gradient(135deg,#10b981,#34d399);color:#fff;padding:24px;border-radius:12px 12px 0 0">'
@@ -1106,12 +1173,9 @@ function envoyerMailParrainValide(parrain, filleul) {
     + '<div style="background:#fff;padding:24px;border:1px solid #e2e8f0;border-top:none">'
     + '<p>Bonne nouvelle ! <strong>' + escapeHtml(filleul.nom || 'Un proche') + '</strong> a s\xe9journ\xe9 \xe0 Berck et a utilis\xe9 votre code parrain <strong>' + escapeHtml(parrain.code) + '</strong>.</p>'
     + '<p>Comme promis, voici votre bon <strong>-10% de r\xe9duction</strong> \xe0 utiliser sur votre prochain s\xe9jour en direct :</p>'
-    + '<div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:2px solid #10b981;border-radius:12px;padding:20px;text-align:center;margin:20px 0">'
-    + '<p style="font-size:12px;color:#166534;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;font-weight:600">Votre bon fid\xe9lit\xe9</p>'
-    + '<div style="font-size:24px;font-weight:800;color:#10b981;letter-spacing:3px;background:#fff;padding:16px;border-radius:8px;display:inline-block">' + PROMO_FIDELE + '</div>'
-    + '<p style="font-size:12px;color:#64748b;margin:12px 0 0">\xc0 utiliser lors de votre r\xe9servation directe sur <strong>' + SITE_URL.replace('https://','') + '</strong></p>'
-    + '</div>'
-    + '<p style="font-size:14px;color:#64748b">Votre code parrain <strong>' + escapeHtml(parrain.code) + '</strong> reste actif : continuez \xe0 le partager, chaque nouveau filleul = -10% suppl\xe9mentaire !</p>'
+    + bonHtml
+    + '<p style="font-size:14px;color:#64748b">Ce bon est <strong>strictement personnel</strong> : il ne fonctionne qu\'une fois, puis s\'\xe9teint automatiquement.</p>'
+    + '<p style="font-size:14px;color:#64748b">Votre code parrain <strong>' + escapeHtml(parrain.code) + '</strong> reste actif : continuez \xe0 le partager, chaque nouveau filleul = un nouveau bon -10% !</p>'
     + '<p style="margin-top:20px;font-size:13px;color:#64748b">Merci pour votre confiance,<br>Claudine</p>'
     + '</div></div>';
 
@@ -1123,7 +1187,18 @@ function envoyerMailParrainValide(parrain, filleul) {
   });
 }
 
-function envoyerMailFilleulValide(filleul, parrain) {
+function envoyerMailFilleulValide(filleul, parrain, bon) {
+  var bonHtml;
+  if (bon) {
+    bonHtml = ''
+      + '<div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:2px solid #10b981;border-radius:12px;padding:20px;text-align:center;margin:20px 0">'
+      + '<p style="font-size:12px;color:#166534;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;font-weight:600">Votre bon fid\xe9lit\xe9 personnel</p>'
+      + '<div style="font-size:24px;font-weight:800;color:#10b981;letter-spacing:3px;background:#fff;padding:16px;border-radius:8px;display:inline-block">' + escapeHtml(bon.code) + '</div>'
+      + '<p style="font-size:12px;color:#64748b;margin:12px 0 0">Valable jusqu\'au <strong>' + escapeHtml(bon.expiration) + '</strong> — utilisable <strong>une seule fois</strong>, lors d\'une r\xe9servation directe sur <strong>' + SITE_URL.replace('https://','') + '</strong></p>'
+      + '</div>';
+  } else {
+    bonHtml = '<p><strong>Votre bon personnel -10% vous sera envoy\xe9 dans un email s\xe9par\xe9 tr\xe8s prochainement.</strong></p>';
+  }
   var html = ''
     + '<div style="font-family:-apple-system,sans-serif;max-width:600px;margin:0 auto;color:#1e293b">'
     + '<div style="background:linear-gradient(135deg,#10b981,#34d399);color:#fff;padding:24px;border-radius:12px 12px 0 0">'
@@ -1131,13 +1206,9 @@ function envoyerMailFilleulValide(filleul, parrain) {
     + '<p style="margin:6px 0 0;opacity:0.9">Votre code parrain a \xe9t\xe9 accept\xe9</p>'
     + '</div>'
     + '<div style="background:#fff;padding:24px;border:1px solid #e2e8f0;border-top:none">'
-    + '<p>Bonne nouvelle ! Le code parrain de <strong>' + escapeHtml(parrain.nom || 'votre proche') + '</strong> est bien valid\xe9.</p>'
-    + '<p>En plus du code BERCK10 que nous vous avons d\xe9j\xe0 envoy\xe9, voici votre <strong>bonus parrainage -10%</strong> :</p>'
-    + '<div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:2px solid #10b981;border-radius:12px;padding:20px;text-align:center;margin:20px 0">'
-    + '<p style="font-size:12px;color:#166534;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;font-weight:600">Votre bon fid\xe9lit\xe9</p>'
-    + '<div style="font-size:24px;font-weight:800;color:#10b981;letter-spacing:3px;background:#fff;padding:16px;border-radius:8px;display:inline-block">' + PROMO_FIDELE + '</div>'
-    + '<p style="font-size:12px;color:#64748b;margin:12px 0 0">\xc0 utiliser sur <strong>' + SITE_URL.replace('https://','') + '</strong></p>'
-    + '</div>'
+    + '<p>Bonne nouvelle ! Le code parrain de <strong>' + escapeHtml(parrain.nom || 'votre proche') + '</strong> est bien valid\xe9. Voici votre <strong>bonus parrainage -10%</strong> :</p>'
+    + bonHtml
+    + '<p style="font-size:14px;color:#64748b">Ce bon est <strong>strictement personnel</strong> : il ne fonctionne qu\'une fois, puis s\'\xe9teint automatiquement.</p>'
     + '<p style="font-size:14px;color:#64748b">Vous aussi, <strong>parrainez vos proches</strong> ! Votre propre code parrain personnel vous a \xe9t\xe9 envoy\xe9 dans un email s\xe9par\xe9 si vous avez dit souhaiter revenir ET recommander notre Appart-H\xf4tel.</p>'
     + '<p style="margin-top:20px;font-size:13px;color:#64748b">\xc0 tr\xe8s bient\xf4t \xe0 Berck !<br>Claudine</p>'
     + '</div></div>';
@@ -1148,6 +1219,200 @@ function envoyerMailFilleulValide(filleul, parrain) {
     subject: '\u{1F381} Parrainage valid\xe9 : votre -10% est l\xe0 !',
     htmlBody: html
   });
+}
+
+// =====================================================================
+// v9 : GESTION DU POOL DE BONS FIDELITE UNIQUES (onglet 'Bons Fidelite')
+// =====================================================================
+// Cycle de vie d'un bon : DISPONIBLE -> ATTRIBUE -> CONSOMME (ou EXPIRE).
+// Les codes DOIVENT aussi exister dans Beds24 : (SETTINGS) BOOKING ENGINE >
+// MULTIPLE PROPERTIES > One Time Use Voucher Codes (Beds24 les supprime a l'usage).
+
+function formatDateFR(d) {
+  return Utilities.formatDate(d, 'Europe/Paris', 'dd/MM/yyyy');
+}
+
+// A executer manuellement depuis l'editeur (ou via une session assistee) pour
+// remplir le pool. Genere nb codes, les ajoute au Sheet en DISPONIBLE et envoie
+// a Claudine la liste exacte a coller dans Beds24.
+function genererPoolBons(nb) {
+  nb = nb || 40;
+  var ss = SpreadsheetApp.openById(SHEET_ID);
+  var sheet = ensureSheet(ss, 'Bons Fidelite', HEAD_BONS, '#f59e0b');
+  var data = sheet.getDataRange().getValues();
+  var existants = {};
+  for (var i = 1; i < data.length; i++) existants[String(data[i][0]).toUpperCase()] = true;
+
+  // Alphabet sans caracteres ambigus (pas de O/0, I/1/L) ni caracteres speciaux (regle Beds24)
+  var alphabet = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  var codes = [];
+  while (codes.length < nb) {
+    var c = 'FIDELE-';
+    for (var k = 0; k < 8; k++) {
+      if (k === 4) c += '-';
+      c += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+    }
+    if (!existants[c]) { existants[c] = true; codes.push(c); }
+  }
+  codes.forEach(function(code) {
+    sheet.appendRow([code, 'DISPONIBLE', '', '', '', '', '', '', '', '']);
+  });
+
+  MailApp.sendEmail({
+    to: ALERT_EMAIL,
+    subject: '\u{1F39F} ' + nb + ' nouveaux bons fid\xe9lit\xe9 g\xe9n\xe9r\xe9s — \xe0 coller dans Beds24',
+    htmlBody: '<p>' + nb + ' bons uniques ont \xe9t\xe9 ajout\xe9s \xe0 l\'onglet <strong>Bons Fidelite</strong> (statut DISPONIBLE).</p>'
+      + '<p><strong>\xc0 coller dans Beds24</strong> lors de la prochaine session : (SETTINGS) BOOKING ENGINE &gt; MULTIPLE PROPERTIES &gt; One Time Use Voucher Codes (valeur : -10%, selon le format du champ constat\xe9 sur la page) :</p>'
+      + '<pre style="background:#f1f5f9;padding:12px;border-radius:8px;font-size:13px">' + codes.join('<br>') + '</pre>'
+      + '<p style="font-size:12px;color:#64748b">Tant que le collage n\'est pas fait, les bons envoy\xe9s aux voyageurs ne fonctionneront pas sur le moteur de r\xe9servation.</p>'
+  });
+  return codes.join('\n');
+}
+
+// Pioche le premier bon DISPONIBLE, le marque ATTRIBUE avec expiration a +18 mois.
+// Renvoie { code, expiration } ou null si le pool est vide (alerte envoyee).
+function attribuerBon(ss, role, nom, email, codeParrainLie) {
+  var sheet = ensureSheet(ss, 'Bons Fidelite', HEAD_BONS, '#f59e0b');
+  var data = sheet.getDataRange().getValues();
+  var row = -1;
+  var dispo = 0;
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][1] === 'DISPONIBLE') {
+      dispo++;
+      if (row === -1) row = i + 1;
+    }
+  }
+
+  if (row === -1) {
+    MailApp.sendEmail({
+      to: ALERT_EMAIL,
+      subject: '\u{1F6A8} URGENT — plus aucun bon fid\xe9lit\xe9 disponible',
+      htmlBody: '<p>Un parrainage vient d\'\xeatre valid\xe9 (' + escapeHtml(nom || '') + ', ' + escapeHtml(email || '') + ', r\xf4le ' + role + ') mais <strong>le pool de bons est vide</strong>.</p>'
+        + '<p>\xc0 faire : ex\xe9cuter <strong>genererPoolBons()</strong> dans l\'\xe9diteur Apps Script, coller les codes dans Beds24, puis envoyer son bon manuellement \xe0 ce voyageur (ligne EN ATTENTE dans Parrainages Valides).</p>'
+    });
+    return null;
+  }
+
+  var now = new Date();
+  var exp = new Date(now.getFullYear(), now.getMonth() + BON_VALIDITE_MOIS, now.getDate());
+  var code = data[row - 1][0];
+  // Colonnes 2..8 : Statut, Role, Attribue A, Email, Code Parrain Lie, Date Attribution, Date Expiration
+  sheet.getRange(row, 2, 1, 7).setValues([[
+    'ATTRIBUE', role, nom || '', email || '', codeParrainLie || '',
+    now.toLocaleString('fr-FR'), formatDateFR(exp)
+  ]]);
+
+  var restants = dispo - 1;
+  if (restants <= BON_STOCK_ALERTE) {
+    MailApp.sendEmail({
+      to: ALERT_EMAIL,
+      subject: '⚠️ Stock bons fid\xe9lit\xe9 bas : ' + restants + ' restant(s)',
+      htmlBody: '<p>Il ne reste que <strong>' + restants + '</strong> bon(s) DISPONIBLE dans le pool.</p>'
+        + '<p>\xc0 faire : ex\xe9cuter <strong>genererPoolBons()</strong> puis coller les nouveaux codes dans Beds24 lors de la prochaine session.</p>'
+    });
+  }
+
+  return { code: code, expiration: formatDateFR(exp) };
+}
+
+// ===== v9 : ROBOT QUOTIDIEN — reconciliation des bons consommes =====
+// Lit les resas recentes via l'API Beds24 (token READ-ONLY dans les Script
+// Properties, cle BEDS24_REFRESH_TOKEN — jamais dans le code, le repo est public).
+// Le code voucher utilise apparait dans la resa (rate description / invoice items).
+function robotReconciliationBons() {
+  var refresh = PropertiesService.getScriptProperties().getProperty('BEDS24_REFRESH_TOKEN');
+  if (!refresh) return; // pas configure : robot inactif, aucun impact
+
+  var tokenResp = UrlFetchApp.fetch('https://api.beds24.com/v2/authentication/token', {
+    headers: { refreshToken: refresh }, muteHttpExceptions: true
+  });
+  if (tokenResp.getResponseCode() !== 200) return;
+  var token = JSON.parse(tokenResp.getContentText()).token;
+  if (!token) return;
+
+  var ss = SpreadsheetApp.openById(SHEET_ID);
+  var sheet = ensureSheet(ss, 'Bons Fidelite', HEAD_BONS, '#f59e0b');
+  var data = sheet.getDataRange().getValues();
+  var rowByCode = {};
+  for (var i = 1; i < data.length; i++) rowByCode[String(data[i][0]).toUpperCase()] = i + 1;
+
+  var since = new Date();
+  since.setDate(since.getDate() - 30);
+  var sinceStr = Utilities.formatDate(since, 'Europe/Paris', 'yyyy-MM-dd');
+
+  var page = 1;
+  while (page <= 5) {
+    var url = 'https://api.beds24.com/v2/bookings?bookingTimeFrom=' + sinceStr
+            + '&includeInvoiceItems=true&page=' + page;
+    var resp = UrlFetchApp.fetch(url, { headers: { token: token }, muteHttpExceptions: true });
+    if (resp.getResponseCode() !== 200) break;
+    var body = JSON.parse(resp.getContentText());
+    var bookings = body.data || [];
+    if (!bookings.length) break;
+
+    bookings.forEach(function(b) {
+      var matches = JSON.stringify(b).match(/FIDELE-[A-Z2-9]{4}-[A-Z2-9]{4}/g) || [];
+      matches.forEach(function(code) {
+        var r = rowByCode[code];
+        if (!r) {
+          MailApp.sendEmail({
+            to: ALERT_EMAIL,
+            subject: '\u{1F6A8} Bon fid\xe9lit\xe9 INCONNU utilis\xe9 : ' + code,
+            htmlBody: '<p>Le code <strong>' + code + '</strong> appara\xeet dans la r\xe9sa Beds24 #' + b.id + ' mais n\'existe pas dans l\'onglet Bons Fidelite. \xc0 v\xe9rifier.</p>'
+          });
+          return;
+        }
+        var statut = sheet.getRange(r, 2).getValue();
+        if (statut === 'ATTRIBUE') {
+          sheet.getRange(r, 2).setValue('CONSOMME');
+          sheet.getRange(r, 9).setValue(new Date().toLocaleString('fr-FR'));
+          sheet.getRange(r, 10).setValue('Resa Beds24 #' + b.id);
+        } else if (statut === 'EXPIRE') {
+          MailApp.sendEmail({
+            to: ALERT_EMAIL,
+            subject: '\u{1F6A8} Bon fid\xe9lit\xe9 EXPIR\xc9 utilis\xe9 : ' + code,
+            htmlBody: '<p>Le bon <strong>' + code + '</strong> (expir\xe9) a \xe9t\xe9 utilis\xe9 dans la r\xe9sa Beds24 #' + b.id + '. Il n\'avait pas encore \xe9t\xe9 retir\xe9 de Beds24 — \xe0 purger, et d\xe9cision \xe0 prendre sur cette r\xe9sa.</p>'
+          });
+        }
+        // CONSOMME deja : rien a faire
+      });
+    });
+
+    if (!body.pages || !body.pages.nextPageExists) break;
+    page++;
+  }
+}
+
+// ===== v9 : ROBOT HEBDO — bons arrives a expiration (18 mois) =====
+// Marque EXPIRE les bons ATTRIBUE dont la date est depassee et envoie a Claudine
+// la liste exacte a retirer de Beds24 (pas d'expiration native cote Beds24).
+function robotExpirationBons() {
+  var ss = SpreadsheetApp.openById(SHEET_ID);
+  var sheet = ensureSheet(ss, 'Bons Fidelite', HEAD_BONS, '#f59e0b');
+  var data = sheet.getDataRange().getValues();
+  var now = new Date();
+  var expires = [];
+
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][1] !== 'ATTRIBUE') continue;
+    var m = String(data[i][7] || '').match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if (!m) continue;
+    var exp = new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]), 23, 59, 59);
+    if (exp < now) {
+      sheet.getRange(i + 1, 2).setValue('EXPIRE');
+      expires.push(String(data[i][0]));
+    }
+  }
+
+  if (expires.length) {
+    MailApp.sendEmail({
+      to: ALERT_EMAIL,
+      subject: '⏳ ' + expires.length + ' bon(s) fid\xe9lit\xe9 expir\xe9(s) — \xe0 retirer de Beds24',
+      htmlBody: '<p>Ces bons ont d\xe9pass\xe9 leurs ' + BON_VALIDITE_MOIS + ' mois de validit\xe9 et sont pass\xe9s en EXPIRE dans le Sheet.</p>'
+        + '<p><strong>\xc0 retirer de la liste Beds24</strong> ((SETTINGS) BOOKING ENGINE &gt; MULTIPLE PROPERTIES &gt; One Time Use Voucher Codes) lors de la prochaine session :</p>'
+        + '<pre style="background:#f1f5f9;padding:12px;border-radius:8px;font-size:13px">' + expires.join('<br>') + '</pre>'
+    });
+  }
 }
 
 function json(obj) {
