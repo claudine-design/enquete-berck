@@ -45,6 +45,7 @@
          border-radius:20px; padding:8px 22px; font-size:14px; font-weight:bold; cursor:pointer; }
   .titre-section { font-size:14px; font-weight:bold; color:#888; margin:22px 4px 10px; }
   .hint-edit { font-size:12px; color:#999; margin:8px 0 4px; }
+  .langue { font-size:13px; color:#7048b6; background:#f3edff; border-radius:6px; padding:6px 9px; margin:6px 0; }
   .carte-lue { opacity:.85; background:#fbfbf6; }
   .carte-lue .boutons button { padding:9px; font-size:14px; background:#8d99ae; }
 </style>
@@ -95,6 +96,7 @@ function fdate(s) {
   return p.length === 3 ? p[2] + '/' + p[1] : (s || '');
 }
 var OPTION_TXT = { pack_linge:'🛏️ Pack linge', animal:'🐕 Animal', arrivee_anticipee:'⏰ Arrivée anticipée', depart_tardif:'⏰ Départ tardif' };
+var LANGUES = { de:'allemand', en:'anglais', nl:'néerlandais', es:'espagnol', it:'italien', pt:'portugais', pl:'polonais' };
 
 function apiGet(params) {
   var qs = new URLSearchParams(Object.assign({ secret: SECRET }, params)).toString();
@@ -145,6 +147,9 @@ function charger() {
         '<div class="qui">' + esc(it.appart) + ' — ' + esc(it.voyageur) +
         '<span class="badge ' + badge + '">' + esc(it.categorie) + '</span></div>' +
         '<div class="dates">Séjour ' + fdate(it.arrivee) + ' → ' + fdate(it.depart) + ' · reçu le ' + esc(it.genere_le) + '</div>' +
+        (it.langue && it.langue !== 'fr' ? '<div class="langue">🌐 Le voyageur écrit en ' +
+            (LANGUES[it.langue] || esc(it.langue)) + ' — vous validez en français, il recevra la réponse traduite en ' +
+            (LANGUES[it.langue] || esc(it.langue)) + '.</div>' : '') +
         (it.besoin_claudine && it.note_interne ? '<div class="alerte">⚠️ ' + esc(it.note_interne) + '</div>' : '') +
         '<div class="question">💬 ' + esc(it.question) + '</div>' +
         '<details><summary>Voir toute la conversation</summary><div class="conv">' + esc(it.conversation) + '</div></details>' +
