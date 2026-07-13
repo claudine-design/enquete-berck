@@ -399,8 +399,12 @@ textarea{resize:vertical;min-height:90px;font-size:14px;line-height:1.5}
     <div class="card">
       <div class="card-title">&#x1F464; Vos coordonn&eacute;es</div>
       <div class="form-group">
-        <label for="nom">Nom Pr&eacute;nom *</label>
-        <input type="text" id="nom" required placeholder="Jean Dupont" autocomplete="name">
+        <label for="prenom">Pr&eacute;nom *</label>
+        <input type="text" id="prenom" required placeholder="Jean" autocomplete="given-name">
+      </div>
+      <div class="form-group">
+        <label for="nomfamille">Nom *</label>
+        <input type="text" id="nomfamille" required placeholder="Dupont" autocomplete="family-name">
       </div>
       <div class="form-group">
         <label for="tel">T&eacute;l&eacute;phone</label>
@@ -557,6 +561,20 @@ textarea{resize:vertical;min-height:90px;font-size:14px;line-height:1.5}
       </div>
     </div>
 
+    <!-- CODE PARRAIN (v8) — saisie par le filleul -->
+    <div class="card">
+      <div class="card-title">&#x1F381; Vous venez de la part d'un proche ?</div>
+      <p style="font-size:13px;color:#64748b;margin:-6px 0 12px">
+        Si un proche vous a recommand&eacute; nos appartements avec son <strong>code parrain</strong>,
+        entrez-le ici : vous recevrez <strong>chacun un bon &minus;10%</strong> par email.
+      </p>
+      <div class="form-group">
+        <label for="parrainUtilise">Code parrain <span style="font-weight:400;color:#94a3b8">(facultatif)</span></label>
+        <input type="text" id="parrainUtilise" placeholder="BERCK-MARIE-1234" autocomplete="off"
+               style="text-transform:uppercase" autocapitalize="characters" spellcheck="false">
+      </div>
+    </div>
+
     <!-- SUBMIT -->
     <button type="submit" class="submit-btn" id="submitBtn">Envoyer mon avis &#x2728;</button>
     <div class="error-msg" id="errorMsg"></div>
@@ -597,8 +615,9 @@ textarea{resize:vertical;min-height:90px;font-size:14px;line-height:1.5}
       <div id="parrainGenBlock" class="card thankcard" style="display:none">
         <div class="card-title" style="border:none;padding:0;margin-bottom:14px">Votre code parrain</div>
         <p class="thank-para">
-          Partagez votre <strong>code personnel</strong> avec vos proches. Quand ils r&eacute;servent et utilisent votre code,
-          <strong>ils b&eacute;n&eacute;ficient de &minus;10%</strong> sur leur s&eacute;jour, et <strong>vous aussi</strong> lors de votre prochaine venue.
+          Partagez votre <strong>code personnel</strong> avec vos proches. Quand l'un d'eux r&eacute;serve en direct,
+          s&eacute;journe et indique votre code dans le questionnaire de fin de s&eacute;jour,
+          vous recevez <strong>chacun un bon &minus;10%</strong> personnel, valable 18 mois.
         </p>
         <div class="promo-code" id="parrainCodeDisplay">BERCK-XXXX</div>
         <a id="parrainWhatsAppBtn" href="#" target="_blank" rel="noopener" class="thank-btn thank-btn-share">
@@ -614,12 +633,12 @@ textarea{resize:vertical;min-height:90px;font-size:14px;line-height:1.5}
       <div id="parrainValideBlock" class="card thankcard" style="display:none">
         <div class="card-title" style="border:none;padding:0;margin-bottom:10px">Parrainage valid&eacute;</div>
         <p class="thank-para">
-          Votre code parrain a &eacute;t&eacute; accept&eacute;. Un mail avec votre <strong>bon &minus;10%</strong> vous est envoy&eacute; &mdash; et votre parrain aussi.
+          Votre code parrain a &eacute;t&eacute; accept&eacute;. Un mail avec votre <strong>bon &minus;10% personnel</strong>
+          (usage unique, valable 18 mois) vous est envoy&eacute; &mdash; et votre parrain re&ccedil;oit le sien aussi.
         </p>
       </div>
 
-      <!-- ancien code promo (masqué, gardé pour compat script) -->
-      <div id="promoCode" style="display:none">FIDELE-10</div>
+      <!-- v8 : plus aucun code promo generique — les bons -10% sont uniques et envoyes par email -->
     </div>
   </div>
 
@@ -741,7 +760,11 @@ function submitForm(e) {
     action: 'submitEnquete',
     appart: appart,
     residence: RESIDENCES[appart],
-    nom: document.getElementById('nom').value.trim(),
+    prenom: document.getElementById('prenom').value.trim(),
+    nomfamille: document.getElementById('nomfamille').value.trim(),
+    // retro-compat : l'ancien backend ne connait que 'nom'
+    nom: (document.getElementById('prenom').value.trim() + ' ' + document.getElementById('nomfamille').value.trim()).trim(),
+    parrainUtilise: document.getElementById('parrainUtilise').value.trim().toUpperCase(),
     tel: document.getElementById('tel').value.trim(),
     whatsapp: document.getElementById('whatsapp').checked ? 'oui' : 'non',
     ville: document.getElementById('ville').value.trim(),
@@ -799,8 +822,8 @@ function submitForm(e) {
           document.getElementById('parrainCodeDisplay').textContent = resp.parrainCode;
           var nomPrenom = data.nom || 'un proche';
           var waMsg = '\u{1F30A} Coucou ! J\'ai s\xe9journ\xe9 \xe0 Berck chez Claudine, c\'\xe9tait super ! '
-            + 'Tu peux avoir -10% en r\xe9servant en direct sur appart-hotel-berck.com avec mon code parrain : '
-            + resp.parrainCode + ' (et moi aussi je gagne -10% \u{1F60A})';
+            + 'R\xe9serve en direct sur appart-hotel-berck.com et indique mon code parrain '
+            + resp.parrainCode + ' dans le questionnaire de fin de s\xe9jour : on gagne chacun un bon -10% \u{1F60A}';
           document.getElementById('parrainWhatsAppBtn').href =
             'https://wa.me/?text=' + encodeURIComponent(waMsg);
           document.getElementById('parrainEmailBtn').href =
