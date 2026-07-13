@@ -46,6 +46,9 @@
   .titre-section { font-size:14px; font-weight:bold; color:#888; margin:22px 4px 10px; }
   .hint-edit { font-size:12px; color:#999; margin:8px 0 4px; }
   .langue { font-size:13px; color:#7048b6; background:#f3edff; border-radius:6px; padding:6px 9px; margin:6px 0; }
+  .carte-urgence { border:2px solid var(--rouge); }
+  .urgence { background:var(--rouge); color:#fff; font-weight:bold; font-size:14px;
+             border-radius:6px; padding:8px 10px; margin-bottom:8px; }
   .carte-lue { opacity:.85; background:#fbfbf6; }
   .carte-lue .boutons button { padding:9px; font-size:14px; background:#8d99ae; }
 </style>
@@ -124,6 +127,8 @@ function charger() {
   apiGet({ action:'list' }).then(function(res) {
     if (res.error) { toast('Erreur : ' + res.error); return; }
     items = res.items || [];
+    // urgences toujours en tête de liste
+    items.sort(function(a, b){ return (b.urgence ? 1 : 0) - (a.urgence ? 1 : 0); });
     var aValider = items.filter(function(it){ return it.statut === 'en_attente'; });
     var sansReponse = items.filter(function(it){ return it.statut === 'courtoisie'; });
     document.getElementById('compteur').textContent = aValider.length;
@@ -143,7 +148,8 @@ function charger() {
               (it.option_detail ? ' — ' + esc(it.option_detail) : '') +
               ' → créer l\'événement sur le calendrier DRAP / Check-in</label></div>';
       }
-      html += '<div class="carte" data-statut="en_attente" id="carte-' + i + '">' +
+      html += '<div class="carte' + (it.urgence ? ' carte-urgence' : '') + '" data-statut="en_attente" id="carte-' + i + '">' +
+        (it.urgence ? '<div class="urgence">🚨 URGENCE — ' + esc(it.urgence) + '</div>' : '') +
         '<div class="qui">' + esc(it.appart) + ' — ' + esc(it.voyageur) +
         '<span class="badge ' + badge + '">' + esc(it.categorie) + '</span></div>' +
         '<div class="dates">Séjour ' + fdate(it.arrivee) + ' → ' + fdate(it.depart) + ' · reçu le ' + esc(it.genere_le) + '</div>' +
