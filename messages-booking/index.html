@@ -47,6 +47,14 @@
   .hint-edit { font-size:12px; color:#999; margin:8px 0 4px; }
   .langue { font-size:13px; color:#7048b6; background:#f3edff; border-radius:6px; padding:6px 9px; margin:6px 0; }
   .carte-urgence { border:2px solid var(--rouge); }
+  .refo { background:#eef7ff; border:1px solid #cfe3ff; border-radius:8px; padding:10px; margin-top:10px; }
+  .refo-ligne { display:flex; gap:8px; align-items:stretch; }
+  .refo textarea { flex:1; min-height:52px; background:#fff; }
+  .mic { flex:0 0 52px; font-size:22px; border:1px solid #cfe3ff; border-radius:8px; background:#fff; }
+  .mic-on { background:var(--rouge); color:#fff; animation:pulse 1s infinite; }
+  @keyframes pulse { 50% { opacity:.6; } }
+  .gen { width:100%; margin-top:8px; background:var(--bleu); color:#fff; padding:10px; }
+  .refo-btn { background:#eef7ff; color:var(--bleu); flex:0 0 34%; }
   .urgence { background:var(--rouge); color:#fff; font-weight:bold; font-size:14px;
              border-radius:6px; padding:8px 10px; margin-bottom:8px; }
   .carte-lue { opacity:.85; background:#fbfbf6; }
@@ -162,9 +170,18 @@ function charger() {
         opt +
         '<div class="hint-edit">✏️ Touchez le texte pour le modifier avant d\'envoyer — le robot apprendra de votre version :</div>' +
         '<textarea id="txt-' + i + '">' + esc(it.proposition || '') + '</textarea>' +
+        '<div class="refo" id="refo-' + i + '" style="display:none">' +
+          '<div class="hint-edit">Dites (ou tapez) ce que vous voulez répondre — Claude rédige le message poli à votre façon :</div>' +
+          '<div class="refo-ligne">' +
+          '<textarea id="consigne-' + i + '" rows="2" placeholder="Ex : finalement je ne peux pas accepter 3 chiens, l\'appartement ne convient pas"></textarea>' +
+          '<button class="mic" id="mic-' + i + '" onclick="dicter(' + i + ')" title="Dicter à la voix">🎤</button>' +
+          '</div>' +
+          '<button class="gen" id="gen-' + i + '" onclick="genererReformulation(' + i + ')">🪄 Rédiger le message</button>' +
+        '</div>' +
         '<div class="boutons">' +
         '<button class="rej" onclick="rejeter(' + i + ')">🚫 Ignorer</button>' +
-        '<button class="env" id="btn-' + i + '" onclick="valider(' + i + ')">✅ Valider &amp; envoyer</button>' +
+        '<button class="refo-btn" onclick="toggleReformuler(' + i + ')">🪄 Reformuler</button>' +
+        '<button class="env" id="btn-' + i + '" onclick="valider(' + i + ')">✅ Envoyer</button>' +
         '</div></div>';
     });
     if (sansReponse.length) {
@@ -222,6 +239,51 @@ function valider(i) {
                       : '📋 Validé — à envoyer à la main sur Booking (' + (res.raison || '') + ')');
   }).catch(function(e) {
     btn.disabled = false; btn.textContent = '✅ Valider & envoyer';
+    toast('Erreur : ' + e.message);
+  });
+}
+
+function toggleReformuler(i) {
+  var d = document.getElementById('refo-' + i);
+  d.style.display = (d.style.display === 'none') ? 'block' : 'none';
+  if (d.style.display === 'block') document.getElementById('consigne-' + i).focus();
+}
+
+var reco = null;
+function dicter(i) {
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { toast('Micro non supporté ici — utilisez le micro 🎤 du clavier'); return; }
+  var btn = document.getElementById('mic-' + i);
+  if (reco) { reco.stop(); return; }
+  reco = new SR();
+  reco.lang = 'fr-FR'; reco.interimResults = false; reco.continuous = true;
+  btn.classList.add('mic-on'); btn.textContent = '⏹';
+  reco.onresult = function (ev) {
+    var t = '';
+    for (var k = ev.resultIndex; k < ev.results.length; k++) t += ev.results[k][0].transcript;
+    var c = document.getElementById('consigne-' + i);
+    c.value = (c.value ? c.value + ' ' : '') + t.trim();
+  };
+  reco.onend = function () { btn.classList.remove('mic-on'); btn.textContent = '🎤'; reco = null; };
+  reco.onerror = function () { btn.classList.remove('mic-on'); btn.textContent = '🎤'; reco = null;
+                               toast('Micro indisponible — utilisez le micro du clavier'); };
+  reco.start();
+  toast('🎤 Parlez… (retouchez ⏹ pour arrêter)');
+}
+
+function genererReformulation(i) {
+  var it = items[i];
+  var consigne = document.getElementById('consigne-' + i).value.trim();
+  if (!consigne) { toast('Dites d\'abord ce que vous voulez répondre'); return; }
+  var g = document.getElementById('gen-' + i);
+  g.disabled = true; g.textContent = '🪄 Rédaction en cours…';
+  apiPost({ action:'reformuler', id: it.id, consigne: consigne }).then(function(res) {
+    if (res.error) { throw new Error(res.error); }
+    document.getElementById('txt-' + i).value = res.texte;
+    g.disabled = false; g.textContent = '🪄 Rédiger le message';
+    toast('✏️ Nouveau message rédigé — relisez puis Envoyer');
+  }).catch(function(e) {
+    g.disabled = false; g.textContent = '🪄 Rédiger le message';
     toast('Erreur : ' + e.message);
   });
 }
