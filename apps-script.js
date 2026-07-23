@@ -71,8 +71,12 @@ var HEAD_PARRAINS = ['Code Parrain', 'Nom Prenom', 'Email', 'Telephone', 'Appart
 var HEAD_PARRAINAGES = ['Date Validation', 'Code Parrain Utilise', 'Parrain Nom', 'Parrain Email', 'Filleul Nom', 'Filleul Email', 'Filleul Appartement', 'Filleul Date Sejour', 'Bon Parrain', 'Bon Filleul'];
 var HEAD_BONS = ['Code Bon', 'Statut', 'Role', 'Attribue A', 'Email', 'Code Parrain Lie', 'Date Attribution', 'Date Expiration', 'Date Consommation', 'Note'];
 var HEAD_ROUTINES = ['Date Fait', 'Appart Slug', 'Task Id', 'Task Label', 'Prestataire'];
-var HEAD_SIGNALEMENTS = ['ID', 'Date Creation', 'Appart Slug', 'Source', 'Voyageur', 'Element', 'Description', 'Action Prestataire', 'Statut', 'Date Resolu', 'Resolu Par', 'Calendar Event ID'];
+var HEAD_SIGNALEMENTS = ['ID', 'Date Creation', 'Appart Slug', 'Source', 'Voyageur', 'Element', 'Description', 'Action Prestataire', 'Statut', 'Date Resolu', 'Resolu Par', 'Calendar Event ID', 'Presta Event ID'];
 var DRAPS_CALENDAR_ID = '8e2aa92cb418bfa01e1a133d5835ef14be76315442ba4703e67431393ffca07b@group.calendar.google.com';
+// URL stable du deploiement web app. ScriptApp.getService().getUrl() renvoie parfois
+// une URL de deploiement secondaire invalide (liens de validation morts dans les events
+// Calendar, constate le 23/07/2026) -> on fige l URL connue-bonne ici.
+var STABLE_EXEC_URL = 'https://script.google.com/macros/s/AKfycbyZ50d01GyAOXi4LKQteCrGKkEcq4eKzLBMh3_G9hM4TI-5IAfjhrnxDZyKZO3-0IolBA/exec';
 
 // ===== CALENDRIERS PRESTATAIRES (warning event horaire 10h en plus du DraPS) =====
 // 6 calendriers prestataires partages avec princessedopale@gmail.com en ecriture.
@@ -394,8 +398,7 @@ function handle(p) {
       var cal = CalendarApp.getCalendarById(DRAPS_CALENDAR_ID);
       if (cal) {
         var title = '🔴 ' + slug2.toUpperCase() + ' : ' + (element || description.substring(0, 60) || 'Signalement voyageur');
-        var webAppUrl = '';
-        try { webAppUrl = ScriptApp.getService().getUrl(); } catch (urlErr) { webAppUrl = ''; }
+        var webAppUrl = STABLE_EXEC_URL;
         var validateLink = webAppUrl ? (webAppUrl + '?action=tapValidateSignalement&id=' + encodeURIComponent(sigId)) : '';
         var bodyParts = [];
         bodyParts.push('Signalement voyageur a regler par le menage.');
@@ -445,7 +448,8 @@ function handle(p) {
       'ouvert',
       '',
       '',
-      eventId
+      eventId,
+      prestaEventId
     ]);
     return json({ success: true, id: sigId, eventId: eventId, prestaEventId: prestaEventId });
   }
@@ -485,6 +489,8 @@ function handle(p) {
         } catch (calErr2) {
           // ignore
         }
+        // Retirer le warning de l event menage du prestataire (SANS coche — regle Claudine 23/07)
+        try { clearPrestaWarning_(rows3[k][12]); } catch (peErr) {}
         return json({ success: true, statut: 'fait-prestataire' });
       }
     }
@@ -527,6 +533,8 @@ function handle(p) {
         } catch (calErr4) {
           // ignore
         }
+        // Retirer le warning de l event menage du prestataire (SANS coche — regle Claudine 23/07)
+        try { clearPrestaWarning_(rows4[kk][12]); } catch (peErr2) {}
         return HtmlService.createHtmlOutput(htmlSignalementResult_('🟢', 'Validé !', 'Signalement <strong>' + appartName4.toString().toUpperCase() + ' — ' + element4 + '</strong> marqué comme validé. L\'event Calendar est passé au vert. Tu peux fermer cet onglet.'));
       }
     }
@@ -1537,7 +1545,7 @@ function findPrestaCalendarForSlug_(slug, dateObj) {
         if (events[j].getTitle().indexOf('🚨') === 0) continue;
         for (var k = 0; k < normalizedPatterns.length; k++) {
           if (titleNorm.indexOf(normalizedPatterns[k]) >= 0) {
-            return { id: entry.id, name: entry.name, matchedEvent: events[j].getTitle() };
+            return { id: entry.id, name: entry.name, matchedEvent: events[j].getTitle(), event: events[j] };
           }
         }
       }
@@ -1548,42 +1556,85 @@ function findPrestaCalendarForSlug_(slug, dateObj) {
   return null;
 }
 
+// Marqueurs du bloc signalement injecte dans la description de l event menage
+var SIG_DESC_START = '——— ⚠️ SIGNALEMENT VOYAGEUR ———';
+var SIG_DESC_END   = '——— FIN SIGNALEMENT ———';
+
+// REGLE CLAUDINE (23/07/2026) : sur le calendrier du prestataire, PAS d event separe
+// avec coche/validation (la prestataire croirait son menage "valide"). A la place :
+// on MODIFIE l event de menage existant -> "⚠️" tout a gauche AVANT les initiales
+// + le signalement a la FIN du titre. Quand le signalement est resolu (ou fausse
+// alerte), on RESTAURE le titre d origine — aucune coche, aucun symbole de validation.
 function createPrestaWarningEvent_(slug, signalementId, voyageur, element, description, actionPresta) {
   var tz = 'Europe/Paris';
   var dateObj = new Date(); // jour J = aujourd hui
   var found = findPrestaCalendarForSlug_(slug, dateObj);
   if (!found) {
-    Logger.log('createPrestaWarningEvent_ : aucun calendrier presta trouve pour ' + slug + ' le ' + Utilities.formatDate(dateObj, tz, 'yyyy-MM-dd'));
+    Logger.log('createPrestaWarningEvent_ : aucun event menage trouve pour ' + slug + ' le ' + Utilities.formatDate(dateObj, tz, 'yyyy-MM-dd'));
     return '';
   }
   try {
-    var cal = CalendarApp.getCalendarById(found.id);
-    var start = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), 10, 0, 0);
-    var end = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), 11, 0, 0);
-    var title = '🚨 ' + slug + ' : ' + (element || (description ? description.substring(0, 60) : 'signalement voyageur'));
-    var webAppUrl = '';
-    try { webAppUrl = ScriptApp.getService().getUrl(); } catch (e) { webAppUrl = ''; }
-    var validateLink = webAppUrl ? (webAppUrl + '?action=tapValidateSignalement&id=' + encodeURIComponent(signalementId)) : '';
+    var ev = found.event;
+    var originalTitle = ev.getTitle();
+    // Deja marque ? (2 signalements le meme jour) -> on garde le 1er marquage
+    if (originalTitle.indexOf('⚠️') !== 0) {
+      var sigLabel = (element || (description ? description.substring(0, 50) : 'signalement voyageur'));
+      ev.setTitle('⚠️' + originalTitle + ' — 🔴 ' + sigLabel);
+    }
     var lines = [];
-    lines.push('🔴 Signalement voyageur — ' + slug + ' (' + found.name + ')');
-    lines.push('');
+    lines.push(SIG_DESC_START);
     if (voyageur) lines.push('Voyageur : ' + voyageur);
     if (description) lines.push('Message : ' + description);
-    lines.push('');
     if (actionPresta) lines.push('Action : ' + actionPresta);
-    lines.push('');
-    lines.push('✅ Quand fait : clique le bouton "✓ Réglé" dans la checklist QR code de ' + slug + ',');
-    if (validateLink) lines.push('OU tape ce lien pour valider directement : ' + validateLink);
-    lines.push('');
+    lines.push('Quand c est regle : bouton "✓ Réglé" dans la checklist QR code de ' + slug + '.');
     lines.push('ID signalement : ' + signalementId);
-    var event = cal.createEvent(title, start, end, { description: lines.join('\n') });
-    try { event.setColor(CalendarApp.EventColor.RED); } catch (e) {}
-    try { event.removeAllReminders(); } catch (e) {}
-    Logger.log('Warning event cree dans ' + found.name + ' (match event "' + found.matchedEvent + '") : ' + event.getId());
-    return event.getId();
+    lines.push(SIG_DESC_END);
+    var oldDesc = ev.getDescription() || '';
+    ev.setDescription(oldDesc ? (oldDesc + '\n\n' + lines.join('\n')) : lines.join('\n'));
+    Logger.log('Warning insere dans l event menage "' + found.matchedEvent + '" (' + found.name + ')');
+    // combo "mod::calId::eventId" -> a restaurer (sans coche) a la resolution
+    return 'mod::' + found.id + '::' + ev.getId();
   } catch (e) {
-    Logger.log('createPrestaWarningEvent_ creation echec : ' + e.message);
+    Logger.log('createPrestaWarningEvent_ echec : ' + e.message);
     return 'err:' + (e.message || 'unknown').substring(0, 80);
+  }
+}
+
+// Resolution d un signalement (fait-prestataire OU valide-claudine OU fausse alerte) :
+// on retire le warning de l event menage du prestataire SANS ajouter de coche.
+// combo formats acceptes :
+//   "mod::calId::eventId"  -> restaurer le titre d origine + nettoyer la description
+//   "calId::eventId"       -> ancien format (event 🚨 separe) : on le SUPPRIME
+function clearPrestaWarning_(combo) {
+  var c = (combo || '').toString();
+  if (c.indexOf('::') < 0) return;
+  var parts = c.split('::');
+  var isMod = parts[0] === 'mod';
+  var calId = isMod ? parts[1] : parts[0];
+  var evId  = isMod ? parts[2] : parts[1];
+  try {
+    var cal = CalendarApp.getCalendarById(calId);
+    if (!cal) return;
+    var ev = cal.getEventById(evId);
+    if (!ev) return;
+    if (isMod) {
+      // Restaurer le titre : retirer "⚠️" en tete et " — 🔴 ..." en queue
+      var t = ev.getTitle().replace(/^⚠️\s*/, '').replace(/\s*— 🔴 .*$/, '');
+      ev.setTitle(t);
+      // Retirer le bloc signalement de la description
+      var d = ev.getDescription() || '';
+      var startIdx = d.indexOf(SIG_DESC_START);
+      var endIdx = d.indexOf(SIG_DESC_END);
+      if (startIdx >= 0 && endIdx > startIdx) {
+        var cleaned = (d.substring(0, startIdx) + d.substring(endIdx + SIG_DESC_END.length)).replace(/\n{3,}/g, '\n\n').trim();
+        ev.setDescription(cleaned);
+      }
+    } else {
+      // Ancien format : event 🚨 separe -> suppression pure (pas de coche)
+      ev.deleteEvent();
+    }
+  } catch (e) {
+    Logger.log('clearPrestaWarning_ erreur : ' + e.message);
   }
 }
 
@@ -1633,6 +1684,9 @@ var SCAN_FEEDBACK_SYSTEM_PROMPT = [
   '- Demandes pratiques sans probleme (check-in tardif, codes/cles, vinaigrettes, packs linge supplementaires, paiements)',
   '- Sujets factuels neutres (confirmation arrivee/depart, telephone, mail, parking, transports)',
   '- Doleances exprimees AVANT le sejour (le voyageur ne peut pas signaler de probleme dans le logement avant d y etre)',
+  '- CAPTURES DE PAIEMENT : si le CONTEXTE montre que l hote a demande une preuve/capture de paiement (arrivee anticipee, depart tardif, supplement, demande d argent) et que le voyageur envoie ensuite une ou plusieurs photos, eventuellement suivies de "c est bon" / "c est fait" → notify:false (ce sont des captures d ecran du paiement, PAS un degat). Cas reel du 23/07/2026 : fausse alerte Apolove.',
+  '',
+  'PHOTOS : quand le message est une ou plusieurs photos sans texte, DECIDE D ABORD grace au CONTEXTE de la conversation. Contexte paiement/administratif → notify:false. Contexte probleme (le voyageur decrivait une casse, une panne, une salissure) ou AUCUN contexte exploitable → notify:true avec element "photo a verifier".',
   '',
   'EXEMPLES POSITIFS (a NOTIFIER imperativement) :',
   '- "Bonjour, mon ami a casse un verre en faisant la vaisselle. Combien vous dois-t-on pour cela ?" → notify:true, categorie A changer, element verre, action "Verifier le nombre de verres. Si un manque, en ressortir un du local menage. Si stock vide, signaler a Claudine."',
@@ -1711,14 +1765,15 @@ function getBeds24Messages_(token, bookingIds) {
   return byBooking;
 }
 
-function callClaudeFilter_(message, apartName, voyageur) {
+function callClaudeFilter_(message, apartName, voyageur, contextStr) {
   var apiKey = PropertiesService.getScriptProperties().getProperty('ANTHROPIC_API_KEY');
   if (!apiKey) throw new Error('ANTHROPIC_API_KEY non configure dans PropertiesService. Lance setupScanSecrets() une fois.');
 
   var userPrompt = 'Appartement : ' + (apartName || 'inconnu') + '\n' +
                    'Voyageur : ' + (voyageur || 'inconnu') + '\n\n' +
-                   '---DEBUT MESSAGE---\n' + message + '\n---FIN MESSAGE---\n\n' +
-                   'Decide notify=true/false selon les regles. Retourne UNIQUEMENT le JSON, sans markdown.';
+                   (contextStr ? '---CONTEXTE DE LA CONVERSATION (messages precedents, du plus ancien au plus recent)---\n' + contextStr + '\n---FIN CONTEXTE---\n\n' : '') +
+                   '---DEBUT MESSAGE A ANALYSER---\n' + message + '\n---FIN MESSAGE---\n\n' +
+                   'Decide notify=true/false selon les regles (utilise le CONTEXTE pour interpreter les photos). Retourne UNIQUEMENT le JSON, sans markdown.';
 
   var resp = UrlFetchApp.fetch(ANTHROPIC_API_URL, {
     method: 'post',
@@ -1755,6 +1810,43 @@ function callClaudeFilter_(message, apartName, voyageur) {
     Logger.log('Parse JSON echoue : ' + match[0].substring(0, 200));
     return null;
   }
+}
+
+// Analyse un message voyageur brut : compte les photos, extrait l id de conversation
+// Airbnb (Messaging-XXXX dans les URLs muscache) et retourne le texte nettoye du HTML.
+// Les URLs photo Airbnb sont SIGNEES et expirent en 1h -> inutile de les stocker,
+// on pointe a la place vers la messagerie Airbnb ou les photos restent visibles.
+function analyseGuestMessage_(text) {
+  var t = (text || '').toString();
+  var photoCount = (t.match(/<img\b/gi) || []).length;
+  if (!photoCount && /muscache\.com/i.test(t)) photoCount = 1;
+  var threadMatch = t.match(/Messaging-(\d+)/);
+  var clean = t
+    .replace(/<[^>]*>/g, ' ')                          // tags HTML
+    .replace(/https?:\/\/a0\.muscache\.com\S+/gi, '')  // URLs photo signees (expirent en 1h)
+    .replace(/\s+/g, ' ')
+    .trim();
+  return {
+    photoCount: photoCount,
+    threadId: threadMatch ? threadMatch[1] : '',
+    textClean: clean
+  };
+}
+
+// Construit le contexte de conversation pour le filtre LLM : jusqu a 4 messages
+// precedant le message analyse (hote + voyageur), nettoyes et tronques.
+function buildConversationContext_(sortedMsgs, currentIndex) {
+  var lines = [];
+  var from = Math.max(0, currentIndex - 4);
+  for (var c = from; c < currentIndex; c++) {
+    var cm = sortedMsgs[c];
+    var who = cm.source === 'guest' ? 'VOYAGEUR' : 'HOTE';
+    var info = analyseGuestMessage_(cm.message);
+    var body = info.textClean.substring(0, 250);
+    if (info.photoCount) body = (body ? body + ' ' : '') + '[' + info.photoCount + ' photo(s) jointe(s)]';
+    if (body) lines.push(who + ' : ' + body);
+  }
+  return lines.join('\n');
 }
 
 // Reutilise la logique addSignalement existante de handle()
@@ -1831,23 +1923,46 @@ function dailyScanBeds24() {
 
     var voyageur = ((bk.firstName || '') + ' ' + (bk.lastName || '')).trim() || 'Voyageur';
 
-    for (var m = 0; m < msgs.length; m++) {
-      var msg = msgs[m];
+    // Trier par date croissante pour que le contexte precede chaque message
+    var sortedMsgs = msgs.slice().sort(function(a, b) {
+      return new Date(a.time || 0) - new Date(b.time || 0);
+    });
+
+    for (var m = 0; m < sortedMsgs.length; m++) {
+      var msg = sortedMsgs[m];
       if (msg.source !== 'guest') continue;
       var text = (msg.message || '').toString().trim();
       if (text.length < 10) continue;
 
       try {
-        var decision = callClaudeFilter_(text, slug, voyageur);
+        var info = analyseGuestMessage_(text);
+        // Texte propre pour le LLM (pas de HTML brut) + mention explicite des photos
+        var llmText = info.textClean;
+        if (info.photoCount) {
+          llmText = (llmText ? llmText + '\n' : '') + '[Le voyageur a envoye ' + info.photoCount + ' photo(s) — contenu non visible par le scan]';
+        }
+        if (!llmText) { ignoredCount++; continue; }
+        var contextStr = buildConversationContext_(sortedMsgs, m);
+
+        var decision = callClaudeFilter_(llmText, slug, voyageur, contextStr);
         if (!decision) { Logger.log('  decision nulle, skip'); continue; }
         if (!decision.notify) { ignoredCount++; continue; }
+
+        // Description LISIBLE pour Claudine + prestataire :
+        // texte nettoye (sans HTML, sans URLs signees mortes) + pointeur messagerie pour les photos
+        var descParts = [];
+        if (info.textClean) descParts.push(info.textClean.substring(0, 480));
+        if (info.photoCount) {
+          descParts.push('📷 ' + info.photoCount + ' photo(s) jointe(s) — a regarder dans la messagerie Airbnb/Booking (les liens photo expirent en 1h, seule la messagerie les garde visibles).');
+          if (info.threadId) descParts.push('Conversation Airbnb : https://www.airbnb.fr/hosting/messages/' + info.threadId);
+        }
 
         addSignalementInternal_({
           appart: slug,
           source: 'Beds24 #' + bid + ' (scan auto ' + today + ')',
           voyageur: voyageur,
           element: decision.element || '',
-          description: text.substring(0, 480),
+          description: descParts.join('\n'),
           actionPresta: decision.action || ''
         });
         notifyCount++;
