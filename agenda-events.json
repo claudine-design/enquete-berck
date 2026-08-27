@@ -1,7 +1,7 @@
 [
  {
   "titre": "Exposition \"Horizon\" Musée Opale Sud",
-  "start": "2026-08-26",
+  "start": "2026-08-27",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128477",
@@ -9,7 +9,7 @@
  },
  {
   "titre": "Exposition \"Détours loin du Bercail\" Musée Opale Sud",
-  "start": "2026-08-26",
+  "start": "2026-08-27",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128475",
@@ -17,7 +17,7 @@
  },
  {
   "titre": "Exposition \"Le street art à travers le monde\"",
-  "start": "2026-08-26",
+  "start": "2026-08-27",
   "date_label": "Jusqu'au 30/08/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128716",
@@ -25,7 +25,7 @@
  },
  {
   "titre": "Mon Village vacances",
-  "start": "2026-08-26",
+  "start": "2026-08-27",
   "date_label": "Jusqu'au 31/08/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=129187",
@@ -33,7 +33,7 @@
  },
  {
   "titre": "Programmation \"Vibrez cet été\"",
-  "start": "2026-08-26",
+  "start": "2026-08-27",
   "date_label": "Jusqu'au 30/08/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=74014",
@@ -41,23 +41,15 @@
  },
  {
   "titre": "Mon Village Vacances - Atelier Ukulélé",
-  "start": "2026-08-26",
+  "start": "2026-08-27",
   "date_label": "Jusqu'au 30/07/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=99493",
   "source": "Office de Tourisme"
  },
  {
-  "titre": "Mon Village Vacances - Eveil Musical",
-  "start": "2026-08-26",
-  "date_label": "Jusqu'au 26/08/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=99496",
-  "source": "Office de Tourisme"
- },
- {
   "titre": "Mon Village Vacances - Danse Expérience Zumba",
-  "start": "2026-08-26",
+  "start": "2026-08-27",
   "date_label": "Jusqu'au 28/08/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=85738",
@@ -65,7 +57,7 @@
  },
  {
   "titre": "Un été au Musée : Au bout du fil !",
-  "start": "2026-08-26",
+  "start": "2026-08-27",
   "date_label": "Jusqu'au 27/08/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=129360",
@@ -73,39 +65,15 @@
  },
  {
   "titre": "Mon Village Vacances - Marche Vivantielle en Baie d'Authie",
-  "start": "2026-08-26",
+  "start": "2026-08-27",
   "date_label": "Jusqu'au 28/08/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=129036",
   "source": "Office de Tourisme"
  },
  {
-  "titre": "Portes ouvertes du Tennis Club Berck",
-  "start": "2026-08-26",
-  "date_label": "Jusqu'au 26/08/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=129772",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Portes ouvertes Tenis Club Berck",
-  "start": "2026-08-26",
-  "date_label": "Jusqu'au 26/08/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=129757",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Mon Village Vacances - Voyage Sonore",
-  "start": "2026-08-26",
-  "date_label": "Jusqu'au 26/08/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=115919",
-  "source": "Office de Tourisme"
- },
- {
   "titre": "Un été au Musée : Grande parade médiévale",
-  "start": "2026-08-26",
+  "start": "2026-08-27",
   "date_label": "Jusqu'au 28/08/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=129362",
@@ -198,6 +166,30 @@
   "source": "Office de Tourisme"
  },
  {
+  "titre": "Concours Agility - Club Canin des tchiens Berckois",
+  "start": "2026-08-30",
+  "date_label": "Le 30/08/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=124487",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Rassemblement d'Attelages",
+  "start": "2026-08-30",
+  "date_label": "Le 30/08/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=100298",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Don de sang - Institut Calot",
+  "start": "2026-08-31",
+  "date_label": "Le 31/08/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=100586",
+  "source": "Office de Tourisme"
+ },
+ {
   "titre": "LE COUP DE LA CIGOGNE",
   "start": "2026-09-04",
   "date_label": "4 septembre",
@@ -265,5 +257,21 @@
   ],
   "lien": "https://www.oukankoi.fr/?p=165702",
   "source": "oukankoi.fr"
+ },
+ {
+  "titre": "Loto du Groupement des Commerçants de Berck-Plage",
+  "start": "2026-09-06",
+  "date_label": "Le 06/09/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130242",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Coup de Coeur Surprise - Cinos",
+  "start": "2026-09-07",
+  "date_label": "Le 07/09/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=125995",
+  "source": "Office de Tourisme"
  }
 ]
