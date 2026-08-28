@@ -1,7 +1,7 @@
 [
  {
   "titre": "Exposition \"Horizon\" Musée Opale Sud",
-  "start": "2026-08-27",
+  "start": "2026-08-28",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128477",
@@ -9,7 +9,7 @@
  },
  {
   "titre": "Exposition \"Détours loin du Bercail\" Musée Opale Sud",
-  "start": "2026-08-27",
+  "start": "2026-08-28",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128475",
@@ -17,7 +17,7 @@
  },
  {
   "titre": "Exposition \"Le street art à travers le monde\"",
-  "start": "2026-08-27",
+  "start": "2026-08-28",
   "date_label": "Jusqu'au 30/08/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128716",
@@ -25,7 +25,7 @@
  },
  {
   "titre": "Mon Village vacances",
-  "start": "2026-08-27",
+  "start": "2026-08-28",
   "date_label": "Jusqu'au 31/08/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=129187",
@@ -33,7 +33,7 @@
  },
  {
   "titre": "Programmation \"Vibrez cet été\"",
-  "start": "2026-08-27",
+  "start": "2026-08-28",
   "date_label": "Jusqu'au 30/08/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=74014",
@@ -41,31 +41,23 @@
  },
  {
   "titre": "Mon Village Vacances - Atelier Ukulélé",
-  "start": "2026-08-27",
+  "start": "2026-08-28",
   "date_label": "Jusqu'au 30/07/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=99493",
   "source": "Office de Tourisme"
  },
  {
-  "titre": "Mon Village Vacances - Danse Expérience Zumba",
-  "start": "2026-08-27",
+  "titre": "ANNULE - Mon Village Vacances - Danse Expérience Zumba",
+  "start": "2026-08-28",
   "date_label": "Jusqu'au 28/08/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=85738",
   "source": "Office de Tourisme"
  },
  {
-  "titre": "Un été au Musée : Au bout du fil !",
-  "start": "2026-08-27",
-  "date_label": "Jusqu'au 27/08/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=129360",
-  "source": "Office de Tourisme"
- },
- {
   "titre": "Mon Village Vacances - Marche Vivantielle en Baie d'Authie",
-  "start": "2026-08-27",
+  "start": "2026-08-28",
   "date_label": "Jusqu'au 28/08/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=129036",
@@ -73,18 +65,10 @@
  },
  {
   "titre": "Un été au Musée : Grande parade médiévale",
-  "start": "2026-08-27",
+  "start": "2026-08-28",
   "date_label": "Jusqu'au 28/08/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=129362",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Brocante des enfants - reportée au 28/08",
-  "start": "2026-08-28",
-  "date_label": "Le 28/08/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=97882",
   "source": "Office de Tourisme"
  },
  {
@@ -129,7 +113,7 @@
   "source": "Office de Tourisme"
  },
  {
-  "titre": "Concert - Modiro",
+  "titre": "ANNULE - Concert - Modiro",
   "start": "2026-08-29",
   "date_label": "Le 29/08/2026",
   "categories": [],
@@ -272,6 +256,14 @@
   "date_label": "Le 07/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=125995",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Atelier Textie Chez Causettes",
+  "start": "2026-09-12",
+  "date_label": "Le 12/09/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=112737",
   "source": "Office de Tourisme"
  }
 ]
