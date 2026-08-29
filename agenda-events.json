@@ -1,77 +1,5 @@
 [
  {
-  "titre": "Exposition \"Horizon\" Musée Opale Sud",
-  "start": "2026-08-28",
-  "date_label": "Jusqu'au 20/09/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128477",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Exposition \"Détours loin du Bercail\" Musée Opale Sud",
-  "start": "2026-08-28",
-  "date_label": "Jusqu'au 20/09/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128475",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Exposition \"Le street art à travers le monde\"",
-  "start": "2026-08-28",
-  "date_label": "Jusqu'au 30/08/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128716",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Mon Village vacances",
-  "start": "2026-08-28",
-  "date_label": "Jusqu'au 31/08/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=129187",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Programmation \"Vibrez cet été\"",
-  "start": "2026-08-28",
-  "date_label": "Jusqu'au 30/08/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=74014",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Mon Village Vacances - Atelier Ukulélé",
-  "start": "2026-08-28",
-  "date_label": "Jusqu'au 30/07/2027",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=99493",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "ANNULE - Mon Village Vacances - Danse Expérience Zumba",
-  "start": "2026-08-28",
-  "date_label": "Jusqu'au 28/08/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=85738",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Mon Village Vacances - Marche Vivantielle en Baie d'Authie",
-  "start": "2026-08-28",
-  "date_label": "Jusqu'au 28/08/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=129036",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Un été au Musée : Grande parade médiévale",
-  "start": "2026-08-28",
-  "date_label": "Jusqu'au 28/08/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=129362",
-  "source": "Office de Tourisme"
- },
- {
   "titre": "RICHESSE DE L’ESTUAIRE",
   "start": "2026-08-29",
   "date_label": "29 août",
@@ -105,19 +33,51 @@
   "source": "oukankoi.fr"
  },
  {
-  "titre": "Soirée \"Harry Potter\" rentrée à l’école des sorciers - Cinos",
+  "titre": "Exposition \"Horizon\" Musée Opale Sud",
   "start": "2026-08-29",
-  "date_label": "Le 29/08/2026",
+  "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130113",
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128477",
   "source": "Office de Tourisme"
  },
  {
-  "titre": "ANNULE - Concert - Modiro",
+  "titre": "Exposition \"Détours loin du Bercail\" Musée Opale Sud",
   "start": "2026-08-29",
-  "date_label": "Le 29/08/2026",
+  "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128939",
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128475",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Exposition \"Le street art à travers le monde\"",
+  "start": "2026-08-29",
+  "date_label": "Jusqu'au 30/08/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128716",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Mon Village vacances",
+  "start": "2026-08-29",
+  "date_label": "Jusqu'au 31/08/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=129187",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Programmation \"Vibrez cet été\"",
+  "start": "2026-08-29",
+  "date_label": "Jusqu'au 30/08/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=74014",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Mon Village Vacances - Atelier Ukulélé",
+  "start": "2026-08-29",
+  "date_label": "Jusqu'au 30/07/2027",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=99493",
   "source": "Office de Tourisme"
  },
  {
@@ -264,6 +224,38 @@
   "date_label": "Le 12/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=112737",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Forum des Associations Culturelles, Patrimoniales et de Loisirs",
+  "start": "2026-09-13",
+  "date_label": "Le 13/09/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=98460",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Soirée ABAC - Cinos - \"les fleurs du Manguier\"",
+  "start": "2026-09-16",
+  "date_label": "Le 16/09/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=114959",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "35ème édition - 5h de Berck",
+  "start": "2026-09-19",
+  "date_label": "Du 19/09/2026 au 20/09/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=80562",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Brocante Lotissement du phare",
+  "start": "2026-09-20",
+  "date_label": "Le 20/09/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=92272",
   "source": "Office de Tourisme"
  }
 ]
