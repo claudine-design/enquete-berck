@@ -1,28 +1,18 @@
 [
  {
   "titre": "LES GRANDES MARÉES",
-  "start": "2026-08-30",
-  "date_label": "30 août",
+  "start": "2026-08-31",
+  "date_label": "31 août",
   "categories": [
    "Balades",
    "Visites"
   ],
-  "lien": "https://www.oukankoi.fr/?p=164513",
-  "source": "oukankoi.fr"
- },
- {
-  "titre": "LES BOBARTS EN CONCERT",
-  "start": "2026-08-30",
-  "date_label": "30 août",
-  "categories": [
-   "Concerts"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=165668",
+  "lien": "https://www.oukankoi.fr/?p=164515",
   "source": "oukankoi.fr"
  },
  {
   "titre": "Exposition \"Horizon\" Musée Opale Sud",
-  "start": "2026-08-30",
+  "start": "2026-08-31",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128477",
@@ -30,50 +20,26 @@
  },
  {
   "titre": "Exposition \"Détours loin du Bercail\" Musée Opale Sud",
-  "start": "2026-08-30",
+  "start": "2026-08-31",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128475",
   "source": "Office de Tourisme"
  },
  {
-  "titre": "Exposition \"Le street art à travers le monde\"",
-  "start": "2026-08-30",
-  "date_label": "Jusqu'au 30/08/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128716",
-  "source": "Office de Tourisme"
- },
- {
   "titre": "Mon Village vacances",
-  "start": "2026-08-30",
+  "start": "2026-08-31",
   "date_label": "Jusqu'au 31/08/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=129187",
   "source": "Office de Tourisme"
  },
  {
-  "titre": "Programmation \"Vibrez cet été\"",
-  "start": "2026-08-30",
-  "date_label": "Jusqu'au 30/08/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=74014",
-  "source": "Office de Tourisme"
- },
- {
   "titre": "Mon Village Vacances - Atelier Ukulélé",
-  "start": "2026-08-30",
+  "start": "2026-08-31",
   "date_label": "Jusqu'au 30/07/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=99493",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Don de sang - Institut Calot",
-  "start": "2026-08-31",
-  "date_label": "Le 31/08/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=100586",
   "source": "Office de Tourisme"
  },
  {
@@ -215,6 +181,46 @@
   "date_label": "Du 25/09/2026 au 27/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=127556",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Concert de l'ensemble vocal \"Manque pas d'Air\"",
+  "start": "2026-09-27",
+  "date_label": "Le 27/09/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=114687",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Brocante - Festi'Berck",
+  "start": "2026-10-04",
+  "date_label": "Le 04/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=122568",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Beach Cross",
+  "start": "2026-10-17",
+  "date_label": "Du 17/10/2026 au 18/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=75330",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Allée des roses – Aidons les passereaux",
+  "start": "2026-10-20",
+  "date_label": "Le 20/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128529",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Bal des commerçants",
+  "start": "2026-11-22",
+  "date_label": "Le 22/11/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=124489",
   "source": "Office de Tourisme"
  }
 ]
