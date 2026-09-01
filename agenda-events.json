@@ -1,18 +1,7 @@
 [
  {
-  "titre": "LES GRANDES MARÉES",
-  "start": "2026-08-31",
-  "date_label": "31 août",
-  "categories": [
-   "Balades",
-   "Visites"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=164515",
-  "source": "oukankoi.fr"
- },
- {
   "titre": "Exposition \"Horizon\" Musée Opale Sud",
-  "start": "2026-08-31",
+  "start": "2026-09-01",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128477",
@@ -20,23 +9,15 @@
  },
  {
   "titre": "Exposition \"Détours loin du Bercail\" Musée Opale Sud",
-  "start": "2026-08-31",
+  "start": "2026-09-01",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128475",
   "source": "Office de Tourisme"
  },
  {
-  "titre": "Mon Village vacances",
-  "start": "2026-08-31",
-  "date_label": "Jusqu'au 31/08/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=129187",
-  "source": "Office de Tourisme"
- },
- {
   "titre": "Mon Village Vacances - Atelier Ukulélé",
-  "start": "2026-08-31",
+  "start": "2026-09-01",
   "date_label": "Jusqu'au 30/07/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=99493",
@@ -221,6 +202,14 @@
   "date_label": "Le 22/11/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=124489",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Rencontres Internationales de Cerfs-Volants 2027",
+  "start": "2027-04-17",
+  "date_label": "Du 17/04/2027 au 25/04/2027",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=100705",
   "source": "Office de Tourisme"
  }
 ]
