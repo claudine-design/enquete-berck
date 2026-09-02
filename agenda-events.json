@@ -1,7 +1,7 @@
 [
  {
   "titre": "Exposition \"Horizon\" Musée Opale Sud",
-  "start": "2026-09-01",
+  "start": "2026-09-02",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128477",
@@ -9,7 +9,7 @@
  },
  {
   "titre": "Exposition \"Détours loin du Bercail\" Musée Opale Sud",
-  "start": "2026-09-01",
+  "start": "2026-09-02",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128475",
@@ -17,10 +17,18 @@
  },
  {
   "titre": "Mon Village Vacances - Atelier Ukulélé",
-  "start": "2026-09-01",
+  "start": "2026-09-02",
   "date_label": "Jusqu'au 30/07/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=99493",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Exposition Francis Crochet",
+  "start": "2026-09-02",
+  "date_label": "Jusqu'au 30/09/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=107874",
   "source": "Office de Tourisme"
  },
  {
@@ -173,6 +181,14 @@
   "source": "Office de Tourisme"
  },
  {
+  "titre": "Ciné Rencontre - \"Le Triangle d'Or\"",
+  "start": "2026-10-02",
+  "date_label": "Le 02/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=122433",
+  "source": "Office de Tourisme"
+ },
+ {
   "titre": "Brocante - Festi'Berck",
   "start": "2026-10-04",
   "date_label": "Le 04/10/2026",
@@ -202,14 +218,6 @@
   "date_label": "Le 22/11/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=124489",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Rencontres Internationales de Cerfs-Volants 2027",
-  "start": "2027-04-17",
-  "date_label": "Du 17/04/2027 au 25/04/2027",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=100705",
   "source": "Office de Tourisme"
  }
 ]
