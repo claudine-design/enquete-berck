@@ -1,7 +1,7 @@
 [
  {
   "titre": "Exposition \"Horizon\" Musée Opale Sud",
-  "start": "2026-09-02",
+  "start": "2026-09-03",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128477",
@@ -9,38 +9,19 @@
  },
  {
   "titre": "Exposition \"Détours loin du Bercail\" Musée Opale Sud",
-  "start": "2026-09-02",
+  "start": "2026-09-03",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128475",
   "source": "Office de Tourisme"
  },
  {
-  "titre": "Mon Village Vacances - Atelier Ukulélé",
-  "start": "2026-09-02",
-  "date_label": "Jusqu'au 30/07/2027",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=99493",
-  "source": "Office de Tourisme"
- },
- {
   "titre": "Exposition Francis Crochet",
-  "start": "2026-09-02",
+  "start": "2026-09-03",
   "date_label": "Jusqu'au 30/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=107874",
   "source": "Office de Tourisme"
- },
- {
-  "titre": "LE COUP DE LA CIGOGNE",
-  "start": "2026-09-04",
-  "date_label": "4 septembre",
-  "categories": [
-   "Spectacles",
-   "Théâtre"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=165681",
-  "source": "oukankoi.fr"
  },
  {
   "titre": "LE PARC AU LEVER DU JOUR",
@@ -138,6 +119,14 @@
   "date_label": "Le 16/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=114959",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Journées Européennes du Patrimoine 2026",
+  "start": "2026-09-19",
+  "date_label": "Du 19/09/2026 au 20/09/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=92709",
   "source": "Office de Tourisme"
  },
  {
