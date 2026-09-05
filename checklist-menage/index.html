@@ -255,7 +255,7 @@ const apartFeatures = {
   // ───── LOVE ROOMS (8) — 2 paniers : gourmand + petit utilitaire ─────
   'balneo':           { panier:'loveroom',  capacite:6, balneo:true, peignoirs:2, litConditional:true, exterieur:true }, // jardin + brasero
   'cocon-romantique': { panier:'loveroom',  capacite:2, balneo:true, peignoirs:2, sauna:true, tapisExtra:true, litConditional:true, exterieur:true }, // brasero
-  'apolove':          { panier:'loveroom',  capacite:2 },
+  'apolove':          { panier:'loveroom',  capacite:2, balneo:true }, // bain à remous — ajouté 05/09/2026, il manquait
   'mini-love-room':   { panier:'loveroom',  capacite:2, balneo:true, peignoirs:2, tapisExtra:true },
   'grande-love-room': { panier:'loveroom',  capacite:2 },
   'evasion':          { panier:'loveroom',  capacite:4, balneo:true, peignoirs:2, sauna:true, tapisExtra:true, litConditional:true },
@@ -294,7 +294,17 @@ function renderApartWarning(slug){
     }
   }
   if(f.balneo){
-    bullets.push('🛁 <b>Balnéo / jacuzzi</b> — mettre <b>impérativement de l\'anti-calcaire</b> sur <b>toutes les buses</b> (chaque jet) et sur tout le <b>chrome</b> (robinetterie, têtes de jets, pourtour). Sans ça, pièces coûteuses + panne.');
+    bullets.push(
+      '🛁 <b>Balnéo / jacuzzi — protocole en 5 temps, dans cet ordre</b> :' +
+      '<ol style="margin:6px 0 0 0;padding-left:20px">' +
+        '<li><b>Purger les buses.</b> Remplir la cuve d\'eau chaude jusqu\'à <b>5 cm au-dessus du jet le plus haut</b>, verser le produit de désinfection balnéo, <b>faire tourner les jets 5 minutes</b>, puis vider.</li>' +
+        '<li><b>Rincer et contrôler.</b> Remplir à l\'eau claire, relancer les jets <b>1 minute</b>, vider. <b>Rien ne doit sortir des buses</b> — ni sable, ni dépôt gris. Si du sable sort, recommencer.</li>' +
+        '<li><b>Anti-calcaire</b> sur <b>toutes les buses</b> (chaque jet) et sur tout le <b>chrome</b> (robinetterie, têtes de jets, pourtour). Sans ça : pièces coûteuses + panne.</li>' +
+        '<li><b>Receveur, bonde et pourtour</b> : sable et cheveux, <b>y compris sous le repose-nuque et la têtière</b>. À Berck le sable se dépose à chaque séjour.</li>' +
+        '<li><b>Cuve vide, sèche et sans trace</b> avant de partir — la filmer dans la vidéo de fin de ménage.</li>' +
+      '</ol>' +
+      '<div style="margin-top:6px">⚠️ Trois voyageurs ont noté la propreté du bain à remous cet été, et <b>un kilo de sable est sorti des buses</b> le 20/07. C\'est le premier point de contrôle de ces appartements.</div>'
+    );
   }
   if(f.peignoirs){
     bullets.push('🥋 <b>' + f.peignoirs + ' peignoirs propres</b> à installer dans le logement.');
@@ -339,7 +349,7 @@ document.getElementById('appart').addEventListener('change', e => {
   const params = new URLSearchParams(location.search);
   const presta = (params.get('presta') || '').trim();
   if(!presta) return;
-  const map = { 'remi': 'Rémi', 'clara': 'Clara', 'christelle': 'Christelle' };
+  const map = { 'remi': 'Rémi', 'clara': 'Clara', 'christelle': 'Christelle', 'claire': 'Claire et Sébastien', 'stephanie': 'Stéphanie', 'aimance': 'Aimance' };
   const nice = map[presta.toLowerCase()] || (presta.charAt(0).toUpperCase() + presta.slice(1));
   const nomInput = document.getElementById('nom');
   if(nomInput && !nomInput.value) nomInput.value = nice;
@@ -619,6 +629,7 @@ const data = [
   ]],
   ["s2","🛁 Salle de bain — on laisse agir",[
     {t:"Mettre l'anti-calcaire sur robinetteries et bondes", d:"Toute la robinetterie (SDB + cuisine), pare-douche ou baignoire si présente. Laisser agir pendant qu'on fait la cuisine."},
+    {t:"Balnéo : purger les buses (uniquement si l'appartement en a une)", d:"Remplir d'eau chaude 5 cm au-dessus du jet le plus haut, verser le produit de désinfection balnéo, faire tourner les jets 5 min, vider. C'est ce qui évacue le sable et les dépôts restés dans les canalisations. Voir le protocole complet dans le bandeau rouge en haut de la page."},
     {t:"Nettoyer le pare-douche au spray anti-calcaire", d:"Spray, laisser agir 5 min, frotter avec une éponge non-abrasive."},
     {t:"Vérifier et nettoyer la bonde de douche", d:"Démonter la grille, retirer cheveux et dépôts. Sans ça, la douche déborde au prochain locataire."},
     {t:"Asperger de javel : cuvette WC, joints jaunes, douche", d:"NE PAS oublier les joints jaunes dans les coins. Laisser agir."},
@@ -648,6 +659,7 @@ const data = [
     {t:"2 rouleaux de papier toilette neufs", d:"Toujours 2 rouleaux entamés ou neufs visibles."},
     {t:"Compléter savon, gel douche, coton/coton-tige", d:"Vérifier qu'il y en a pour le prochain séjour."},
     "Vider poubelle SDB + sac propre",
+    {t:"Balnéo : rinçage final et contrôle du sable (si l'appartement en a une)", d:"Remplir à l'eau claire, relancer les jets 1 min, vider : RIEN ne doit sortir des buses. Puis essuyer le receveur, la bonde et le pourtour — y compris sous le repose-nuque. La cuve doit être vide, sèche et sans trace.", photo:true},
     {t:"Mettre le tapis de bain propre", d:"Remplacer le tapis utilisé par un tapis sec et propre."},
   ]],
   ["s6","✨ Touche finale",[
