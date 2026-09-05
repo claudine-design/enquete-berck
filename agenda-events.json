@@ -1,7 +1,7 @@
 [
  {
   "titre": "Exposition \"Horizon\" Musée Opale Sud",
-  "start": "2026-09-04",
+  "start": "2026-09-05",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128477",
@@ -9,7 +9,7 @@
  },
  {
   "titre": "Exposition \"Détours loin du Bercail\" Musée Opale Sud",
-  "start": "2026-09-04",
+  "start": "2026-09-05",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128475",
@@ -17,57 +17,11 @@
  },
  {
   "titre": "Exposition Francis Crochet",
-  "start": "2026-09-04",
+  "start": "2026-09-05",
   "date_label": "Jusqu'au 30/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=107874",
   "source": "Office de Tourisme"
- },
- {
-  "titre": "LE PARC AU LEVER DU JOUR",
-  "start": "2026-09-05",
-  "date_label": "5 septembre",
-  "categories": [
-   "Balades",
-   "Découverte"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=165695",
-  "source": "oukankoi.fr"
- },
- {
-  "titre": "ÇA SENT LE SAPIN",
-  "start": "2026-09-05",
-  "date_label": "5 septembre",
-  "categories": [
-   "Spectacles",
-   "Théâtre"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=165692",
-  "source": "oukankoi.fr"
- },
- {
-  "titre": "BEACH ART FESTIVAL",
-  "start": "2026-09-05",
-  "date_label": "5 septembre",
-  "categories": [
-   "Arts",
-   "Conférences / débats",
-   "festivals"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=165687",
-  "source": "oukankoi.fr"
- },
- {
-  "titre": "PROGRAMMATION NOMADE !",
-  "start": "2026-09-05",
-  "date_label": "5 septembre",
-  "categories": [
-   "Concerts",
-   "Découverte",
-   "Spectacles"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=165685",
-  "source": "oukankoi.fr"
  },
  {
   "titre": "BALAD’ÂNES SENSORIELLE EN BAIE DE SOMME",
@@ -146,12 +100,30 @@
   "source": "Office de Tourisme"
  },
  {
+  "titre": "Rémi Comptines \"Ma guitare à tiroirs\" - Familia Théâtre",
+  "start": "2026-09-23",
+  "date_label": "Le 23/09/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=124245",
+  "source": "Office de Tourisme"
+ },
+ {
   "titre": "Ciné Spectacle \"Artus Le Show XXL\" - CInos",
   "start": "2026-09-24",
   "date_label": "Le 24/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=129971",
   "source": "Office de Tourisme"
+ },
+ {
+  "titre": "LE GRAND DÉMONTAGE",
+  "start": "2026-09-25",
+  "date_label": "25 septembre",
+  "categories": [
+   "Spectacles"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=165723",
+  "source": "oukankoi.fr"
  },
  {
   "titre": "T'In Souvyin Tu ?  - \"ya qu'à Berck qu'on voé cho\"",
@@ -170,11 +142,29 @@
   "source": "Office de Tourisme"
  },
  {
+  "titre": "SPECTACLE “PARTENAIRES PARTICULIERS”",
+  "start": "2026-10-02",
+  "date_label": "2 octobre",
+  "categories": [
+   "Spectacles"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=165719",
+  "source": "oukankoi.fr"
+ },
+ {
   "titre": "Ciné Rencontre - \"Le Triangle d'Or\"",
   "start": "2026-10-02",
   "date_label": "Le 02/10/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=122433",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "XX Elles - Familia Théâtre",
+  "start": "2026-10-03",
+  "date_label": "Le 03/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130205",
   "source": "Office de Tourisme"
  },
  {
@@ -191,22 +181,6 @@
   "date_label": "Du 17/10/2026 au 18/10/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=75330",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Allée des roses – Aidons les passereaux",
-  "start": "2026-10-20",
-  "date_label": "Le 20/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128529",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Bal des commerçants",
-  "start": "2026-11-22",
-  "date_label": "Le 22/11/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=124489",
   "source": "Office de Tourisme"
  }
 ]
