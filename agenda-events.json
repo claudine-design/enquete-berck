@@ -1,29 +1,5 @@
 [
  {
-  "titre": "Exposition \"Horizon\" Musée Opale Sud",
-  "start": "2026-09-05",
-  "date_label": "Jusqu'au 20/09/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128477",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Exposition \"Détours loin du Bercail\" Musée Opale Sud",
-  "start": "2026-09-05",
-  "date_label": "Jusqu'au 20/09/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128475",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Exposition Francis Crochet",
-  "start": "2026-09-05",
-  "date_label": "Jusqu'au 30/09/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=107874",
-  "source": "Office de Tourisme"
- },
- {
   "titre": "BALAD’ÂNES SENSORIELLE EN BAIE DE SOMME",
   "start": "2026-09-06",
   "date_label": "6 septembre",
@@ -36,11 +12,27 @@
   "source": "oukankoi.fr"
  },
  {
-  "titre": "Loto du Groupement des Commerçants de Berck-Plage",
+  "titre": "Exposition \"Horizon\" Musée Opale Sud",
   "start": "2026-09-06",
-  "date_label": "Le 06/09/2026",
+  "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130242",
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128477",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Exposition \"Détours loin du Bercail\" Musée Opale Sud",
+  "start": "2026-09-06",
+  "date_label": "Jusqu'au 20/09/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128475",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Exposition Francis Crochet",
+  "start": "2026-09-06",
+  "date_label": "Jusqu'au 30/09/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=107874",
   "source": "Office de Tourisme"
  },
  {
@@ -89,6 +81,14 @@
   "date_label": "Du 19/09/2026 au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=80562",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Atelier Catherine Grain – Causettes",
+  "start": "2026-09-19",
+  "date_label": "Le 19/09/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130430",
   "source": "Office de Tourisme"
  },
  {
@@ -142,16 +142,6 @@
   "source": "Office de Tourisme"
  },
  {
-  "titre": "SPECTACLE “PARTENAIRES PARTICULIERS”",
-  "start": "2026-10-02",
-  "date_label": "2 octobre",
-  "categories": [
-   "Spectacles"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=165719",
-  "source": "oukankoi.fr"
- },
- {
   "titre": "Ciné Rencontre - \"Le Triangle d'Or\"",
   "start": "2026-10-02",
   "date_label": "Le 02/10/2026",
@@ -173,14 +163,6 @@
   "date_label": "Le 04/10/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=122568",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Beach Cross",
-  "start": "2026-10-17",
-  "date_label": "Du 17/10/2026 au 18/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=75330",
   "source": "Office de Tourisme"
  }
 ]
