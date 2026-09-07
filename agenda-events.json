@@ -1,19 +1,7 @@
 [
  {
-  "titre": "BALAD’ÂNES SENSORIELLE EN BAIE DE SOMME",
-  "start": "2026-09-06",
-  "date_label": "6 septembre",
-  "categories": [
-   "Balades",
-   "bien-être",
-   "Découverte"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=165702",
-  "source": "oukankoi.fr"
- },
- {
   "titre": "Exposition \"Horizon\" Musée Opale Sud",
-  "start": "2026-09-06",
+  "start": "2026-09-07",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128477",
@@ -21,7 +9,7 @@
  },
  {
   "titre": "Exposition \"Détours loin du Bercail\" Musée Opale Sud",
-  "start": "2026-09-06",
+  "start": "2026-09-07",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128475",
@@ -29,18 +17,10 @@
  },
  {
   "titre": "Exposition Francis Crochet",
-  "start": "2026-09-06",
+  "start": "2026-09-07",
   "date_label": "Jusqu'au 30/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=107874",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Coup de Coeur Surprise - Cinos",
-  "start": "2026-09-07",
-  "date_label": "Le 07/09/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=125995",
   "source": "Office de Tourisme"
  },
  {
@@ -142,6 +122,16 @@
   "source": "Office de Tourisme"
  },
  {
+  "titre": "SPECTACLE “PARTENAIRES PARTICULIERS”",
+  "start": "2026-10-02",
+  "date_label": "2 octobre",
+  "categories": [
+   "Spectacles"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=165719",
+  "source": "oukankoi.fr"
+ },
+ {
   "titre": "Ciné Rencontre - \"Le Triangle d'Or\"",
   "start": "2026-10-02",
   "date_label": "Le 02/10/2026",
@@ -163,6 +153,14 @@
   "date_label": "Le 04/10/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=122568",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Beach Cross",
+  "start": "2026-10-17",
+  "date_label": "Du 17/10/2026 au 18/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=75330",
   "source": "Office de Tourisme"
  }
 ]
