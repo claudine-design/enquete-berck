@@ -1,7 +1,7 @@
 [
  {
   "titre": "Exposition \"Horizon\" Musée Opale Sud",
-  "start": "2026-09-08",
+  "start": "2026-09-09",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128477",
@@ -9,7 +9,7 @@
  },
  {
   "titre": "Exposition \"Détours loin du Bercail\" Musée Opale Sud",
-  "start": "2026-09-08",
+  "start": "2026-09-09",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128475",
@@ -17,7 +17,7 @@
  },
  {
   "titre": "Exposition Francis Crochet",
-  "start": "2026-09-08",
+  "start": "2026-09-09",
   "date_label": "Jusqu'au 30/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=107874",
@@ -70,6 +70,18 @@
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130430",
   "source": "Office de Tourisme"
+ },
+ {
+  "titre": "RENCONTRE AVEC LES PHOQUES",
+  "start": "2026-09-20",
+  "date_label": "20 septembre",
+  "categories": [
+   "Balades",
+   "Découverte",
+   "Loisirs"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=165764",
+  "source": "oukankoi.fr"
  },
  {
   "titre": "Brocante Lotissement du phare",
