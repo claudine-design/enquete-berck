@@ -1,7 +1,7 @@
 [
  {
   "titre": "Exposition \"Horizon\" Musée Opale Sud",
-  "start": "2026-09-10",
+  "start": "2026-09-11",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128477",
@@ -9,7 +9,7 @@
  },
  {
   "titre": "Exposition \"Détours loin du Bercail\" Musée Opale Sud",
-  "start": "2026-09-10",
+  "start": "2026-09-11",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128475",
@@ -17,7 +17,7 @@
  },
  {
   "titre": "Exposition Francis Crochet",
-  "start": "2026-09-10",
+  "start": "2026-09-11",
   "date_label": "Jusqu'au 30/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=107874",
@@ -69,6 +69,22 @@
   "date_label": "Du 19/09/2026 au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=80562",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Concert des 50 ans de jumelage entre Berck-sur-Mer et Bad Honnef",
+  "start": "2026-09-19",
+  "date_label": "Le 19/09/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130482",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Festival \"Racines & Décibels\"",
+  "start": "2026-09-19",
+  "date_label": "Le 19/09/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=124414",
   "source": "Office de Tourisme"
  },
  {
@@ -187,22 +203,6 @@
   "date_label": "Le 03/10/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130205",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Brocante - Festi'Berck",
-  "start": "2026-10-04",
-  "date_label": "Le 04/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=122568",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Beach Cross",
-  "start": "2026-10-17",
-  "date_label": "Du 17/10/2026 au 18/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=75330",
   "source": "Office de Tourisme"
  }
 ]
