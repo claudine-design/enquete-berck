@@ -1,7 +1,7 @@
 [
  {
   "titre": "Exposition \"Horizon\" Musée Opale Sud",
-  "start": "2026-09-13",
+  "start": "2026-09-14",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128477",
@@ -9,7 +9,7 @@
  },
  {
   "titre": "Exposition \"Détours loin du Bercail\" Musée Opale Sud",
-  "start": "2026-09-13",
+  "start": "2026-09-14",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128475",
@@ -17,18 +17,10 @@
  },
  {
   "titre": "Exposition Francis Crochet",
-  "start": "2026-09-13",
+  "start": "2026-09-14",
   "date_label": "Jusqu'au 30/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=107874",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Portes Ouvertes Aéro ULM Berck",
-  "start": "2026-09-13",
-  "date_label": "Jusqu'au 13/09/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=123123",
   "source": "Office de Tourisme"
  },
  {
@@ -217,6 +209,22 @@
   "date_label": "Le 04/10/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=122568",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Beach Cross",
+  "start": "2026-10-17",
+  "date_label": "Du 17/10/2026 au 18/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=75330",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Allée des roses – Aidons les passereaux",
+  "start": "2026-10-20",
+  "date_label": "Le 20/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128529",
   "source": "Office de Tourisme"
  }
 ]
