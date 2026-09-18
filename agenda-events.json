@@ -1,7 +1,7 @@
 [
  {
   "titre": "Exposition \"Horizon\" Musée Opale Sud",
-  "start": "2026-09-17",
+  "start": "2026-09-18",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128477",
@@ -9,7 +9,7 @@
  },
  {
   "titre": "Exposition \"Détours loin du Bercail\" Musée Opale Sud",
-  "start": "2026-09-17",
+  "start": "2026-09-18",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128475",
@@ -17,7 +17,7 @@
  },
  {
   "titre": "Exposition Francis Crochet",
-  "start": "2026-09-17",
+  "start": "2026-09-18",
   "date_label": "Jusqu'au 30/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=107874",
@@ -114,6 +114,17 @@
    "Découverte"
   ],
   "lien": "https://www.oukankoi.fr/?p=165836",
+  "source": "oukankoi.fr"
+ },
+ {
+  "titre": "LA JOURNÉE DU SCRAP",
+  "start": "2026-09-26",
+  "date_label": "26 septembre",
+  "categories": [
+   "Ateliers / Stages",
+   "Loisirs"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=165993",
   "source": "oukankoi.fr"
  },
  {
