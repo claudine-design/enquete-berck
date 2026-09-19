@@ -142,11 +142,12 @@ body::before{
 <script>
 var PRESTAS = {
   remi:       { nom:'R\u00e9mi',      bonjour:'Bonjour R\u00e9mi'      },
-  clara:      { nom:'Clara',          bonjour:'Bonjour Clara'          },
   christelle: { nom:'Christelle',     bonjour:'Bonjour Christelle'     },
   claire:     { nom:'Claire et Sébastien', bonjour:'Bonjour Claire et Sébastien' },
   stephanie:  { nom:'Stéphanie',  bonjour:'Bonjour Stéphanie'  },
-  aimance:    { nom:'Aimance',        bonjour:'Bonjour Aimance'        }
+  aimance:    { nom:'Aimance',        bonjour:'Bonjour Aimance'        },
+  maylis:     { nom:'Maïlys',         bonjour:'Bonjour Maïlys',        sansPlanning:true },
+  priscilia:  { nom:'Priscilia',      bonjour:'Bonjour Priscilia',     sansPlanning:true }
 };
 
 // URLs de chaque service
@@ -170,7 +171,6 @@ if (!presta) {
       '<p>S\u00e9lectionnez votre espace personnel</p>' +
       '<div class="links">' +
         '<a href="?presta=remi">R\u00e9mi</a>' +
-        '<a href="?presta=clara">Clara</a>' +
         '<a href="?presta=christelle">Christelle</a>' +
       '</div>' +
     '</div>';
@@ -194,7 +194,7 @@ if (!presta) {
 
   var tiles =
     '<div class="btn-grid">' +
-      tile('\uD83D\uDCC5', 'Mon planning', 'Calendrier des m\u00e9nages \u00e0 venir', URLS.calendrier + prestaKey) +
+      (presta.sansPlanning ? '' : tile('\uD83D\uDCC5', 'Mon planning', 'Calendrier des m\u00e9nages \u00e0 venir', URLS.calendrier + prestaKey)) +
       tile('\u2728', 'Propret\u00e9', 'Avis voyageurs &mdash; 30 derniers jours', URLS.proprete + prestaKey) +
       tile('\uD83D\uDED2', 'R\u00e9assort', 'Articles manquants par logement', URLS.reassort, false) +
       tile('\uD83D\uDCD6', 'Tuto m\u00e9nage', 'Checklist photo par appartement', URLS.checklist + '?presta=' + prestaKey) +

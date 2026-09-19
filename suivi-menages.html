@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Suivi des ménages</title>
+<style>
+  :root{--bg:#f7f4ef;--card:#fff;--txt:#1f2933;--mut:#6b7280;--line:#e5e1da;--ok:#2f7d4f;--warn:#b45309;--bad:#b42318;--acc:#1f3b57}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--txt)}
+  header{background:var(--acc);color:#fff;padding:16px}
+  header h1{margin:0;font-size:20px}
+  header p{margin:4px 0 0;font-size:13px;opacity:.85}
+  .bar{display:flex;gap:8px;flex-wrap:wrap;padding:12px 16px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+  .bar select,.bar button{padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#fff;font-size:14px}
+  .bar button{background:var(--acc);color:#fff;border:none}
+  main{padding:12px 16px 40px;max-width:1100px;margin:0 auto}
+  h2.day{font-size:15px;margin:22px 0 8px;color:var(--acc);text-transform:capitalize}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin:8px 0}
+  .top{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline}
+  .top .apt{font-weight:700;font-size:16px}
+  .top .who{color:var(--mut)}
+  .top .h{font-variant-numeric:tabular-nums}
+  .pill{display:inline-block;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:600}
+  .pill.ok{background:#e7f5ec;color:var(--ok)} .pill.warn{background:#fff4e0;color:var(--warn)} .pill.bad{background:#fdecea;color:var(--bad)}
+  .rem{font-size:12.5px;color:var(--warn);margin-top:4px}
+  .photos{display:flex;gap:8px;overflow-x:auto;margin-top:10px;padding-bottom:4px}
+  .ph{flex:0 0 auto;width:118px;cursor:pointer}
+  .ph .pair{display:flex;gap:2px}
+  .ph img{width:100%;height:100px;object-fit:cover;border-radius:8px;display:block;background:#eee}
+  .ph .pair img{width:58px}
+  .ph .cap{font-size:11.5px;color:var(--mut);margin-top:3px;line-height:1.25}
+  .ph .cap b{color:var(--txt)}
+  .empty{color:var(--mut);text-align:center;padding:40px 10px}
+  .cmp{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;z-index:50;flex-direction:column;padding:12px}
+  .cmp.open{display:flex}
+  .cmp .imgs{flex:1;display:flex;gap:8px;min-height:0}
+  .cmp figure{flex:1;margin:0;display:flex;flex-direction:column;min-width:0}
+  .cmp figure img{flex:1;min-height:0;object-fit:contain;width:100%}
+  .cmp figcaption{color:#fff;text-align:center;font-size:13px;padding:6px}
+  .cmp button{align-self:flex-end;background:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:15px;margin-bottom:8px}
+  @media (max-width:600px){ .cmp .imgs{flex-direction:column} }
+</style>
+</head>
+<body>
+<header>
+  <h1>🧹 Suivi des ménages</h1>
+  <p>Heure de début, heure de fin, durée et photos de chaque ménage — les heures viennent du téléphone du prestataire.</p>
+</header>
+<div class="bar">
+  <select id="jours"><option value="3">3 derniers jours</option><option value="7" selected>7 derniers jours</option><option value="14">14 jours</option><option value="31">31 jours</option></select>
+  <select id="presta"><option value="">Tous les prestataires</option></select>
+  <button id="reload">Actualiser</button>
+</div>
+<main id="out"><div class="empty">Chargement…</div></main>
+
+<div class="cmp" id="cmp" onclick="if(event.target===this)this.classList.remove('open')">
+  <button onclick="document.getElementById('cmp').classList.remove('open')">✕ Fermer</button>
+  <div class="imgs" id="cmp-imgs"></div>
+</div>
+
+<script>
+const API = 'https://script.google.com/macros/s/AKfycbwABUZlluUlyKrlL0zyl--vhXu9YD4x8RYIs3_RZgs3raxqAmr8yGFAspp6livjN62dcQ/exec';
+const P = new URLSearchParams(location.search);
+let CLE = P.get('cle') || '';
+try { if(CLE) localStorage.setItem('suivi-cle', CLE); else CLE = localStorage.getItem('suivi-cle') || ''; } catch(e){}
+const NOMS = {'kitesurf':'Kitesurf','hamac':'Hamac','paddle':'Paddle','surf':'Surf','famille':'Famille','balneo':'Balnéo','cocon-romantique':'Cocon Romantique','terrasse':'Terrasse','maisonnette':'Maisonnette','face-mer':'Face Mer','apollo':'Apollo','apolove':'Apolove','kingston':'Kingston','reserve':'La Réserve','albatros':'Albatros','mini-love-room':'Mini Love Room','grande-love-room':'Grande Love Room','jeanne':'Jeanne','evasion':'Évasion','rotonde':'Rotonde','patio':'Patio','grand-large':'Grand Large','helene':'Studio Hélène'};
+let DATA = null;
+
+const img = (id, w) => 'https://lh3.googleusercontent.com/d/' + id + '=w' + (w || 400);
+const hm = iso => iso ? new Date(iso).toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}) : '—';
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const dur = m => m === '' || m == null ? '' : Math.floor(m/60) + 'h' + String(m % 60).padStart(2, '0');
+
+async function load(){
+  const out = document.getElementById('out');
+  if(!CLE){ out.innerHTML = '<div class="empty">Lien incomplet : ouvrez cette page depuis votre lien personnel (avec la clé).</div>'; return; }
+  out.innerHTML = '<div class="empty">Chargement…</div>';
+  try {
+    const r = await fetch(API + '?action=suivi&cle=' + encodeURIComponent(CLE) + '&jours=' + document.getElementById('jours').value);
+    DATA = await r.json();
+    if(!DATA.ok) throw new Error(DATA.error || 'erreur');
+  } catch(e){ out.innerHTML = '<div class="empty">Impossible de charger le suivi (' + esc(e.message) + ').</div>'; return; }
+  const sel = document.getElementById('presta'), cur = sel.value;
+  const prestas = [...new Set(DATA.sessions.map(s => s.presta).filter(Boolean))].sort();
+  sel.innerHTML = '<option value="">Tous les prestataires</option>' + prestas.map(p => '<option' + (p === cur ? ' selected' : '') + '>' + esc(p) + '</option>').join('');
+  render();
+}
+
+function render(){
+  const out = document.getElementById('out');
+  const f = document.getElementById('presta').value;
+  const list = DATA.sessions.filter(s => !f || s.presta === f);
+  if(!list.length){ out.innerHTML = '<div class="empty">Aucun ménage enregistré sur la période.</div>'; return; }
+  let html = '', lastDay = '';
+  list.forEach((s, i) => {
+    const ref = s.debut || s.fin || (s.photos[0] && s.photos[0].heure);
+    const day = ref ? new Date(ref).toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long'}) : 'Date inconnue';
+    if(day !== lastDay){ html += '<h2 class="day">' + day + '</h2>'; lastDay = day; }
+    let pill;
+    if(s.statut === 'TERMINE' && /ANNUL|Abandonn|Jamais termin/.test(s.remarque || '')) pill = '<span class="pill bad">' + esc(s.remarque.split(' (')[0]) + '</span>';
+    else if(s.statut === 'TERMINE') pill = '<span class="pill ok">Terminé · ' + dur(s.duree) + '</span>';
+    else pill = '<span class="pill warn">En cours / pas encore terminé</span>';
+    const mods = (DATA.modeles || {})[s.appart] || {};
+    const photos = s.photos.slice().sort((a, b) => a.heure > b.heure ? 1 : -1);
+    html += '<div class="card"><div class="top"><span class="apt">' + esc(NOMS[s.appart] || s.appart) + '</span><span class="who">' + esc(s.presta) + '</span>' +
+      '<span class="h">▶ ' + hm(s.debut) + ' → ' + hm(s.fin) + '</span>' + pill +
+      '<span class="who">' + photos.length + ' photo' + (photos.length > 1 ? 's' : '') + (s.total ? ' · ' + s.taches + '/' + s.total + ' tâches' : '') + '</span></div>' +
+      (s.remarque && !/ANNUL|Abandonn|Jamais termin/.test(s.remarque) ? '<div class="rem">⚠️ ' + esc(s.remarque) + '</div>' : '') +
+      '<div class="photos">' + photos.map((p, k) => {
+        const mn = s.debut ? Math.round((new Date(p.heure) - new Date(s.debut)) / 60000) : null;
+        const m = mods[p.etape];
+        return '<div class="ph" data-s="' + i + '" data-k="' + k + '">' +
+          (m ? '<div class="pair"><img loading="lazy" src="' + img(p.fileId, 300) + '" alt=""><img loading="lazy" src="' + img(m, 300) + '" alt="" style="opacity:.75"></div>' : '<img loading="lazy" src="' + img(p.fileId, 300) + '" alt="">') +
+          '<div class="cap"><b>' + esc(p.libelle || p.etape) + '</b><br>' + hm(p.heure) + (mn != null ? ' · +' + mn + ' min' : '') + '</div></div>';
+      }).join('') + '</div></div>';
+  });
+  out.innerHTML = html;
+  out.querySelectorAll('.ph').forEach(el => el.onclick = () => {
+    const s = list[+el.dataset.s];
+    const p = s.photos.slice().sort((a, b) => a.heure > b.heure ? 1 : -1)[+el.dataset.k];
+    const m = ((DATA.modeles || {})[s.appart] || {})[p.etape];
+    document.getElementById('cmp-imgs').innerHTML =
+      '<figure><img src="' + img(p.fileId, 1400) + '" alt=""><figcaption>' + esc(s.presta) + ' — ' + esc(p.libelle) + ' — ' + hm(p.heure) + '</figcaption></figure>' +
+      (m ? '<figure><img src="' + img(m, 1400) + '" alt=""><figcaption>Photo modèle</figcaption></figure>' : '');
+    document.getElementById('cmp').classList.add('open');
+  });
+}
+
+document.getElementById('jours').onchange = load;
+document.getElementById('presta').onchange = render;
+document.getElementById('reload').onclick = load;
+load();
+</script>
+</body>
+</html>

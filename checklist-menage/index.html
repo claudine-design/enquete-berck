@@ -98,6 +98,33 @@
   .actions button{flex:1;padding:14px;border:none;border-radius:14px;font-size:15px;font-weight:600;cursor:pointer}
   .reset{background:#fff;color:#888;border:1px solid #eed !important}
   .send{background:linear-gradient(135deg,#E89BA3,#F2A57A);color:white;box-shadow:0 4px 12px rgba(232,155,163,.4)}
+  .s8{background:var(--bleu)}.s8 h2{background:#5b7fa3}
+  .s2 h2,.s4 h2{background:#c0606c}
+  .item .col{min-width:0}
+  .slot{margin:8px 0 2px;padding:8px;border-radius:10px;background:#fff;border:2px dashed #E89BA3}
+  .slot.ok{border:2px solid #86C28A;background:#f4fbf1}
+  .slot-title{font-size:13px;font-weight:700;color:#7a3b46;margin-bottom:6px}
+  .slot.ok .slot-title{color:#2e5a30}
+  .slot-row{display:flex;gap:6px;overflow-x:auto}
+  .slot figure{margin:0;flex:0 0 auto;text-align:center}
+  .slot figure img{width:96px;height:96px;object-fit:cover;border-radius:8px;display:block;border:1px solid #ddd}
+  .slot figure figcaption{font-size:11px;color:#777;margin-top:2px}
+  .slot figure.nomodel div{width:96px;height:96px;border-radius:8px;background:#f3f3f3;color:#999;font-size:11px;display:flex;align-items:center;justify-content:center;text-align:center;padding:6px}
+  .slot button{margin-top:8px;margin-right:6px;padding:10px 12px;border-radius:10px;border:none;font-size:14px;font-weight:600;cursor:pointer}
+  .slot .shoot{background:#E89BA3;color:#fff}
+  .slot.ok .shoot{background:#e8e8e8;color:#555}
+  .slot .nc{background:#f3f3f3;color:#666;font-weight:500}
+  .start{margin:12px 0;padding:12px;border-radius:14px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.06);text-align:center;font-size:14px}
+  .start button{width:100%;padding:16px;border:none;border-radius:14px;font-size:18px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16a34a,#22c55e);box-shadow:0 4px 12px rgba(22,163,74,.35);cursor:pointer}
+  .start.on{background:#f0fdf4;border:2px solid #16a34a;color:#14532d;text-align:left}
+  .start .small{font-size:12px;color:#666;margin-top:6px}
+  .sync{margin:6px 0;padding:8px 10px;border-radius:10px;font-size:12.5px}
+  .sync.ok{color:#2e5a30;background:#f0fdf4}
+  .sync.wait{color:#7c4a03;background:#fff7e6;border:1px solid #f2a57a}
+  .sync button{margin-left:6px;padding:4px 10px;border-radius:8px;border:1px solid #f2a57a;background:#fff;font-size:12px}
+  .hint{text-align:center;color:#888;font-size:14px;padding:20px;background:#fff;border-radius:14px}
+  .modele-banner{margin:12px 0;padding:12px;border-radius:14px;background:#fde2e6;border:2px solid #c0606c;color:#5A2A33;font-size:13.5px}
+  select:disabled{opacity:.75}
   footer{text-align:center;color:#b88;font-size:12px;padding:10px 0 30px}
 </style>
 </head>
@@ -152,8 +179,22 @@
     </optgroup>
   </select>
   <label style="margin-top:10px">Prestataire</label>
-  <input id="nom" placeholder="Votre prénom">
+  <select id="nom">
+    <option value="">— Choisir votre prénom —</option>
+    <option>Rémi</option>
+    <option>Christelle</option>
+    <option>Claire et Sébastien</option>
+    <option>Stéphanie</option>
+    <option>Aimance</option>
+    <option>Maïlys</option>
+    <option>Priscilia</option>
+    <option>Claudine</option>
+  </select>
 </div>
+
+<div id="mode-modele" style="display:none" class="modele-banner">📸 <b>MODE PHOTOS MODÈLES</b> — Claudine. Choisissez l'appartement, puis prenez chaque photo telle que vous voulez la voir. Les prestataires la verront à côté de leur bouton photo.</div>
+<div id="start-box" class="start"></div>
+<div id="sync-bar" class="sync ok"></div>
 
 <div id="warning-appart" style="display:none;margin:14px 16px;padding:14px 16px;border-radius:12px"></div>
 
@@ -181,7 +222,7 @@
 <div id="sections"></div>
 
 <div class="actions">
-  <button class="reset" onclick="reset()">Tout décocher</button>
+  <button class="reset" onclick="reset()">Annuler ce ménage</button>
   <button class="send" onclick="send()">✓ Terminer</button>
 </div>
 
@@ -349,7 +390,7 @@ document.getElementById('appart').addEventListener('change', e => {
   const params = new URLSearchParams(location.search);
   const presta = (params.get('presta') || '').trim();
   if(!presta) return;
-  const map = { 'remi': 'Rémi', 'clara': 'Clara', 'christelle': 'Christelle', 'claire': 'Claire et Sébastien', 'stephanie': 'Stéphanie', 'aimance': 'Aimance' };
+  const map = { 'remi': 'Rémi', 'maylis': 'Maïlys', 'mailys': 'Maïlys', 'priscilia': 'Priscilia', 'christelle': 'Christelle', 'claire': 'Claire et Sébastien', 'stephanie': 'Stéphanie', 'aimance': 'Aimance' };
   const nice = map[presta.toLowerCase()] || (presta.charAt(0).toUpperCase() + presta.slice(1));
   const nomInput = document.getElementById('nom');
   if(nomInput && !nomInput.value) nomInput.value = nice;
@@ -618,195 +659,410 @@ document.getElementById('signalements-list').addEventListener('click', async fun
   }
 }
 
-// Items : string ou objet {t:"...", d:"détail optionnel", photo:true, video:true}
+// =====================================================================
+// TUTO MÉNAGE v2 — basé sur la fiche de contrôle v3 (19/09/2026)
+// Bouton « Je commence » + photos obligatoires avec photo modèle
+// + fonctionne SANS RÉSEAU (caves) : tout est daté par le téléphone,
+//   gardé dans le téléphone, et envoyé dès que le réseau revient.
+// =====================================================================
+const SUIVI_API = 'https://script.google.com/macros/s/AKfycbwABUZlluUlyKrlL0zyl--vhXu9YD4x8RYIs3_RZgs3raxqAmr8yGFAspp6livjN62dcQ/exec';
+const PARAMS = new URLSearchParams(location.search);
+const MODE_MODELE = PARAMS.has('modele');
+const CLE = (function(){
+  const c = PARAMS.get('cle');
+  try { if(c) localStorage.setItem('menage-cle', c); return c || localStorage.getItem('menage-cle') || ''; } catch(e){ return c || ''; }
+})();
+// Logements sans linge prévu : photo de l'alèse (lit défait) obligatoire — liste Claudine 19/09/2026
+const SANS_LINGE = ['hamac','paddle','kitesurf','surf','face-mer','grand-large','albatros','terrasse'];
+
+// Photos : {id, label, multi?:true (plusieurs lits), nonConcerne?:true}
+// Items : {id, t, d?, photos?:[...], only?:fn(slug)->bool}
 const data = [
-  ["s1","🧺 Arrivée & préparation",[
-    {t:"Lire le questionnaire et vérifier les annotations", d:"📷 Prendre en photo le questionnaire rempli avant de commencer."},
-    {t:"Ouvrir le placard ménage 057 : matériel + produits", d:"Sortir : 🛁 SDB (produit WC, anti-calcaire, javel, sac poubelle) — 🍳 Cuisine (café, thé, sucre, pastilles lave-vaisselle) — 🛋️ Salon (produit vitres, vinaigre)."},
-    {t:"Lancer une machine de lavettes et tapis", d:"Si du linge sale est dans le local ménage à votre arrivée."},
-    {t:"Vider votre sac et ramasser le linge sale du locataire précédent", d:"Tapis, torchon, essuie-mains, éponge → sac ménage. Linge de lit → sac pressing."},
-    {t:"Régler les radiateurs", d:"12° l'hiver, éteints l'été."},
+  ["s1","1. Arrivée",[
+    {id:"questionnaire", t:"Photo du questionnaire d'arrivée + lire les annotations."},
+    {id:"premier-tour", t:"Premier tour : casse, manque, panne, saleté anormale → photo + signalement AVANT de commencer."},
+    {id:"machine", t:"Lancer la machine à laver."},
+    {id:"fenetres", t:"Ouvrir les fenêtres. Vérifier le placard ménage : produits, lavettes, sacs, linge."},
+    {id:"radiateurs", t:"Radiateurs : 12° l'hiver, éteints l'été."},
   ]],
-  ["s2","🛁 Salle de bain — on laisse agir",[
-    {t:"Mettre l'anti-calcaire sur robinetteries et bondes", d:"Toute la robinetterie (SDB + cuisine), pare-douche ou baignoire si présente. Laisser agir pendant qu'on fait la cuisine."},
-    {t:"Balnéo : purger les buses (uniquement si l'appartement en a une)", d:"Remplir d'eau chaude 5 cm au-dessus du jet le plus haut, verser le produit de désinfection balnéo, faire tourner les jets 5 min, vider. C'est ce qui évacue le sable et les dépôts restés dans les canalisations. Voir le protocole complet dans le bandeau rouge en haut de la page."},
-    {t:"Nettoyer le pare-douche au spray anti-calcaire", d:"Spray, laisser agir 5 min, frotter avec une éponge non-abrasive."},
-    {t:"Vérifier et nettoyer la bonde de douche", d:"Démonter la grille, retirer cheveux et dépôts. Sans ça, la douche déborde au prochain locataire."},
-    {t:"Asperger de javel : cuvette WC, joints jaunes, douche", d:"NE PAS oublier les joints jaunes dans les coins. Laisser agir."},
+  ["s2","2. Salle de bain : produits — dans cet ordre",[
+    {id:"anticalcaire", t:"① Anti-calcaire sur toute la robinetterie : salle de bain, cuisine, balnéo, buses et commandes balnéo."},
+    {id:"robinet-douche", t:"② Tout de suite, à l'anti-calcaire : nettoyer la robinetterie de la douche."},
+    {id:"pare-douche", t:"③ Faire le pare-douche."},
+    {id:"siphon", t:"④ Faire le siphon : zéro cheveu.", photos:[{id:"siphon", label:"Siphon propre"}]},
+    {id:"javel-receveur", t:"⑤ Enchaîner : spray javel sur tout le receveur + le carrelage au-dessus, sur les joints.", d:"Pour que les joints ne deviennent pas marron. Le receveur sera rincé à la toute fin (étape 8)."},
+    {id:"javel-wc", t:"⑥ Javel sur tout le WC, SAUF le dessus de la lunette. Puis on laisse agir ⏳ et on passe à l'étape 3.", d:"Le dessus de la lunette touche la peau : même essuyée, la javel colle à la peau."},
   ]],
-  ["s3","🍳 Cuisine — on inspecte tout",[
-    {t:"Ouvrir tout l'électroménager et les placards", d:"Vérifier qu'il n'y a aucune nourriture oubliée."},
-    "Nettoyer les saletés éventuelles",
-    {t:"Frigo / congélateur : aucune nourriture oubliée", d:"Si vide : laisser à 5° (frigo) et -18° (congel). Si nourriture : poubelle + désinfection rapide."},
-    {t:"Micro-ondes, four, plaques, cafetière, grille-pain, bouilloire", d:"Micro-ondes : intérieur + plaque tournante. Four : ouvrir + vérifier la plaque. Bouilloire : vider, détartrer au vinaigre si calcaire, rincer. Senseo : pas de capsule, nettoyer porteurs + récipient."},
-    {t:"Lave-vaisselle : ouvrir, allumer, vérifier", d:"Liquide de rinçage (☀️) + sel (flèches). Lancer un cycle si besoin."},
-    "Vaisselle propre, rangée, non abîmée",
-    "Vider la poubelle et remettre un sac propre",
+  ["s3","3. Pendant que ça agit",[
+    {id:"poubelles", t:"Vider toutes les poubelles et remettre un sac propre partout."},
+    {id:"cuisine", t:"Cuisine : frigo, four, micro-ondes, plaques, cafetière, bouilloire, lave-vaisselle et TOUS les placards propres, rien d'oublié.", photos:[{id:"cuisine", label:"Cuisine, tous les placards ouverts"}]},
+    {id:"evier", t:"Liquide vaisselle, éponge, dosettes lave-vaisselle, torchon, essuie-main."},
+    {id:"sdb-produits", t:"Salle de bain : savon, gel douche, coton, sèche-cheveux, tapis. Papier toilette : 1 rouleau + 3/4 minimum, pliage en pointe."},
+    {id:"surfaces", t:"Surfaces : plan de travail, crédence, table, miroir, plan vasque (sans toucher aux produits qui agissent)."},
+    {id:"panier", t:"Panier d'accueil + petites cartes de visite.", d:"Voir le détail du panier dans l'encadré « Consignes spécifiques » en haut de la page."},
   ]],
-  ["s4","🪟 Appartement — surfaces & vitres",[
-    {t:"Tables, appuis, chaises, murs, fenêtres", d:"Surfaces utiles, plan de travail et table : produit magique (vinaigre)."},
-    "Nettoyer les vitres",
-    {t:"Vérifier les alèses (lit, matelas, oreillers, canapé)", d:"Si tachées ou mouillées → pressing. Vérifier sous le lit et autour des chevets."},
-    {t:"Inspecter les couettes — taches ou marques", d:"Si la couette est tachée ou marquée, l'enlever IMMÉDIATEMENT et la remplacer. Pas de couette douteuse pour le prochain locataire."},
-    {t:"Refaire le lit et déco", d:"Linge propre tendu et bordé. Déposer le pack de linge (serviettes, gants) si besoin."},
-    "Vérifier sous le lit et la table de nuit (rien d'oublié)",
+  ["s4","4. Retour sur les produits — dans cet ordre",[
+    {id:"essuyer-javel", t:"① Javel du WC essuyée au papier toilette, jeté dans les WC. Tirer la chasse."},
+    {id:"lunette", t:"② Dessus de la lunette au produit fait maison : seul endroit (contact peau).", d:"Spray fait maison : 50 % vinaigre blanc + 25 % alcool ménager + 1 c. à café de liquide vaisselle, compléter avec de l'eau. Jamais avec la javel.", photos:[{id:"wc", label:"WC propre, lunette relevée"}]},
+    {id:"mains", t:"③ Se rincer les mains."},
+    {id:"essuyer-anticalcaire", t:"④ Anti-calcaire : on ESSUIE, on ne rince PAS (lavabo, cuisine…). On ne remouille plus.", photos:[{id:"robinet-sdb", label:"Robinets salle de bain"},{id:"robinet-cuisine", label:"Robinet cuisine"}]},
+    {id:"balneo", t:"Balnéo : buses une par une, purge, zéro sable.", only: s => !!(apartFeatures[s] && apartFeatures[s].balneo)},
+    {id:"plan-sdb", t:"Plan de la salle de bain propre, tapis de sol enroulé posé dessus.", photos:[{id:"plan-sdb", label:"Plan SDB + tapis enroulé"}]},
   ]],
-  ["s5","🚿 Salle de bain — on rince et on essuie",[
-    "Essuyer robinetteries traitées à l'anti-calcaire",
-    "Rincer la douche (javel)",
-    "Essuyer la javel sous la cuvette + nettoyer le dessus WC",
-    "Miroir et lavabo sans traces",
-    {t:"2 rouleaux de papier toilette neufs", d:"Toujours 2 rouleaux entamés ou neufs visibles."},
-    {t:"Compléter savon, gel douche, coton/coton-tige", d:"Vérifier qu'il y en a pour le prochain séjour."},
-    "Vider poubelle SDB + sac propre",
-    {t:"Balnéo : rinçage final et contrôle du sable (si l'appartement en a une)", d:"Remplir à l'eau claire, relancer les jets 1 min, vider : RIEN ne doit sortir des buses. Puis essuyer le receveur, la bonde et le pourtour — y compris sous le repose-nuque. La cuve doit être vide, sèche et sans trace.", photo:true},
-    {t:"Mettre le tapis de bain propre", d:"Remplacer le tapis utilisé par un tapis sec et propre."},
+  ["s5","5. Chambre",[
+    {id:"aleses", t:"Check des alèses : tache, odeur, humidité → on change.", photos:[{id:"alese", label:"Alèse, lit défait", only: s => SANS_LINGE.includes(s)}]},
+    {id:"lits", t:"Draps propres si besoin, sinon lit refait. Déco du lit selon les photos de référence.", photos:[{id:"lit", label:"Chaque lit refait", multi:true}]},
+    {id:"sous-lit", t:"Sous le lit et tables de chevet : rien d'oublié."},
   ]],
-  ["s6","✨ Touche finale",[
-    {t:"Installer la déco selon photos de référence", d:"Galerie photos en haut de la page. La déco doit être identique aux photos. Compléter le panier d'accueil."},
-    {t:"Aspirer SOUS le canapé (ouvrir le canapé-lit)", d:"⚠️ Ouvrir le canapé-lit s'il est convertible et passer l'aspirateur DESSOUS. Plusieurs voyageurs ont remonté avoir trouvé des miettes/gâteaux. Le voyageur qui ouvre le clic-clac a la tête à 2 cm — ZÉRO tolérance."},
-    {t:"Aspirer partout (sous lit, autour des chevets)", d:"Inclus : sous le lit, sous les chevets, sous le canapé fixe, derrière les meubles déplaçables."},
-    "Poussières : plinthes, TV, tête de lit",
-    "Coussins / plaids propres et pliés",
-    {t:"Odeur générale : aérer, spray textile / huile essentielle", d:"Aérer 5 min minimum. Spray anti-odeur juste avant de partir."},
+  ["s6","6. Salon — extérieur — vitres",[
+    {id:"canape", t:"Ouvrir le canapé-lit : dedans et dessous, rien d'oublié. Ranger coussins, plaids, déco.", photos:[{id:"canape", label:"Canapé", nonConcerne:true}]},
+    {id:"exterieur", t:"Balcon / terrasse / patio : mégots, déchets, crottes de chien. Sol balayé.", only: s => !!(apartFeatures[s] && apartFeatures[s].exterieur)},
+    {id:"vitres", t:"Faire les vitres et baies vitrées.", photos:[{id:"vitres", label:"Vitres"}]},
   ]],
-  ["s7","🏁 Avant de partir",[
-    {t:"Vidéo OBLIGATOIRE : tour complet de l'appartement", d:"Passer dans : entrée → cuisine → salon → chambre → salle de bain. La vidéo s'envoie automatiquement sur le Drive de Claudine.", video:true},
-    "Retour au local : étendre le linge",
-    {t:"Remplir le sac de ménage", d:"Contenu nécessaire pour le prochain ménage : 1 tapis, 1 torchon, 1 essuie-main, 3 lavettes, 2 rouleaux PQ, 1 paquet gâteaux. Noter ce qui manque dans les produits."},
+  ["s7","7. Aspirateur puis poussière",[
+    {id:"aspi", t:"Aspirer tout le logement, tous les angles : plinthes, recoins, sous le canapé."},
+    {id:"cotes-lit", t:"Insister sur les côtés du lit et dessous."},
+    {id:"sol", t:"Laver le sol là où il y a des traces."},
+    {id:"lavette", t:"Petite lavette : dessus des plinthes, meubles, cadres, TV, étagères, déco."},
+  ]],
+  ["s8","8. Regard final — vidéo — départ",[
+    {id:"regard", t:"Regarder l'appart comme le voyageur qui entre. Casse → photo + signalement."},
+    {id:"rincer-receveur", t:"Rincer le receveur (javel)."},
+    {id:"video", t:"Vidéo continue de toutes les pièces → envoyée sur WhatsApp tout de suite.", d:"Filmer sans couper : entrée, cuisine, salon, chambre(s), salle de bain. Puis l'envoyer à Claudine sur WhatsApp."},
+    {id:"linge", t:"Sortir le linge de la machine et l'étendre. Hublot entrouvert."},
+    {id:"reassort", t:"Noter le réassort dans l'appli.", d:"Appli réassort : https://claudine-design.github.io/enquete-berck/reassort/"},
+    {id:"fermeture", t:"Fenêtres fermées, lumières éteintes, robinets vérifiés, clés en place, code brouillé."},
   ]],
 ];
 
-const root = document.getElementById('sections');
-let total = 0;
-const sectionRefs = [];
-data.forEach(([cls,title,items],si)=>{
-  const sec = document.createElement('section');
-  sec.className = cls;
-  // Première section ouverte par défaut
-  if(si === 0) sec.classList.add('open');
-  sec.innerHTML = `<h2><span class="title-wrap">${title}</span><span class="count" data-section="${si}">0/${items.length}</span><span class="arrow">▼</span></h2><div class="body"></div>`;
-  // Toggle accordéon au clic sur le header
-  sec.querySelector('h2').addEventListener('click', e => {
-    if(e.target.tagName === 'INPUT' || e.target.classList.contains('info-btn')) return;
-    sec.classList.toggle('open');
-  });
-  sectionRefs.push({sec, items: items.length, si});
-  const body = sec.querySelector('.body');
-  items.forEach((it,i)=>{
-    total++;
-    const id = `c_${si}_${i}`;
-    const t = typeof it==='string'?it:it.t;
-    const detail = typeof it==='object' && it.d ? it.d : null;
-    const needPhoto = typeof it==='object' && it.photo;
-    const needVideo = typeof it==='object' && it.video;
-    const div = document.createElement('label');
-    div.className='item';
-    let tag = '';
-    if(needPhoto) tag = '<span class="photo-tag">📷 photo</span>';
-    if(needVideo) tag = '<span class="video-tag">🎥 vidéo</span>';
-    let media = '';
-    if(needPhoto) media = `<input type="file" accept="image/*" capture="environment" class="photo-input"><img class="thumb" style="display:none">`;
-    if(needVideo) media = `<input type="file" accept="video/*" capture="environment" class="photo-input"><video controls style="display:none"></video>`;
-    const infoBtn = detail ? '<button type="button" class="info-btn" aria-label="Détail">ⓘ</button>' : '';
-    const detailBlock = detail ? `<div class="detail">${detail}</div>` : '';
-    div.innerHTML = `<input type="checkbox" id="${id}"><div class="col"><div style="display:flex;align-items:flex-start"><span style="flex:1">${t}${tag}</span>${infoBtn}</div>${detailBlock}${media}</div>`;
-    // Toggle détail au clic sur le bouton info (sans cocher la case)
-    if(detail){
-      const btn = div.querySelector('.info-btn');
-      btn.addEventListener('click', e => {
-        e.preventDefault();
-        e.stopPropagation();
-        div.classList.toggle('show-detail');
-      });
-    }
-    const cb = div.querySelector('input[type="checkbox"]');
-    if(needPhoto || needVideo){
-      const fi = div.querySelector('.photo-input');
-      const preview = div.querySelector(needVideo?'video':'.thumb');
-      cb.addEventListener('click',e=>{
-        if(e.target.checked && !preview.src){
-          e.preventDefault();
-          e.target.checked = false;
-          fi.click();
-        }
-      });
-      fi.addEventListener('change',e=>{
-        const f = e.target.files[0];
-        if(!f) return;
-        const url = URL.createObjectURL(f);
-        preview.src = url;
-        preview.style.display = 'block';
-        cb.checked = true;
-        div.classList.add('done');
-        update();
-        // Envoi automatique vers Google Drive (Vidéos ménage Berck)
-        const reader = new FileReader();
-        reader.onload = ()=>{
-          const b64 = reader.result.split(',')[1];
-          const stamp = new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
-          const apartVal = (document.getElementById('appart').value || 'sans-appart').replace(/[^a-z0-9-]/gi,'-');
-          const nomVal = (document.getElementById('nom').value || 'anonyme').replace(/[^a-zA-ZÀ-ÿ0-9-]/g,'-').toLowerCase();
-          const ext = (f.name && f.name.includes('.')) ? '.' + f.name.split('.').pop() : (needVideo ? '.mp4' : '.jpg');
-          const kind = needVideo ? 'video' : 'photo';
-          // Format: <appart>_<prestataire>_<date>_<kind>.<ext>
-          const payload = {file:b64, mime:f.type, name:`${apartVal}_${nomVal}_${stamp}_${kind}${ext}`};
-          fetch('https://script.google.com/macros/s/AKfycbwTCZ7TqqWJQFqt73XNKtADLXJD0D41mXpIUJJFaBv9qyATph_UkmJMxYjUaEz-mxkm/exec',{
-            method:'POST', mode:'no-cors',
-            headers:{'Content-Type':'text/plain'},
-            body: JSON.stringify(payload)
-          }).then(()=>{
-            const tag = div.querySelector('.photo-tag, .video-tag');
-            if(tag) tag.textContent += ' ✓ envoyé';
-          }).catch(()=>{});
-        };
-        reader.readAsDataURL(f);
-      });
-    }
-    cb.addEventListener('change',e=>{
-      if((needPhoto||needVideo) && !div.querySelector(needVideo?'video':'.thumb').src) return;
-      div.classList.toggle('done',e.target.checked);
-      update();
-    });
-    body.appendChild(div);
-  });
-  root.appendChild(sec);
-});
+// ---------- état du ménage en cours (gardé dans le téléphone) ----------
+let S = null; // {id, appart, presta, debut, checked:{}, photos:{slot:[{heure,thumb}]}, nc:{}}
+function saveS(){ try { if(S) localStorage.setItem('menage-en-cours', JSON.stringify(S)); else localStorage.removeItem('menage-en-cours'); } catch(e){} }
+function loadS(){ try { return JSON.parse(localStorage.getItem('menage-en-cours') || 'null'); } catch(e){ return null; } }
+function hhmm(iso){ const d = new Date(iso); return d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}); }
+function slug(){ return document.getElementById('appart').value; }
+function presta(){ return document.getElementById('nom').value; }
+function appartLabel(s){ const o = Array.from(document.getElementById('appart').options).find(o => o.value === s); return o ? o.textContent : s; }
 
-function update(){
-  const checked = document.querySelectorAll('.item input:checked').length;
-  document.getElementById('bar').style.width = (checked/total*100)+'%';
-  document.getElementById('ptext').textContent = `${checked} / ${total} tâches`;
-  // Compteur par section
-  sectionRefs.forEach(({sec,items,si})=>{
-    const done = sec.querySelectorAll('.item input:checked').length;
-    const cntEl = sec.querySelector('.count');
-    cntEl.textContent = `${done}/${items}`;
-    cntEl.classList.toggle('done', done === items);
-    // Auto-fermer la section quand 100% complet (sauf si déjà fermée manuellement)
-    if(done === items && sec.classList.contains('open') && !sec.dataset.userClosed){
-      // Petit délai pour laisser voir la coche
-      setTimeout(()=>{ if(sec.querySelectorAll('.item input:checked').length === items) sec.classList.remove('open'); }, 600);
-    }
+// ---------- file d'attente d'envoi (IndexedDB) ----------
+function idb(){
+  return new Promise((res, rej) => {
+    const r = indexedDB.open('menage-queue', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('q', {autoIncrement:true});
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
   });
+}
+async function qAdd(item){
+  const db = await idb();
+  await new Promise((res, rej) => { const tx = db.transaction('q','readwrite'); tx.objectStore('q').add(item); tx.oncomplete = res; tx.onerror = () => rej(tx.error); });
+  updateSyncBar();
+  if('serviceWorker' in navigator && navigator.serviceWorker.ready){
+    navigator.serviceWorker.ready.then(r => r.sync && r.sync.register('menage-flush')).catch(()=>{});
+  }
+  flush();
+}
+async function qAll(){
+  const db = await idb();
+  return new Promise((res, rej) => {
+    const out = []; const tx = db.transaction('q','readonly');
+    tx.objectStore('q').openCursor().onsuccess = e => { const c = e.target.result; if(c){ out.push({key:c.key, val:c.value}); c.continue(); } else res(out); };
+    tx.onerror = () => rej(tx.error);
+  });
+}
+async function qDel(key){
+  const db = await idb();
+  await new Promise(res => { const tx = db.transaction('q','readwrite'); tx.objectStore('q').delete(key); tx.oncomplete = res; });
+}
+let flushing = false, flushRetry = null;
+async function flush(){
+  if(flushing || SUIVI_API.indexOf('http') !== 0) return;
+  flushing = true;
+  try {
+    const items = await qAll();
+    for(const {key, val} of items){
+      let ok = false;
+      try {
+        const r = await fetch(SUIVI_API, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(val)});
+        const j = await r.json();
+        ok = !!j.ok || j.error === 'cle';
+        if(ok && val.action === 'modele' && j.fileId && slug() === val.appart){ modeles[val.etape] = j.fileId; saveModeles(val.appart); render(); }
+      } catch(e){ ok = false; }
+      if(!ok){ clearTimeout(flushRetry); flushRetry = setTimeout(flush, 30000); break; }
+      await qDel(key);
+      updateSyncBar();
+    }
+  } finally { flushing = false; updateSyncBar(); }
+}
+async function updateSyncBar(){
+  const bar = document.getElementById('sync-bar');
+  let n = 0; try { n = (await qAll()).length; } catch(e){}
+  if(n === 0){ bar.className = 'sync ok'; bar.innerHTML = navigator.onLine ? '✅ Tout est envoyé' : '📴 Pas de réseau — rien en attente'; return; }
+  bar.className = 'sync wait';
+  bar.innerHTML = '📡 <b>' + n + ' envoi' + (n>1?'s':'') + ' en attente</b> — gardé' + (n>1?'s':'') + ' dans le téléphone, ça partira dès qu\'il y a du réseau. <button type="button" onclick="flush()">Renvoyer</button>';
+}
+window.addEventListener('online', () => flush());
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') flush(); });
+
+// ---------- photos : compression avant envoi ----------
+function compress(file, max){
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(img.src);
+      res(c.toDataURL('image/jpeg', 0.72));
+    };
+    img.onerror = rej;
+    img.src = URL.createObjectURL(file);
+  });
+}
+function prendrePhoto(){
+  return new Promise(res => {
+    const fi = document.createElement('input');
+    fi.type = 'file'; fi.accept = 'image/*'; fi.capture = 'environment';
+    fi.onchange = () => res(fi.files[0] || null);
+    fi.click();
+  });
+}
+
+// ---------- photos modèles ----------
+let modeles = {};
+function modeleUrl(id){ return 'https://lh3.googleusercontent.com/d/' + id + '=w900'; }
+function saveModeles(s){ try { localStorage.setItem('modeles-' + s, JSON.stringify(modeles)); } catch(e){} }
+async function loadModeles(s){
+  try { modeles = JSON.parse(localStorage.getItem('modeles-' + s) || '{}'); } catch(e){ modeles = {}; }
+  render();
+  if(!s || SUIVI_API.indexOf('http') !== 0) return;
+  try {
+    const r = await fetch(SUIVI_API + '?action=modeles&appart=' + encodeURIComponent(s));
+    const j = await r.json();
+    if(j.ok && slug() === s){
+      modeles = j.modeles || {}; saveModeles(s); render();
+      Object.values(modeles).forEach(id => { const i = new Image(); i.src = modeleUrl(id); }); // mise en cache pour la cave
+    }
+  } catch(e){}
+}
+
+// ---------- rendu ----------
+function itemsFor(s){
+  return data.map(([cls, title, items]) => [cls, title, items
+    .filter(it => !it.only || it.only(s))
+    .map(it => Object.assign({}, it, {photos: (it.photos || []).filter(p => !p.only || p.only(s))}))]);
+}
+function slotDone(p){ return (S && S.nc[p.id]) || (S && S.photos[p.id] && S.photos[p.id].length > 0); }
+function itemReady(it){ return it.photos.every(slotDone); }
+
+function render(){
+  const s = slug();
+  document.getElementById('mode-modele').style.display = MODE_MODELE ? 'block' : 'none';
+  document.getElementById('start-box').style.display = MODE_MODELE ? 'none' : 'block';
+  document.querySelector('.actions').style.display = MODE_MODELE ? 'none' : 'flex';
+  renderStartBox();
+  const root = document.getElementById('sections');
+  root.innerHTML = '';
+  if(!s){ root.innerHTML = '<div class="hint">👆 Choisissez l\'appartement pour afficher le tuto.</div>'; updateProgress(); return; }
+  if(MODE_MODELE){ renderModeModele(root, s); return; }
+  itemsFor(s).forEach(([cls, title, items], si) => {
+    const sec = document.createElement('section');
+    sec.className = cls + ((S && openSec[si]) || (!S && si === 0) || (S && openSec[si] === undefined && firstOpen(items)) ? ' open' : '');
+    const done = items.filter(it => S && S.checked[it.id]).length;
+    sec.innerHTML = '<h2><span class="title-wrap">' + title + '</span><span class="count' + (done === items.length ? ' done' : '') + '">' + done + '/' + items.length + '</span><span class="arrow">▼</span></h2><div class="body"></div>';
+    sec.querySelector('h2').onclick = () => { openSec[si] = !sec.classList.contains('open'); sec.classList.toggle('open'); };
+    const body = sec.querySelector('.body');
+    items.forEach(it => body.appendChild(renderItem(it)));
+    root.appendChild(sec);
+  });
+  updateProgress();
+}
+const openSec = {};
+function firstOpen(items){ return items.some(it => !S.checked[it.id]); }
+
+function renderItem(it){
+  const div = document.createElement('div');
+  const checked = !!(S && S.checked[it.id]);
+  div.className = 'item' + (checked ? ' done' : '');
+  let photosHtml = '';
+  it.photos.forEach(p => {
+    const list = (S && S.photos[p.id]) || [];
+    const nc = S && S.nc[p.id];
+    const m = modeles[p.id];
+    photosHtml += '<div class="slot' + (list.length || nc ? ' ok' : '') + '">' +
+      '<div class="slot-title">📷 ' + p.label + (list.length ? ' ✓' : '') + (nc ? ' — non concerné' : '') + '</div>' +
+      '<div class="slot-row">' +
+        (m ? '<figure><img src="' + modeleUrl(m) + '" onclick="openLightbox(this.src)" alt=""><figcaption>Modèle</figcaption></figure>' : '<figure class="nomodel"><div>Pas encore de photo modèle</div></figure>') +
+        list.map((ph, k) => '<figure><img src="' + ph.thumb + '" onclick="openLightbox(this.src)" alt=""><figcaption>' + hhmm(ph.heure) + '</figcaption></figure>').join('') +
+      '</div>' +
+      (nc ? '' : '<button type="button" class="shoot" data-slot="' + p.id + '">' + (list.length ? (p.multi ? '➕ Photo d\'un autre lit' : '🔁 Reprendre la photo') : '📷 Prendre la photo') + '</button>') +
+      (p.nonConcerne && !list.length ? '<button type="button" class="nc" data-slot="' + p.id + '">' + (nc ? 'Annuler « non concerné »' : 'Pas de canapé ici') + '</button>' : '') +
+    '</div>';
+  });
+  div.innerHTML = '<input type="checkbox"' + (checked ? ' checked' : '') + '><div class="col"><div style="display:flex;align-items:flex-start"><span style="flex:1">' + it.t + '</span>' +
+    (it.d ? '<button type="button" class="info-btn" aria-label="Détail">ⓘ</button>' : '') + '</div>' +
+    (it.d ? '<div class="detail">' + it.d + '</div>' : '') + photosHtml + '</div>';
+  const cb = div.querySelector('input');
+  cb.onclick = e => {
+    if(!S){ e.preventDefault(); alert('▶️ Appuyez d\'abord sur « Je commence le ménage » (en haut).'); return; }
+    if(cb.checked && !itemReady(it)){
+      e.preventDefault();
+      const missing = it.photos.find(p => !slotDone(p));
+      shoot(missing.id, missing.label);
+      return;
+    }
+    S.checked[it.id] = cb.checked; saveS(); render();
+  };
+  const info = div.querySelector('.info-btn');
+  if(info) info.onclick = e => { e.preventDefault(); e.stopPropagation(); div.classList.toggle('show-detail'); };
+  div.querySelectorAll('.shoot').forEach(b => b.onclick = e => { e.preventDefault(); e.stopPropagation();
+    const p = it.photos.find(x => x.id === b.dataset.slot); shoot(p.id, p.label, it); });
+  div.querySelectorAll('.nc').forEach(b => b.onclick = e => { e.preventDefault(); e.stopPropagation();
+    S.nc[b.dataset.slot] = !S.nc[b.dataset.slot]; if(itemReady(it) && S.nc[b.dataset.slot]) S.checked[it.id] = true; saveS(); render(); });
+  return div;
+}
+
+async function shoot(slotId, label, it){
+  if(!S){ alert('▶️ Appuyez d\'abord sur « Je commence le ménage » (en haut).'); return; }
+  const f = await prendrePhoto();
+  if(!f) return;
+  const heure = new Date().toISOString(); // heure de la photo, prise par le téléphone
+  let big, thumb;
+  try { big = await compress(f, 1280); thumb = await compress(f, 220); }
+  catch(e){ alert('Photo illisible, réessayez.'); return; }
+  const p = findSlot(slotId);
+  if(!p.multi) S.photos[slotId] = [];
+  (S.photos[slotId] = S.photos[slotId] || []).push({heure, thumb});
+  const item = it || findItemOfSlot(slotId);
+  if(item && itemReady(item)) S.checked[item.id] = true;
+  saveS(); render();
+  await qAdd({action:'photo', id:S.id, appart:S.appart, presta:S.presta, etape:slotId, libelle:label, heure, mime:'image/jpeg', file: big.split(',')[1]});
+}
+function findSlot(id){ for(const [,, items] of data) for(const it of items) for(const p of (it.photos||[])) if(p.id === id) return p; return {}; }
+function findItemOfSlot(id){ for(const [,, items] of itemsFor(slug())) for(const it of items) if(it.photos.some(p => p.id === id)) return it; return null; }
+
+function updateProgress(){
+  const s = slug();
+  const items = s ? itemsFor(s).flatMap(x => x[2]) : [];
+  const done = items.filter(it => S && S.checked[it.id]).length;
+  document.getElementById('bar').style.width = (items.length ? done / items.length * 100 : 0) + '%';
+  const slots = items.flatMap(it => it.photos);
+  const ph = slots.filter(slotDone).length;
+  document.getElementById('ptext').textContent = done + ' / ' + items.length + ' tâches · ' + ph + ' / ' + slots.length + ' photos';
+}
+
+// ---------- Je commence / Terminer ----------
+function renderStartBox(){
+  const box = document.getElementById('start-box');
+  if(S){
+    box.className = 'start on';
+    box.innerHTML = '🟢 Ménage commencé à <b>' + hhmm(S.debut) + '</b> — <b>' + S.presta + '</b> — ' + appartLabel(S.appart) +
+      '<div class="small">Si vous fermez l\'appli, tout est gardé : rouvrez-la, vous reprenez où vous en étiez.</div>';
+    document.getElementById('appart').disabled = true;
+    document.getElementById('nom').disabled = true;
+  } else {
+    box.className = 'start';
+    box.innerHTML = '<button type="button" id="btn-start">▶️ Je commence le ménage</button><div class="small">L\'heure est notée tout de suite, même sans réseau.</div>';
+    document.getElementById('btn-start').onclick = demarrer;
+    document.getElementById('appart').disabled = false;
+    document.getElementById('nom').disabled = false;
+  }
+}
+async function demarrer(){
+  if(!slug()){ alert('Choisissez d\'abord l\'appartement.'); return; }
+  if(!presta()){ alert('Choisissez d\'abord votre prénom dans la liste « Prestataire ».'); document.getElementById('nom').focus(); return; }
+  const debut = new Date().toISOString();
+  S = { id: 'M' + debut.replace(/\D/g,'').slice(0,14) + Math.random().toString(36).slice(2,6), appart: slug(), presta: presta(), debut, checked:{}, photos:{}, nc:{} };
+  saveS(); render();
+  window.scrollTo({top: document.getElementById('sections').offsetTop - 10, behavior:'smooth'});
+  await qAdd({action:'start', id:S.id, appart:S.appart, presta:S.presta, heure:debut});
+}
+async function send(){
+  if(!S){ alert('▶️ Le ménage n\'a pas été commencé : appuyez sur « Je commence le ménage ».'); return; }
+  const s = S.appart;
+  const items = itemsFor(s).flatMap(x => x[2]);
+  const missing = items.flatMap(it => it.photos).filter(p => !slotDone(p)).map(p => '📷 ' + p.label);
+  if(missing.length){ alert('⛔ Il manque des photos :\n\n' + missing.join('\n') + '\n\nPrenez-les pour pouvoir terminer.'); return; }
+  if(!S.checked['video']){ alert('⛔ Envoyez d\'abord la vidéo sur WhatsApp, puis cochez « Vidéo continue… » (étape 8).'); return; }
+  const done = items.filter(it => S.checked[it.id]).length;
+  let remarque = '';
+  if(done < items.length){
+    if(!confirm('Il reste ' + (items.length - done) + ' tâche(s) non cochée(s). Terminer quand même ?')) return;
+    remarque = (items.length - done) + ' tâche(s) non cochée(s) : ' + items.filter(it => !S.checked[it.id]).map(it => it.id).join(', ');
+  }
+  const fin = new Date().toISOString();
+  const minutes = Math.round((new Date(fin) - new Date(S.debut)) / 60000);
+  await qAdd({action:'fin', id:S.id, appart:S.appart, presta:S.presta, heure:fin, taches:done, total:items.length, remarque});
+  const nom = S.presta;
+  S = null; saveS(); render();
+  const n = (await qAll()).length;
+  alert('Merci ' + nom + ' ! ♥\n\nMénage terminé en ' + Math.floor(minutes/60) + 'h' + String(minutes%60).padStart(2,'0') + '.\n' +
+    (n ? '📡 ' + n + ' envoi(s) encore dans le téléphone : ils partiront dès qu\'il y aura du réseau. Rouvrez l\'appli une fois dehors si le compteur ne descend pas.' : '✅ Tout est envoyé.'));
 }
 function reset(){
-  document.querySelectorAll('.item input[type="checkbox"]').forEach(i=>{i.checked=false;i.closest('.item').classList.remove('done')});
-  document.querySelectorAll('.item .thumb').forEach(img=>{img.src='';img.style.display='none'});
-  update();
+  if(!S) return;
+  if(!confirm('Annuler ce ménage ? Les coches et les photos du téléphone seront effacées (les photos déjà envoyées restent chez Claudine).')) return;
+  qAdd({action:'fin', id:S.id, appart:S.appart, presta:S.presta, heure:new Date().toISOString(), taches:0, total:0, remarque:'ANNULÉ par le prestataire'});
+  S = null; saveS(); render();
 }
-function send(){
-  const videoEl = document.querySelector('.item video');
-  if(!videoEl || !videoEl.src){
-    alert("⛔ Impossible de terminer !\n\nVous devez d'abord enregistrer la vidéo finale de l'appartement (dernière tâche dans 🏁 Avant de partir).");
-    return;
+
+// ---------- Mode photos modèles (Claudine) ----------
+function renderModeModele(root, s){
+  const slots = itemsFor(s).flatMap(x => x[2]).flatMap(it => it.photos);
+  const box = document.createElement('section');
+  box.className = 's1 open';
+  box.innerHTML = '<h2><span class="title-wrap">📸 Photos modèles — ' + appartLabel(s) + '</span><span class="count">' + slots.filter(p => modeles[p.id]).length + '/' + slots.length + '</span></h2><div class="body"></div>';
+  const body = box.querySelector('.body');
+  if(!CLE) body.innerHTML = '<div class="hint">⚠️ Lien incomplet : il manque la clé Claudine.</div>';
+  slots.forEach(p => {
+    const d = document.createElement('div');
+    d.className = 'slot' + (modeles[p.id] ? ' ok' : '');
+    d.innerHTML = '<div class="slot-title">' + p.label + '</div><div class="slot-row">' +
+      (modeles[p.id] ? '<figure><img src="' + modeleUrl(modeles[p.id]) + '" onclick="openLightbox(this.src)" alt=""><figcaption>Modèle actuel</figcaption></figure>' : '<figure class="nomodel"><div>Aucun modèle</div></figure>') +
+      '</div><button type="button" class="shoot">' + (modeles[p.id] ? '🔁 Remplacer le modèle' : '📷 Prendre la photo modèle') + '</button>';
+    d.querySelector('.shoot').onclick = async () => {
+      const f = await prendrePhoto(); if(!f) return;
+      const big = await compress(f, 1280);
+      d.querySelector('.slot-row').innerHTML = '<figure><img src="' + big + '" alt=""><figcaption>Nouveau (envoi…)</figcaption></figure>';
+      await qAdd({action:'modele', cle:CLE, appart:s, etape:p.id, heure:new Date().toISOString(), mime:'image/jpeg', file: big.split(',')[1]});
+    };
+    body.appendChild(d);
+  });
+  root.appendChild(box);
+}
+
+// ---------- démarrage ----------
+(function init(){
+  const sel = document.getElementById('nom');
+  const saved = loadS();
+  if(saved && (Date.now() - new Date(saved.debut)) > 14 * 3600000){
+    // ménage oublié depuis plus de 14 h : on le clôt côté suivi, sans heure de fin
+    qAdd({action:'fin', id:saved.id, appart:saved.appart, presta:saved.presta, heure:saved.debut, taches:0, total:0, remarque:'Jamais terminé dans l\'appli (clôturé automatiquement)'});
+    try { localStorage.removeItem('menage-en-cours'); } catch(e){}
+  } else if(saved && !MODE_MODELE){
+    const qr = PARAMS.get('appart');
+    if(qr && qr !== saved.appart && confirm('Un ménage est en cours sur ' + appartLabel(saved.appart) + ' (commencé à ' + hhmm(saved.debut) + ').\n\nOK = le reprendre\nAnnuler = l\'abandonner et commencer ' + appartLabel(qr))){
+      S = saved;
+    } else if(qr && qr !== saved.appart){
+      qAdd({action:'fin', id:saved.id, appart:saved.appart, presta:saved.presta, heure:new Date().toISOString(), taches:0, total:0, remarque:'Abandonné pour un autre appartement'});
+    } else {
+      S = saved;
+    }
+    if(S){
+      document.getElementById('appart').value = S.appart;
+      sel.value = S.presta;
+      renderGallery(S.appart); renderApartWarning(S.appart);
+    }
   }
-  const checked = document.querySelectorAll('.item input:checked').length;
-  const nom = document.getElementById('nom').value || 'la prestataire';
-  const appart = document.getElementById('appart').value;
-  alert(`Merci ${nom} ! ♥\n\n${checked}/${total} tâches terminées\nAppartement : ${appart}\nDate : ${new Date().toLocaleDateString('fr-FR')}\n\n✓ Vidéo envoyée sur le Drive`);
-}
-update();
+  document.getElementById('appart').addEventListener('change', e => loadModeles(e.target.value));
+  sel.addEventListener('change', () => { try { localStorage.setItem('menage-presta', sel.value); } catch(e){} });
+  if(!sel.value){ try { const p = localStorage.getItem('menage-presta'); if(p) sel.value = p; } catch(e){} }
+  loadModeles(slug());
+  updateSyncBar();
+  flush();
+  if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+})();
 </script>
 </body>
 </html>
