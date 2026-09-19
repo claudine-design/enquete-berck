@@ -1,7 +1,7 @@
 [
  {
   "titre": "Exposition \"Horizon\" Musée Opale Sud",
-  "start": "2026-09-18",
+  "start": "2026-09-19",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128477",
@@ -9,7 +9,7 @@
  },
  {
   "titre": "Exposition \"Détours loin du Bercail\" Musée Opale Sud",
-  "start": "2026-09-18",
+  "start": "2026-09-19",
   "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128475",
@@ -17,7 +17,7 @@
  },
  {
   "titre": "Exposition Francis Crochet",
-  "start": "2026-09-18",
+  "start": "2026-09-19",
   "date_label": "Jusqu'au 30/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=107874",
@@ -26,7 +26,7 @@
  {
   "titre": "Journées Européennes du Patrimoine 2026",
   "start": "2026-09-19",
-  "date_label": "Du 19/09/2026 au 20/09/2026",
+  "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=92709",
   "source": "Office de Tourisme"
@@ -34,33 +34,9 @@
  {
   "titre": "35ème édition - 5h de Berck",
   "start": "2026-09-19",
-  "date_label": "Du 19/09/2026 au 20/09/2026",
+  "date_label": "Jusqu'au 20/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=80562",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Concert des 50 ans de jumelage entre Berck-sur-Mer et Bad Honnef",
-  "start": "2026-09-19",
-  "date_label": "Le 19/09/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130482",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Festival \"Racines & Décibels\"",
-  "start": "2026-09-19",
-  "date_label": "Le 19/09/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=124414",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Atelier Catherine Grain – Causettes",
-  "start": "2026-09-19",
-  "date_label": "Le 19/09/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130430",
   "source": "Office de Tourisme"
  },
  {
@@ -80,22 +56,20 @@
   "source": "Office de Tourisme"
  },
  {
+  "titre": "Cinémondes & ABAC – « Annie Ernaux, Écrire la vie »",
+  "start": "2026-09-23",
+  "date_label": "Le 23/09/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130677",
+  "source": "Office de Tourisme"
+ },
+ {
   "titre": "Ciné Spectacle \"Artus Le Show XXL\" - CInos",
   "start": "2026-09-24",
   "date_label": "Le 24/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=129971",
   "source": "Office de Tourisme"
- },
- {
-  "titre": "LE GRAND DÉMONTAGE",
-  "start": "2026-09-25",
-  "date_label": "25 septembre",
-  "categories": [
-   "Spectacles"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=165723",
-  "source": "oukankoi.fr"
  },
  {
   "titre": "T'In Souvyin Tu ?  - \"ya qu'à Berck qu'on voé cho\"",
@@ -106,6 +80,17 @@
   "source": "Office de Tourisme"
  },
  {
+  "titre": "SORTIE CALÈCHE",
+  "start": "2026-09-26",
+  "date_label": "26 septembre",
+  "categories": [
+   "Balades",
+   "Découverte"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=166152",
+  "source": "oukankoi.fr"
+ },
+ {
   "titre": "À LA DÉCOUVERTE DES MOULES DE BOUCHOTS",
   "start": "2026-09-26",
   "date_label": "26 septembre",
@@ -114,29 +99,6 @@
    "Découverte"
   ],
   "lien": "https://www.oukankoi.fr/?p=165836",
-  "source": "oukankoi.fr"
- },
- {
-  "titre": "LA JOURNÉE DU SCRAP",
-  "start": "2026-09-26",
-  "date_label": "26 septembre",
-  "categories": [
-   "Ateliers / Stages",
-   "Loisirs"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=165993",
-  "source": "oukankoi.fr"
- },
- {
-  "titre": "RENCONTRE AVEC LES PHOQUES",
-  "start": "2026-09-26",
-  "date_label": "26 septembre",
-  "categories": [
-   "Balades",
-   "Découverte",
-   "Loisirs"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=165766",
   "source": "oukankoi.fr"
  },
  {
@@ -159,27 +121,6 @@
   "source": "oukankoi.fr"
  },
  {
-  "titre": "SPECTACLE “PARTENAIRES PARTICULIERS”",
-  "start": "2026-10-02",
-  "date_label": "2 octobre",
-  "categories": [
-   "Spectacles"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=165719",
-  "source": "oukankoi.fr"
- },
- {
-  "titre": "LES SECRETS DE LA LAISSE DE MER",
-  "start": "2026-10-02",
-  "date_label": "2 octobre",
-  "categories": [
-   "Balades",
-   "Découverte"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=165894",
-  "source": "oukankoi.fr"
- },
- {
   "titre": "Ciné Rencontre - \"Le Triangle d'Or\"",
   "start": "2026-10-02",
   "date_label": "Le 02/10/2026",
@@ -194,6 +135,18 @@
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130205",
   "source": "Office de Tourisme"
+ },
+ {
+  "titre": "RENCONTRE AVEC LES PHOQUES",
+  "start": "2026-10-04",
+  "date_label": "4 octobre",
+  "categories": [
+   "Balades",
+   "Découverte",
+   "Loisirs"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=165768",
+  "source": "oukankoi.fr"
  },
  {
   "titre": "Brocante - Festi'Berck",
@@ -217,14 +170,6 @@
   "date_label": "Du 17/10/2026 au 18/10/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=75330",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Allée des roses – Aidons les passereaux",
-  "start": "2026-10-20",
-  "date_label": "Le 20/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128529",
   "source": "Office de Tourisme"
  }
 ]
