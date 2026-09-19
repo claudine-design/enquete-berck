@@ -695,19 +695,19 @@ const data = [
   ]],
   ["s3","3. Pendant que ça agit",[
     {id:"poubelles", t:"Vider toutes les poubelles et remettre un sac propre partout."},
-    {id:"cuisine", t:"Cuisine : frigo, four, micro-ondes, plaques, cafetière, bouilloire, lave-vaisselle et TOUS les placards propres, rien d'oublié.", photos:[{id:"cuisine", label:"Cuisine, tous les placards ouverts"}]},
+    {id:"cuisine", t:"Cuisine : frigo, four, micro-ondes, plaques, cafetière, bouilloire, lave-vaisselle et TOUS les placards propres, rien d'oublié.", photos:[{id:"cuisine", label:"Placards de la cuisine ouverts"},{id:"frigo", label:"Frigo ouvert"},{id:"four", label:"Four ouvert"}]},
     {id:"evier", t:"Liquide vaisselle, éponge, dosettes lave-vaisselle, torchon, essuie-main."},
     {id:"sdb-produits", t:"Salle de bain : savon, gel douche, coton, sèche-cheveux, tapis. Papier toilette : 1 rouleau + 3/4 minimum, pliage en pointe."},
-    {id:"surfaces", t:"Surfaces : plan de travail, crédence, table, miroir, plan vasque (sans toucher aux produits qui agissent)."},
+    {id:"surfaces", t:"Surfaces : plan de travail, crédence, table, miroir, plan vasque (sans toucher aux produits qui agissent).", photos:[{id:"plan-travail", label:"Plan de travail de la cuisine"}]},
     {id:"panier", t:"Panier d'accueil + petites cartes de visite.", d:"Voir le détail du panier dans l'encadré « Consignes spécifiques » en haut de la page."},
   ]],
   ["s4","4. Retour sur les produits — dans cet ordre",[
     {id:"essuyer-javel", t:"① Javel du WC essuyée au papier toilette, jeté dans les WC. Tirer la chasse."},
-    {id:"lunette", t:"② Dessus de la lunette au produit fait maison : seul endroit (contact peau).", d:"Spray fait maison : 50 % vinaigre blanc + 25 % alcool ménager + 1 c. à café de liquide vaisselle, compléter avec de l'eau. Jamais avec la javel.", photos:[{id:"wc", label:"WC propre, lunette relevée"}]},
+    {id:"lunette", t:"② Dessus de la lunette au produit fait maison : seul endroit (contact peau).", d:"Spray fait maison : 50 % vinaigre blanc + 25 % alcool ménager + 1 c. à café de liquide vaisselle, compléter avec de l'eau. Jamais avec la javel.", photos:[{id:"wc", label:"Cuvette des toilettes ouverte, lunette relevée"}]},
     {id:"mains", t:"③ Se rincer les mains."},
-    {id:"essuyer-anticalcaire", t:"④ Anti-calcaire : on ESSUIE, on ne rince PAS (lavabo, cuisine…). On ne remouille plus.", photos:[{id:"robinet-sdb", label:"Robinets salle de bain"},{id:"robinet-cuisine", label:"Robinet cuisine"}]},
+    {id:"essuyer-anticalcaire", t:"④ Anti-calcaire : on ESSUIE, on ne rince PAS (lavabo, cuisine…). On ne remouille plus.", photos:[{id:"robinet-sdb", label:"Zoom sur la robinetterie de la salle de bain"},{id:"robinet-cuisine", label:"Robinet cuisine"}]},
     {id:"balneo", t:"Balnéo : buses une par une, purge, zéro sable.", only: s => !!(apartFeatures[s] && apartFeatures[s].balneo)},
-    {id:"plan-sdb", t:"Plan de la salle de bain propre, tapis de sol enroulé posé dessus.", photos:[{id:"plan-sdb", label:"Plan SDB + tapis enroulé"}]},
+    {id:"plan-sdb", t:"Plan de la salle de bain propre, tapis de sol enroulé posé dessus.", photos:[{id:"plan-sdb", label:"Plan de la salle de bain + tapis enroulé"}]},
   ]],
   ["s5","5. Chambre",[
     {id:"aleses", t:"Check des alèses : tache, odeur, humidité → on change.", photos:[{id:"alese", label:"Alèse, lit défait", only: s => SANS_LINGE.includes(s)}]},
@@ -715,13 +715,13 @@ const data = [
     {id:"sous-lit", t:"Sous le lit et tables de chevet : rien d'oublié."},
   ]],
   ["s6","6. Salon — extérieur — vitres",[
-    {id:"canape", t:"Ouvrir le canapé-lit : dedans et dessous, rien d'oublié. Ranger coussins, plaids, déco.", photos:[{id:"canape", label:"Canapé", nonConcerne:true}]},
+    {id:"canape", t:"Ouvrir le canapé-lit : dedans et dessous, rien d'oublié. Ranger coussins, plaids, déco.", photos:[{id:"canape", label:"Canapé OUVERT (déplié)", nonConcerne:true}]},
     {id:"exterieur", t:"Balcon / terrasse / patio : mégots, déchets, crottes de chien. Sol balayé.", only: s => !!(apartFeatures[s] && apartFeatures[s].exterieur)},
-    {id:"vitres", t:"Faire les vitres et baies vitrées.", photos:[{id:"vitres", label:"Vitres"}]},
+    {id:"vitres", t:"Faire les vitres et baies vitrées.", photos:[{id:"vitres", label:"Fenêtres"}]},
   ]],
   ["s7","7. Aspirateur puis poussière",[
     {id:"aspi", t:"Aspirer tout le logement, tous les angles : plinthes, recoins, sous le canapé."},
-    {id:"cotes-lit", t:"Insister sur les côtés du lit et dessous.", photos:[{id:"coin-lit-gauche", label:"Coin à gauche du lit (après aspirateur)"},{id:"coin-lit-droit", label:"Coin à droite du lit (après aspirateur)"}]},
+    {id:"cotes-lit", t:"Insister sur les côtés du lit et dessous.", photos:[{id:"coin-lit-gauche", label:"À côté de la tête de lit — côté gauche"},{id:"coin-lit-droit", label:"À côté de la tête de lit — côté droit"}]},
     {id:"sol", t:"Laver le sol là où il y a des traces."},
     {id:"lavette", t:"Petite lavette : dessus des plinthes, meubles, cadres, TV, étagères, déco."},
   ]],
@@ -957,7 +957,7 @@ function renderItem(it){
         list.map((ph, k) => '<figure><img src="' + ph.thumb + '" onclick="openLightbox(this.src)" alt=""><figcaption>' + hhmm(ph.heure) + '</figcaption></figure>').join('') +
       '</div>' +
       (nc ? '' : '<button type="button" class="shoot" data-slot="' + p.id + '">' + (list.length ? (p.multi ? '➕ Photo d\'un autre lit' : '🔁 Reprendre la photo') : '📷 Prendre la photo') + '</button>') +
-      (p.nonConcerne && !list.length ? '<button type="button" class="nc" data-slot="' + p.id + '">' + (nc ? 'Annuler « non concerné »' : 'Pas de canapé ici') + '</button>' : '') +
+      (p.nonConcerne && !list.length ? '<button type="button" class="nc" data-slot="' + p.id + '">' + (nc ? 'Annuler « non concerné »' : 'Pas de canapé-lit ici') + '</button>' : '') +
     '</div>';
   });
   div.innerHTML = '<input type="checkbox"' + (checked ? ' checked' : '') + '><div class="col"><div style="display:flex;align-items:flex-start"><span style="flex:1">' + it.t + '</span>' +
