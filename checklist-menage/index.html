@@ -186,7 +186,7 @@
     <option>Claire et Sébastien</option>
     <option>Stéphanie</option>
     <option>Aimance</option>
-    <option>Maïlys</option>
+    <option>Maëlys</option>
     <option>Priscilia</option>
     <option>Claudine</option>
   </select>
@@ -390,7 +390,7 @@ document.getElementById('appart').addEventListener('change', e => {
   const params = new URLSearchParams(location.search);
   const presta = (params.get('presta') || '').trim();
   if(!presta) return;
-  const map = { 'remi': 'Rémi', 'maylis': 'Maïlys', 'mailys': 'Maïlys', 'priscilia': 'Priscilia', 'christelle': 'Christelle', 'claire': 'Claire et Sébastien', 'stephanie': 'Stéphanie', 'aimance': 'Aimance' };
+  const map = { 'remi': 'Rémi', 'maylis': 'Maëlys', 'mailys': 'Maëlys', 'priscilia': 'Priscilia', 'christelle': 'Christelle', 'claire': 'Claire et Sébastien', 'stephanie': 'Stéphanie', 'aimance': 'Aimance' };
   const nice = map[presta.toLowerCase()] || (presta.charAt(0).toUpperCase() + presta.slice(1));
   const nomInput = document.getElementById('nom');
   if(nomInput && !nomInput.value) nomInput.value = nice;
