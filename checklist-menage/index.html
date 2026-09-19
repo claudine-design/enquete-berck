@@ -673,6 +673,9 @@ const CLE = (function(){
 // Appartements « lancés » (règles strictes : entretien en retard obligatoire pour terminer).
 // Claudine les ajoute un par un, après avoir formé le prestataire. Surf = premier (19/09/2026).
 const LANCES = ['surf'];
+// Logements SANS canapé-lit (liste Claudine 19/09/2026) : pas de photo « canapé ouvert ».
+// Cocon, Apolove (Suite Romantique Face Mer), Maisonnette, Grande Love Room (Romantique Face Mer), Mini Love Room (Balnéo Face Mer).
+const SANS_CANAPE = ['cocon-romantique','apolove','maisonnette','grande-love-room','mini-love-room'];
 const SANS_LINGE = ['hamac','paddle','kitesurf','surf','face-mer','grand-large','albatros','terrasse'];
 
 // Photos : {id, label, multi?:true (plusieurs lits), nonConcerne?:true}
@@ -715,7 +718,8 @@ const data = [
     {id:"sous-lit", t:"Sous le lit et tables de chevet : rien d'oublié."},
   ]],
   ["s6","6. Salon — extérieur — vitres",[
-    {id:"canape", t:"Ouvrir le canapé-lit : dedans et dessous, rien d'oublié. Ranger coussins, plaids, déco.", photos:[{id:"canape", label:"Canapé OUVERT (déplié)", nonConcerne:true}]},
+    {id:"canape", t:"Ouvrir le canapé-lit : dedans et dessous, rien d'oublié. Ranger coussins, plaids, déco.", photos:[{id:"canape", label:"Canapé OUVERT (déplié)"}], only: s => !SANS_CANAPE.includes(s)},
+    {id:"deco-salon", t:"Ranger coussins, plaids, déco.", only: s => SANS_CANAPE.includes(s)},
     {id:"exterieur", t:"Balcon / terrasse / patio : mégots, déchets, crottes de chien. Sol balayé.", only: s => !!(apartFeatures[s] && apartFeatures[s].exterieur)},
     {id:"vitres", t:"Faire les vitres et baies vitrées.", photos:[{id:"vitres", label:"Fenêtres"}]},
   ]],
