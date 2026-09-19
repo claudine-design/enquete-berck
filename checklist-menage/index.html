@@ -211,7 +211,7 @@
     🔄 Entretien périodique <span id="routines-summary-count" style="background:rgba(255,255,255,0.25);padding:2px 8px;border-radius:10px;font-size:11px;margin-left:8px"></span>
   </summary>
   <div class="guide-body">
-    <div style="font-size:13px;color:#166534;margin-bottom:12px;font-style:italic">Tâches à faire à fréquence régulière (pas à chaque ménage). 🔴 = en retard · 🟡 = bientôt due · 🟢 = à jour.</div>
+    <div style="font-size:13px;color:#166534;margin-bottom:12px;font-style:italic">Tâches à faire à fréquence régulière (pas à chaque ménage). <b>Une photo est obligatoire pour valider.</b> 🔴 = en retard · 🟡 = bientôt due · 🟢 = à jour.</div>
     <div id="routines-list"></div>
   </div>
 </details>
@@ -472,8 +472,9 @@ async function loadRoutinesForAppart(slug){
     const res = await fetch(ROUTINES_API_URL + '?action=getRoutines&appart=' + encodeURIComponent(slug) + '&t=' + Date.now());
     const json = await res.json();
     routinesData = json.data || {};
+    try { localStorage.setItem('routines-' + slug, JSON.stringify(routinesData)); } catch(e2){}
   } catch(e) {
-    routinesData = {};
+    try { routinesData = JSON.parse(localStorage.getItem('routines-' + slug) || '{}'); } catch(e3){ routinesData = {}; }
   }
   renderRoutines();
 }
@@ -495,7 +496,7 @@ function renderRoutines(){
     const doneToday = lastIso && (Math.floor((Date.now() - new Date(lastIso).getTime()) / 86400000) === 0);
     const btnHtml = doneToday
       ? `<button class="r-btn r-btn-undo" data-task="${escapeHtml(r.id)}" data-action="undo">↶ Annuler</button>`
-      : `<button class="r-btn" data-task="${escapeHtml(r.id)}" data-label="${escapeHtml(r.label)}" data-action="done">✓ Fait</button>`;
+      : `<button class="r-btn" data-task="${escapeHtml(r.id)}" data-label="${escapeHtml(r.label)}" data-action="done">📷 Fait</button>`;
     return `
       <div class="routine ${st.cls}">
         <div class="r-status">${st.icon}</div>
@@ -523,28 +524,23 @@ function renderRoutines(){
   else block.removeAttribute('open');
 }
 
+// Tâche périodique : PHOTO OBLIGATOIRE (décision Claudine 19/09/2026 — une coche ne prouve rien).
+// La photo et la validation passent par la file d'envoi → marche aussi sans réseau.
 async function markRoutineDone(taskId, label, btn){
   if(!currentRoutinesSlug) return;
-  const presta = (document.getElementById('nom').value || '').trim();
-  btn.disabled = true;
-  btn.textContent = '⏳';
-  const params = new URLSearchParams({
-    action: 'markRoutineDone',
-    appart: currentRoutinesSlug,
-    task: taskId,
-    label: label,
-    presta: presta
-  });
-  try {
-    await fetch(ROUTINES_API_URL + '?' + params.toString());
-    // Maj locale optimiste
-    routinesData[taskId] = { lastDone: new Date().toISOString(), prestataire: presta };
-    renderRoutines();
-  } catch(e) {
-    btn.disabled = false;
-    btn.textContent = '✓ Fait';
-    alert('Erreur lors de l\'enregistrement. Réessayez.');
-  }
+  if(!S){ alert('▶️ Appuyez d’abord sur « Je commence le ménage » (en haut).'); return; }
+  const f = await prendrePhoto();
+  if(!f) return;
+  const heure = new Date().toISOString();
+  let big;
+  try { big = await compress(f, 1280); } catch(e){ alert('Photo illisible, réessayez.'); return; }
+  const presta = S.presta;
+  routinesData[taskId] = { lastDone: heure, prestataire: presta };
+  try { localStorage.setItem('routines-' + currentRoutinesSlug, JSON.stringify(routinesData)); } catch(e){}
+  S.routines = S.routines || {}; S.routines[taskId] = heure; saveS();
+  renderRoutines();
+  await qAdd({action:'photo', id:S.id, appart:S.appart, presta, etape:'routine-' + taskId, libelle:'Entretien : ' + label, heure, mime:'image/jpeg', file: big.split(',')[1]});
+  await qAdd({action:'routine', appart:S.appart, task:taskId, label, presta, heure});
 }
 
 async function undoRoutineDone(taskId, btn){
@@ -673,6 +669,9 @@ const CLE = (function(){
   try { if(c) localStorage.setItem('menage-cle', c); return c || localStorage.getItem('menage-cle') || ''; } catch(e){ return c || ''; }
 })();
 // Logements sans linge prévu : photo de l'alèse (lit défait) obligatoire — liste Claudine 19/09/2026
+// Appartements « lancés » (règles strictes : entretien en retard obligatoire pour terminer).
+// Claudine les ajoute un par un, après avoir formé le prestataire. Surf = premier (19/09/2026).
+const LANCES = ['surf'];
 const SANS_LINGE = ['hamac','paddle','kitesurf','surf','face-mer','grand-large','albatros','terrasse'];
 
 // Photos : {id, label, multi?:true (plusieurs lits), nonConcerne?:true}
@@ -721,7 +720,7 @@ const data = [
   ]],
   ["s7","7. Aspirateur puis poussière",[
     {id:"aspi", t:"Aspirer tout le logement, tous les angles : plinthes, recoins, sous le canapé."},
-    {id:"cotes-lit", t:"Insister sur les côtés du lit et dessous."},
+    {id:"cotes-lit", t:"Insister sur les côtés du lit et dessous.", photos:[{id:"coin-lit-gauche", label:"Coin à gauche du lit (après aspirateur)"},{id:"coin-lit-droit", label:"Coin à droite du lit (après aspirateur)"}]},
     {id:"sol", t:"Laver le sol là où il y a des traces."},
     {id:"lavette", t:"Petite lavette : dessus des plinthes, meubles, cadres, TV, étagères, déco."},
   ]],
@@ -783,8 +782,14 @@ async function flush(){
     for(const {key, val} of items){
       let ok = false;
       try {
-        const r = await fetch(SUIVI_API, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(val)});
-        const j = await r.json();
+        let j;
+        if(val.action === 'routine'){
+          const r = await fetch(ROUTINES_API_URL + '?' + new URLSearchParams({action:'markRoutineDone', appart:val.appart, task:val.task, label:val.label, presta:val.presta}).toString());
+          j = await r.json(); j.ok = !!j.success;
+        } else {
+          const r = await fetch(SUIVI_API, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(val)});
+          j = await r.json();
+        }
         ok = !!j.ok || j.error === 'cle';
         if(ok && val.action === 'modele' && j.fileId && slug() === val.appart){ modeles[val.etape] = j.fileId; saveModeles(val.appart); render(); }
       } catch(e){ ok = false; }
@@ -984,6 +989,10 @@ async function send(){
   const items = itemsFor(s).flatMap(x => x[2]);
   const missing = items.flatMap(it => it.photos).filter(p => !slotDone(p)).map(p => '📷 ' + p.label);
   if(missing.length){ alert('⛔ Il manque des photos :\n\n' + missing.join('\n') + '\n\nPrenez-les pour pouvoir terminer.'); return; }
+  if(LANCES.includes(s)){
+    const retard = ROUTINES.filter(r => computeStatus(r.intervalDays, (routinesData[r.id] || {}).lastDone).cls === 'due-overdue');
+    if(retard.length){ alert('⛔ Entretien en retard à faire AVANT de terminer (avec photo) :' + String.fromCharCode(10,10) + retard.map(r => '🔴 ' + r.label).join(String.fromCharCode(10)) + String.fromCharCode(10,10) + 'Voir l’encadré vert « Entretien périodique ».'); document.getElementById('routines-block').setAttribute('open',''); document.getElementById('routines-block').scrollIntoView({behavior:'smooth'}); return; }
+  }
   if(!S.checked['video']){ alert('⛔ Envoyez d\'abord la vidéo sur WhatsApp, puis cochez « Vidéo continue… » (étape 8).'); return; }
   const done = items.filter(it => S.checked[it.id]).length;
   let remarque = '';
