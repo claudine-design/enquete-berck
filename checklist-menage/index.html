@@ -533,7 +533,8 @@ async function markRoutineDone(taskId, label, btn){
   if(!f) return;
   const heure = new Date().toISOString();
   let big;
-  try { big = await compress(f, 1280); } catch(e){ alert('Photo illisible, réessayez.'); return; }
+  if(!(await photoFraiche(f))) return;
+  try { big = await compress(f, 1280, tampon(label)); } catch(e){ alert('Photo illisible, réessayez.'); return; }
   const presta = S.presta;
   routinesData[taskId] = { lastDone: heure, prestataire: presta };
   try { localStorage.setItem('routines-' + currentRoutinesSlug, JSON.stringify(routinesData)); } catch(e){}
@@ -810,20 +811,74 @@ window.addEventListener('online', () => flush());
 document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') flush(); });
 
 // ---------- photos : compression avant envoi ----------
-function compress(file, max){
+// stamp (optionnel) : texte incrusté en bas de la photo (date/heure, appart, prénom) — preuve visible.
+function compress(file, max, stamp){
   return new Promise((res, rej) => {
     const img = new Image();
     img.onload = () => {
       const k = Math.min(1, max / Math.max(img.width, img.height));
       const c = document.createElement('canvas');
       c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
-      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      const g = c.getContext('2d');
+      g.drawImage(img, 0, 0, c.width, c.height);
+      if(stamp){
+        const fs = Math.max(16, Math.round(c.width / 32));
+        g.font = 'bold ' + fs + 'px sans-serif';
+        const h = Math.round(fs * 1.7);
+        g.fillStyle = 'rgba(0,0,0,.6)'; g.fillRect(0, c.height - h, c.width, h);
+        g.fillStyle = '#fff'; g.textBaseline = 'middle';
+        g.fillText(stamp, Math.round(fs * 0.6), c.height - h / 2);
+      }
       URL.revokeObjectURL(img.src);
       res(c.toDataURL('image/jpeg', 0.72));
     };
     img.onerror = rej;
     img.src = URL.createObjectURL(file);
   });
+}
+// Date de prise de vue d'une photo : EXIF DateTimeOriginal si présent, sinon date du fichier.
+async function datePrise(file){
+  try {
+    const buf = new DataView(await file.slice(0, 131072).arrayBuffer());
+    if(buf.getUint16(0) === 0xFFD8){
+      let o = 2;
+      while(o < buf.byteLength - 4){
+        const mk = buf.getUint16(o), len = buf.getUint16(o + 2);
+        if(mk === 0xFFE1 && buf.getUint32(o + 4) === 0x45786966){
+          const t = o + 10, le = buf.getUint16(t) === 0x4949;
+          const u16 = x => buf.getUint16(x, le), u32 = x => buf.getUint32(x, le);
+          const lire = (ifd, tag) => { const n = u16(ifd); for(let i = 0; i < n; i++){ const e = ifd + 2 + i * 12; if(u16(e) === tag) return e; } return 0; };
+          const ex = lire(t + u32(t + 4), 0x8769);
+          if(ex){
+            const d = lire(t + u32(ex + 8), 0x9003);
+            if(d){
+              let str = ''; const off = t + u32(d + 8);
+              for(let i = 0; i < 19; i++) str += String.fromCharCode(buf.getUint8(off + i));
+              const m = str.match(/(\d{4}):(\d{2}):(\d{2}) (\d{2}):(\d{2}):(\d{2})/);
+              if(m) return new Date(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6]);
+            }
+          }
+          break;
+        }
+        o += 2 + len;
+      }
+    }
+  } catch(e){}
+  return file.lastModified ? new Date(file.lastModified) : null;
+}
+// Refuse une photo prise avant le début du ménage (ex. vieille photo choisie dans la galerie).
+async function photoFraiche(file){
+  const d = await datePrise(file);
+  if(!d || !S) return true;
+  if(d.getTime() < new Date(S.debut).getTime() - 10 * 60000){
+    alert('⛔ Cette photo a été prise le ' + d.toLocaleDateString('fr-FR') + ' à ' + d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}) + ', avant le début du ménage.' + String.fromCharCode(10,10) + 'Prenez la photo MAINTENANT avec l’appareil photo.');
+    return false;
+  }
+  return true;
+}
+function tampon(label){
+  const d = new Date();
+  return d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}) + ' · ' + appartLabel(S.appart) + ' · ' + S.presta + ' · ' + label;
 }
 function prendrePhoto(){
   return new Promise(res => {
@@ -934,7 +989,8 @@ async function shoot(slotId, label, it){
   if(!f) return;
   const heure = new Date().toISOString(); // heure de la photo, prise par le téléphone
   let big, thumb;
-  try { big = await compress(f, 1280); thumb = await compress(f, 220); }
+  if(!(await photoFraiche(f))) return;
+  try { big = await compress(f, 1280, tampon(label)); thumb = await compress(f, 220); }
   catch(e){ alert('Photo illisible, réessayez.'); return; }
   const p = findSlot(slotId);
   if(!p.multi) S.photos[slotId] = [];
