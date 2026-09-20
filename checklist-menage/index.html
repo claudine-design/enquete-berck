@@ -123,6 +123,16 @@
   .sync.ok{color:#2e5a30;background:#f0fdf4}
   .sync.wait{color:#7c4a03;background:#fff7e6;border:1px solid #f2a57a}
   .sync button{margin-left:6px;padding:4px 10px;border-radius:8px;border:1px solid #f2a57a;background:#fff;font-size:12px}
+  .fin{position:fixed;inset:0;background:rgba(90,42,51,.55);display:flex;align-items:center;justify-content:center;padding:18px;z-index:9998}
+  .fin-card{background:#fff;border-radius:18px;padding:22px;max-width:420px;width:100%;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+  .fin-t{font-size:22px;font-weight:700;color:#5A2A33}
+  .fin-s{font-size:15px;color:#7a3b46;margin-top:6px}
+  .fin-w{margin-top:16px;background:#fff7e6;border:1px solid #f2a57a;border-radius:12px;padding:12px;color:#7c4a03;font-size:13.5px}
+  .fin-ok{margin-top:16px;background:#f0fdf4;border:1px solid #16a34a;border-radius:12px;padding:14px;color:#14532d;font-size:16px;font-weight:600}
+  .fin-bar{height:8px;background:#fde;border-radius:8px;overflow:hidden;margin:8px 0}
+  .fin-bar > div{height:100%;background:linear-gradient(90deg,#86C28A,#7FB3DC);transition:width .3s}
+  .fin-card button{margin-top:16px;width:100%;padding:14px;border:none;border-radius:12px;background:#E89BA3;color:#fff;font-size:16px;font-weight:700}
+  .small-note{font-size:11.5px;color:#999;margin-top:6px}
   .hint{text-align:center;color:#888;font-size:14px;padding:20px;background:#fff;border-radius:14px}
   .modele-banner{margin:12px 0;padding:12px;border-radius:14px;background:#fde2e6;border:2px solid #c0606c;color:#5A2A33;font-size:13.5px}
   select:disabled{opacity:.75}
@@ -753,7 +763,7 @@ const data = [
   ["s8","8. Regard final — vidéo — départ",[
     {id:"regard", t:"Regarder l'appart comme le voyageur qui entre. Casse → photo + signalement."},
     {id:"rincer-receveur", t:"Rincer le receveur (javel)."},
-    {id:"video", t:"Vidéo continue de toutes les pièces → envoyée sur WhatsApp tout de suite.", d:"Filmer sans couper : entrée, cuisine, salon, chambre(s), salle de bain. Puis l'envoyer à Claudine sur WhatsApp."},
+    {id:"video", t:"Vidéo continue de toutes les pièces (45 secondes maximum).", d:"Filmer sans couper : entrée, cuisine, salon, chambre(s), salle de bain. La vidéo part directement chez Claudine depuis l'appli.", video:true},
     {id:"linge", t:"Sortir le linge de la machine et l'étendre. Hublot entrouvert."},
     {id:"reassort", t:"Noter le réassort dans l'appli.", d:"Appli réassort : https://claudine-design.github.io/enquete-berck/reassort/"},
     {id:"fermeture", t:"Fenêtres fermées, lumières éteintes, robinets vérifiés, clés en place, code brouillé."},
@@ -971,6 +981,13 @@ function renderItem(it){
   const checked = !!(S && S.checked[it.id]);
   div.className = 'item' + (checked ? ' done' : '');
   let photosHtml = '';
+  if(it.video){
+    const v = S && S.video;
+    photosHtml += '<div class="slot' + (v ? ' ok' : '') + '">' +
+      '<div class="slot-title">🎥 Vidéo de fin' + (v ? ' ✓ ' + hhmm(v.heure) : '') + '</div>' +
+      '<button type="button" class="shoot" data-video="1">' + (v ? '🔁 Refaire la vidéo' : '🎥 Filmer maintenant') + '</button>' +
+      '<div class="small-note">Toutes les pièces, sans couper. 45 secondes maximum, sinon la vidéo est trop lourde pour partir.</div></div>';
+  }
   it.photos.forEach(p => {
     const list = (S && S.photos[p.id]) || [];
     const nc = S && S.nc[p.id];
@@ -991,6 +1008,9 @@ function renderItem(it){
   const cb = div.querySelector('input');
   cb.onclick = e => {
     if(!S){ e.preventDefault(); alert('▶️ Appuyez d\'abord sur « Je commence le ménage » (en haut).'); return; }
+    if(cb.checked && it.video && !(S && S.video)){
+      e.preventDefault(); filmer(it); return;
+    }
     if(cb.checked && !itemReady(it)){
       e.preventDefault();
       const missing = it.photos.find(p => !slotDone(p));
@@ -1002,10 +1022,37 @@ function renderItem(it){
   const info = div.querySelector('.info-btn');
   if(info) info.onclick = e => { e.preventDefault(); e.stopPropagation(); div.classList.toggle('show-detail'); };
   div.querySelectorAll('.shoot').forEach(b => b.onclick = e => { e.preventDefault(); e.stopPropagation();
+    if(b.dataset.video){ filmer(it); return; }
     const p = it.photos.find(x => x.id === b.dataset.slot); shoot(p.id, p.label, it); });
   div.querySelectorAll('.nc').forEach(b => b.onclick = e => { e.preventDefault(); e.stopPropagation();
     S.nc[b.dataset.slot] = !S.nc[b.dataset.slot]; if(itemReady(it) && S.nc[b.dataset.slot]) S.checked[it.id] = true; saveS(); render(); });
   return div;
+}
+
+function prendreVideo(){
+  return new Promise(res => {
+    const fi = document.createElement('input');
+    fi.type = 'file'; fi.accept = 'video/*'; fi.capture = 'environment';
+    fi.onchange = () => res(fi.files[0] || null);
+    fi.click();
+  });
+}
+const VIDEO_MAX_MO = 22;
+async function filmer(it){
+  if(!S){ alert('Appuyez d’abord sur « Je commence le ménage » (en haut).'); return; }
+  const f = await prendreVideo();
+  if(!f) return;
+  const mo = f.size / 1048576;
+  if(mo > VIDEO_MAX_MO){
+    alert('⛔ Vidéo trop longue (' + Math.round(mo) + ' Mo).' + String.fromCharCode(10,10) + 'Refaites-en une plus courte : 45 secondes maximum, en marchant sans vous arrêter.');
+    return;
+  }
+  const heure = new Date().toISOString();
+  const b64 = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result.split(',')[1]); r.onerror = rej; r.readAsDataURL(f); });
+  S.video = { heure, mo: Math.round(mo) };
+  if(it) S.checked[it.id] = true;
+  saveS(); render();
+  await qAdd({action:'photo', id:S.id, appart:S.appart, presta:S.presta, etape:'video', libelle:'Vidéo de fin de ménage', heure, mime:f.type || 'video/mp4', file:b64});
 }
 
 async function shoot(slotId, label, it){
@@ -1084,12 +1131,46 @@ async function send(){
   const fin = new Date().toISOString();
   const minutes = Math.round((new Date(fin) - new Date(S.debut)) / 60000);
   await qAdd({action:'fin', id:S.id, appart:S.appart, presta:S.presta, heure:fin, taches:done, total:items.length, remarque});
-  const nom = S.presta;
+  const nom = S.presta, appart = appartLabel(S.appart), nbPhotos = Object.values(S.photos).reduce((a, l) => a + l.length, 0) + (S.video ? 1 : 0);
   S = null; saveS(); render();
-  const n = (await qAll()).length;
-  alert('Merci ' + nom + ' ! ♥\n\nMénage terminé en ' + Math.floor(minutes/60) + 'h' + String(minutes%60).padStart(2,'0') + '.\n' +
-    (n ? '📡 ' + n + ' envoi(s) encore dans le téléphone : ils partiront dès qu\'il y aura du réseau. Rouvrez l\'appli une fois dehors si le compteur ne descend pas.' : '✅ Tout est envoyé.'));
+  ecranFin(nom, appart, minutes, nbPhotos);
 }
+
+// Écran de fin : reste affiché et suit l'envoi en direct jusqu'à « tout est arrivé ».
+function ecranFin(nom, appart, minutes, nbPhotos){
+  const box = document.createElement('div');
+  box.className = 'fin';
+  document.body.appendChild(box);
+  const dessine = (restant, total) => {
+    box.innerHTML = '<div class="fin-card">' +
+      '<div class="fin-t">Merci ' + nom + ' ♥</div>' +
+      '<div class="fin-s">' + appart + '<br>' + nbPhotos + ' photos et vidéo envoyées</div>' +
+      (restant
+        ? '<div class="fin-w">📡 Envoi en cours… ' + (total - restant) + ' / ' + total + '<div class="fin-bar"><div style="width:' + Math.round((total - restant) / total * 100) + '%"></div></div>' +
+          'Ne fermez pas l’appli tant que ce n’est pas fini. Sans réseau, rouvrez-la une fois dehors : tout partira tout seul.</div>'
+        : '<div class="fin-ok">✅ Tout est arrivé chez Claudine.' +
+          '<div style="font-weight:400;font-size:13.5px;margin-top:8px;text-align:left">' +
+          '• Vos photos et votre vidéo sont enregistrées.<br>' +
+          '• Votre ménage est <b>validé</b> : il est coché sur le calendrier de Claudine.<br>' +
+          '• Claudine a été prévenue de la fin du ménage.<br>' +
+          '• Temps passé sur place : <b>' + Math.floor(minutes/60) + ' h ' + String(minutes%60).padStart(2,'0') + '</b>.' +
+          '</div></div>') +
+      '<button type="button" onclick="this.parentNode.parentNode.remove()">Fermer</button></div>';
+  };
+  (async () => {
+    let total = Math.max(1, (await qAll()).length);
+    dessine(total, total);
+    for(let i = 0; i < 900; i++){
+      const n = (await qAll()).length;
+      if(n > total) total = n;
+      dessine(n, total);
+      if(!n) break;
+      await new Promise(r => setTimeout(r, 1500));
+      flush();
+    }
+  })();
+}
+
 function reset(){
   if(!S) return;
   if(!confirm('Annuler ce ménage ? Les coches et les photos du téléphone seront effacées (les photos déjà envoyées restent chez Claudine).')) return;
