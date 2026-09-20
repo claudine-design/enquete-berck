@@ -80,6 +80,7 @@
   .routine .r-btn{flex-shrink:0;background:#16a34a;color:#fff;border:none;padding:7px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;min-width:80px}
   .routine .r-btn:active{transform:scale(.95)}
   .routine .r-btn.r-btn-undo{background:#94a3b8}
+  .routine .r-btn-absent{display:block;margin-top:6px;background:#f3f4f6;color:#555;border:1px solid #e5e7eb;font-weight:500;font-size:11.5px;padding:5px 8px;min-width:0}
   .routine .r-btn.r-btn-undo:hover{background:#64748b}
   .routine .r-btn:disabled{opacity:0.5;cursor:default}
   #routines-summary-count.due{background:rgba(255,255,255,0.4) !important;font-weight:700}
@@ -416,20 +417,22 @@ document.getElementById('appart').addEventListener('change', e => {
 const ROUTINES_API_URL = 'https://script.google.com/macros/s/AKfycbyZ50d01GyAOXi4LKQteCrGKkEcq4eKzLBMh3_G9hM4TI-5IAfjhrnxDZyKZO3-0IolBA/exec';
 
 const ROUTINES = [
+  { id:'reassort',        label:'Vérifier et remplir le réassort si besoin', intervalDays:7   },
   { id:'radiateurs',      label:'Nettoyer les radiateurs',                   intervalDays:15  },
-  { id:'interrupteurs',   label:'Nettoyer les interrupteurs',                intervalDays:21  },
-  { id:'dessus-meubles-cuisine', label:'Nettoyer au-dessus des meubles de cuisine', intervalDays:15  },
   { id:'portes',          label:'Nettoyer portes et poignées',               intervalDays:15  },
-  { id:'luminaires',      label:'Enlever poussière des luminaires',          intervalDays:15  },
-  { id:'tete-lit',        label:'Aspirer la tête de lit',                    intervalDays:30  },
-  { id:'plantes',         label:'Nettoyer les plantes (essuyer feuilles)',   intervalDays:30  },
+  { id:'luminaires',      label:'Enlever poussière des luminaires',          intervalDays:17  },
+  { id:'dessus-meubles-cuisine', label:'Nettoyer au-dessus des meubles de cuisine', intervalDays:20, absent:'Il n’y a pas de meuble en hauteur' },
+  { id:'interrupteurs',   label:'Nettoyer les interrupteurs',                intervalDays:21  },
+  { id:'tete-lit',        label:'Aspirer la tête de lit',                    intervalDays:26  },
+  { id:'cafetiere',       label:'Détartrer cafetière + bouilloire',          intervalDays:28  },
   { id:'derriere-canape', label:'Aspirer derrière le canapé',                intervalDays:30  },
-  { id:'cafetiere',       label:'Détartrer cafetière + bouilloire',          intervalDays:30  },
-  { id:'plaids',          label:'Laver les plaids',                          intervalDays:30  },
+  { id:'plaids',          label:'Laver les plaids',                          intervalDays:32  },
+  { id:'rails-fenetres',  label:'Nettoyer les rails de fenêtres et baies vitrées', intervalDays:35 },
+  { id:'plantes',         label:'Nettoyer les plantes (essuyer feuilles)',   intervalDays:38, absent:'Il n’y a pas de plantes' },
+  { id:'joints-porte',    label:'Nettoyer l’embrasure et les joints de la porte d’entrée', intervalDays:45 },
   { id:'coussins',        label:'Laver les coussins',                        intervalDays:90  },
   { id:'couettes',        label:'Laver les couettes',                        intervalDays:180 },
-  { id:'rideaux',         label:'Laver les rideaux',                         intervalDays:180 },
-  { id:'reassort',        label:'Vérifier et remplir le réassort si besoin', intervalDays:7   }
+  { id:'rideaux',         label:'Laver les rideaux',                         intervalDays:180, absent:'Il n’y a pas de rideaux' }
 ];
 
 let routinesData = {}; // { task_id: { lastDone: ISO } }
@@ -485,7 +488,7 @@ function escapeHtml(s){
 
 function renderRoutines(){
   let dueCount = 0;
-  const html = ROUTINES.map(r => {
+  const html = ROUTINES.filter(r => !routinesData['sans-' + r.id]).map(r => {
     const last = routinesData[r.id];
     const lastIso = last ? last.lastDone : null;
     const st = computeStatus(r.intervalDays, lastIso);
@@ -497,12 +500,16 @@ function renderRoutines(){
     const btnHtml = doneToday
       ? `<button class="r-btn r-btn-undo" data-task="${escapeHtml(r.id)}" data-action="undo">↶ Annuler</button>`
       : `<button class="r-btn" data-task="${escapeHtml(r.id)}" data-label="${escapeHtml(r.label)}" data-action="done">📷 Fait</button>`;
+    const absentHtml = r.absent && !doneToday
+      ? `<button class="r-btn r-btn-absent" data-task="${escapeHtml(r.id)}" data-label="${escapeHtml(r.absent)}" data-action="absent">${escapeHtml(r.absent)}</button>`
+      : '';
     return `
       <div class="routine ${st.cls}">
         <div class="r-status">${st.icon}</div>
         <div class="r-info">
           <div class="r-label">${escapeHtml(r.label)}</div>
           <div class="r-meta">${meta}</div>
+          ${absentHtml}
         </div>
         ${btnHtml}
       </div>
@@ -544,6 +551,18 @@ async function markRoutineDone(taskId, label, btn){
   await qAdd({action:'routine', appart:S.appart, task:taskId, label, presta, heure});
 }
 
+// « Il n'y a pas de meuble en hauteur / de plantes… » : la tâche disparaît pour CE logement,
+// définitivement, et Claudine le voit dans l'historique (tâche « sans-<id> »).
+async function marquerAbsent(taskId, label, btn){
+  if(!currentRoutinesSlug) return;
+  if(!confirm(label + ' dans ce logement ?' + String.fromCharCode(10,10) + 'Cette tâche ne sera plus demandée ici.')) return;
+  btn.disabled = true; btn.textContent = '⏳';
+  routinesData['sans-' + taskId] = { lastDone: new Date().toISOString(), prestataire: (S && S.presta) || '' };
+  try { localStorage.setItem('routines-' + currentRoutinesSlug, JSON.stringify(routinesData)); } catch(e){}
+  renderRoutines();
+  await qAdd({action:'routine', appart:currentRoutinesSlug, task:'sans-' + taskId, label:'SANS OBJET — ' + label, presta:(S && S.presta) || '', heure:new Date().toISOString()});
+}
+
 async function undoRoutineDone(taskId, btn){
   if(!currentRoutinesSlug) return;
   btn.disabled = true;
@@ -578,7 +597,9 @@ document.getElementById('routines-list').addEventListener('click', function(e){
   const taskId = btn.getAttribute('data-task');
   const action = btn.getAttribute('data-action');
   if(!taskId) return;
-  if(action === 'undo'){
+  if(action === 'absent'){
+    marquerAbsent(taskId, btn.getAttribute('data-label'), btn);
+  } else if(action === 'undo'){
     undoRoutineDone(taskId, btn);
   } else {
     const label = btn.getAttribute('data-label');
