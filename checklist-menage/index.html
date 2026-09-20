@@ -307,7 +307,8 @@ const apartFeatures = {
   'reserve':          { panier:'classique', capacite:4 }, // capacité à confirmer
   'albatros':         { panier:'classique', capacite:4 },
   'jeanne':           { panier:'classique', capacite:4 },
-  'grande-roue':      { panier:'classique', capacite:5, balneo:true }, // 17 rue Maréchal Juin, baignoire balnéo double — ajouté 20/09/2026
+  'grande-roue':      { panier:'classique', capacite:5, balneo:true, exterieur:true, litConditional:true,
+                        note:'🛏️ <b>Lit double (chambre 1) fait</b> avec le linge fourni. <b>2 parures de lit simple déposées sur les étagères de la chambre 2</b> (2 lits 80×190) : les voyageurs à 3 ou 4 font ces lits eux-mêmes, c’est dans le contrat. 🛋️ Canapé convertible : linge déposé, pas installé.' }, // 17 rue Maréchal Juin, 5 pers, balnéo double, mini balcon — 20/09/2026
   // ───── LOVE ROOMS (8) — 2 paniers : gourmand + petit utilitaire ─────
   'balneo':           { panier:'loveroom',  capacite:6, balneo:true, peignoirs:2, litConditional:true, exterieur:true }, // jardin + brasero
   'cocon-romantique': { panier:'loveroom',  capacite:2, balneo:true, peignoirs:2, sauna:true, tapisExtra:true, litConditional:true, exterieur:true }, // brasero
@@ -371,7 +372,9 @@ function renderApartWarning(slug){
   if(f.tapisExtra){
     bullets.push('🚿 La balnéo est loin de la douche → mettre un <b>tapis de douche supplémentaire à côté de la balnéo</b>.');
   }
-  if(f.litConditional){
+  if(f.note){
+    bullets.push(f.note);
+  } else if(f.litConditional){
     bullets.push('🛏️ <b>Lit de la 1ère chambre uniquement installé</b>. Les autres linges de lit sont <b>juste déposés</b> sauf <b>si signalé sur le calendrier</b> — dans ce cas faire les autres lits.');
   }
   if(f.exterieur){
