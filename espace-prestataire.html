@@ -155,6 +155,7 @@ var URLS = {
   proprete:    'https://claudine-design.github.io/enquete-berck/proprete.html?presta=', // + presta key
   calendrier:  'https://claudine-design.github.io/apart-hotel-berck/prestataires.html?presta=', // + presta key (nouvelle URL avril 2026)
   reassort:    'https://claudine-design.github.io/enquete-berck/reassort/',  // GitHub Pages (avril 2026, remplace Netlify)
+  missions:    'https://claudine-design.github.io/enquete-berck/missions.html',   // propositions + planning (20/09/2026)
   checklist:   'https://claudine-design.github.io/enquete-berck/checklist-menage/'
 };
 
@@ -194,6 +195,7 @@ if (!presta) {
 
   var tiles =
     '<div class="btn-grid">' +
+      tile('✅', 'Mes missions', 'Propositions à accepter et ménages confirmés', URLS.missions, false) +
       (presta.sansPlanning ? '' : tile('\uD83D\uDCC5', 'Mon planning', 'Calendrier des m\u00e9nages \u00e0 venir', URLS.calendrier + prestaKey)) +
       tile('\u2728', 'Propret\u00e9', 'Avis voyageurs &mdash; 30 derniers jours', URLS.proprete + prestaKey) +
       tile('\uD83D\uDED2', 'R\u00e9assort', 'Articles manquants par logement', URLS.reassort, false) +
