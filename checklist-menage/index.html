@@ -156,6 +156,9 @@
       <option value="surf">Surf</option>
       <option value="famille">Famille</option>
     </optgroup>
+    <optgroup label="17 rue Maréchal Juin">
+      <option value="grande-roue">Grande Roue</option>
+    </optgroup>
     <optgroup label="Le 25 rue Maréchal Juin (Clara)">
       <option value="balneo">Balnéo</option>
       <option value="cocon-romantique">Cocon Romantique</option>
@@ -251,7 +254,7 @@ const apartPhotos = {
   'cocon-romantique': 16, 'evasion': 18, 'face-mer': 7, 'famille': 60,
   'grand-large': 1, 'grande-love-room': 14, 'hamac': 1,
   'helene': 21, 'jeanne': 16, 'kingston': 2, 'kitesurf': 41,
-  'maisonnette': 13, 'mini-love-room': 9, 'paddle': 5,
+  'maisonnette': 13, 'mini-love-room': 9, 'paddle': 5, 'grande-roue': 0,
   'patio': 11, 'reserve': 16, 'rotonde': 0, 'surf': 20, 'terrasse': 1
 };
 
@@ -304,6 +307,7 @@ const apartFeatures = {
   'reserve':          { panier:'classique', capacite:4 }, // capacité à confirmer
   'albatros':         { panier:'classique', capacite:4 },
   'jeanne':           { panier:'classique', capacite:4 },
+  'grande-roue':      { panier:'classique', capacite:5, balneo:true }, // 17 rue Maréchal Juin, baignoire balnéo double — ajouté 20/09/2026
   // ───── LOVE ROOMS (8) — 2 paniers : gourmand + petit utilitaire ─────
   'balneo':           { panier:'loveroom',  capacite:6, balneo:true, peignoirs:2, litConditional:true, exterieur:true }, // jardin + brasero
   'cocon-romantique': { panier:'loveroom',  capacite:2, balneo:true, peignoirs:2, sauna:true, tapisExtra:true, litConditional:true, exterieur:true }, // brasero

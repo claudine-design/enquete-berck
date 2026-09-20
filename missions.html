@@ -52,7 +52,7 @@ try {
   else { K = localStorage.getItem('missions-k') || ''; PRESTA = localStorage.getItem('missions-presta') || ''; }
 } catch(e){}
 
-const NOMS = {'Kitesurf':'Kitesurf','Hamac':'Hamac','Paddle':'Paddle','Surf':'Surf','Famille':'Famille','Balneo Garden':'Balnéo Garden','Cocon Romantique':'Cocon Romantique','Terrasse':'Terrasse','Coeur':'Maisonnette / Cœur','Face Mer':'Face Mer','Apollo':'Apollo','Apolove':'Apolove','Kingston':'Kingston','Albatros':'Albatros','Mini Love Room':'Mini Love Room','Grande Love Room':'Grande Love Room','Jeanne':'Jeanne','Evasion':'Évasion','Rotonde':'Rotonde','Patio':'Patio','Grand Large':'Grand Large','Studio Helene':'Studio Hélène'};
+const NOMS = {'Kitesurf':'Kitesurf','Hamac':'Hamac','Paddle':'Paddle','Surf':'Surf','Famille':'Famille','Balneo Garden':'Balnéo Garden','Cocon Romantique':'Cocon Romantique','Terrasse':'Terrasse','Coeur':'Maisonnette / Cœur','Face Mer':'Face Mer','Apollo':'Apollo','Apolove':'Apolove','Kingston':'Kingston','Albatros':'Albatros','Mini Love Room':'Mini Love Room','Grande Love Room':'Grande Love Room','Jeanne':'Jeanne','Evasion':'Évasion','Rotonde':'Rotonde','Patio':'Patio','Grand Large':'Grand Large','Studio Helene':'Studio Hélène','Grande Roue':'Grande Roue'};
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const jour = d => new Date(d + 'T12:00:00').toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long'});
 
