@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Mes missions — Appart-Hôtel Berck</title>
+<style>
+  :root{--rose:#E89BA3;--vert:#16a34a;--txt:#3B3B3B}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#FFF7F8;color:var(--txt);padding:16px;max-width:560px;margin:0 auto}
+  header{background:linear-gradient(135deg,#F6C6CE,#FBD9CF);border-radius:18px;padding:18px;text-align:center;box-shadow:0 4px 14px rgba(232,155,163,.25)}
+  header h1{margin:0;font-size:21px;color:#5A2A33}
+  header p{margin:4px 0 0;font-size:13px;color:#7a3b46}
+  h2{font-size:15px;color:#5A2A33;margin:22px 0 8px}
+  .card{background:#fff;border-radius:14px;padding:14px;margin:10px 0;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+  .card.prop{border:2px solid #f2a57a;background:#fffaf5}
+  .card.urgent{border:2px solid #dc2626;background:#fff5f5}
+  .when{font-size:13px;color:#888;text-transform:capitalize}
+  .what{font-size:18px;font-weight:700;margin:2px 0 6px;color:#3B3B3B}
+  .infos{font-size:13.5px;color:#7a3b46;background:#fff3e8;border-radius:8px;padding:8px 10px;margin:8px 0}
+  .badge{display:inline-block;font-size:11px;font-weight:700;border-radius:8px;padding:2px 8px;margin-left:6px;vertical-align:2px}
+  .badge.u{background:#dc2626;color:#fff}
+  .badge.ok{background:#dcfce7;color:#166534}
+  .row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  button,a.btn{flex:1;min-width:120px;text-align:center;text-decoration:none;padding:13px;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
+  .take{background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff}
+  .no{background:#fff;color:#888;border:1px solid #eed !important;font-weight:500}
+  .tuto{background:linear-gradient(135deg,#E89BA3,#F2A57A);color:#fff}
+  .small{font-size:12.5px;color:#999;margin-top:8px}
+  .empty{text-align:center;color:#999;font-size:14px;padding:24px;background:#fff;border-radius:14px}
+  footer{text-align:center;color:#b88;font-size:12px;padding:18px 0 30px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Mes missions</h1>
+  <p id="hello">Chargement…</p>
+</header>
+
+<div id="out"><div class="empty">Chargement…</div></div>
+
+<footer>Merci infiniment ♥ — Claudine</footer>
+
+<script>
+const API = 'https://script.google.com/macros/s/AKfycbwPL10RDx-RkqkBxWOqEGIFgZS55-zDjV5F6ZIzDCpKd6IVZvtFjvwL3HfFWCvc5D6I/exec';
+const TUTO = 'https://claudine-design.github.io/enquete-berck/checklist-menage/';
+const P = new URLSearchParams(location.search);
+let K = P.get('k') || '', PRESTA = P.get('presta') || '';
+try {
+  if(K){ localStorage.setItem('missions-k', K); localStorage.setItem('missions-presta', PRESTA); }
+  else { K = localStorage.getItem('missions-k') || ''; PRESTA = localStorage.getItem('missions-presta') || ''; }
+} catch(e){}
+
+const NOMS = {'Kitesurf':'Kitesurf','Hamac':'Hamac','Paddle':'Paddle','Surf':'Surf','Famille':'Famille','Balneo Garden':'Balnéo Garden','Cocon Romantique':'Cocon Romantique','Terrasse':'Terrasse','Coeur':'Maisonnette / Cœur','Face Mer':'Face Mer','Apollo':'Apollo','Apolove':'Apolove','Kingston':'Kingston','Albatros':'Albatros','Mini Love Room':'Mini Love Room','Grande Love Room':'Grande Love Room','Jeanne':'Jeanne','Evasion':'Évasion','Rotonde':'Rotonde','Patio':'Patio','Grand Large':'Grand Large','Studio Helene':'Studio Hélène'};
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const jour = d => new Date(d + 'T12:00:00').toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long'});
+
+let DATA = null;
+
+async function charger(){
+  const out = document.getElementById('out');
+  if(!K){ out.innerHTML = '<div class="empty">Ouvrez cette page depuis le lien personnel que Claudine vous a envoyé par mail.</div>'; return; }
+  try {
+    const r = await fetch(API + '?action=missions&k=' + encodeURIComponent(K) + '&t=' + Date.now());
+    DATA = await r.json();
+  } catch(e){ out.innerHTML = '<div class="empty">Pas de réseau. Réessayez quand vous aurez du réseau.</div>'; return; }
+  if(!DATA.ok){ out.innerHTML = '<div class="empty">Lien incomplet ou expiré. Demandez un nouveau lien à Claudine.</div>'; return; }
+  document.getElementById('hello').textContent = 'Bonjour ' + DATA.presta;
+  rendre();
+}
+
+function rendre(){
+  const props = DATA.missions.filter(m => m.statut === 'PROPOSEE');
+  const prises = DATA.missions.filter(m => m.statut === 'PRISE');
+  let html = '';
+
+  html += '<h2>À accepter</h2>';
+  html += props.length ? props.map(carteProposition).join('') : '<div class="empty">Aucune proposition en attente.</div>';
+
+  html += '<h2>Mes ménages confirmés</h2>';
+  html += prises.length ? prises.map(carteConfirmee).join('') : '<div class="empty">Aucun ménage confirmé pour le moment.</div>';
+
+  document.getElementById('out').innerHTML = html;
+  document.querySelectorAll('[data-act]').forEach(b => b.onclick = () => agir(b));
+}
+
+function infosHtml(m){
+  return m.infos && m.infos.length
+    ? '<div class="infos">📋 ' + m.infos.map(esc).join('<br>📋 ') + '</div>'
+    : '';
+}
+
+function carteProposition(m, i){
+  return '<div class="card prop' + (m.urgent ? ' urgent' : '') + '">' +
+    '<div class="when">' + jour(m.date) + (m.urgent ? '<span class="badge u">URGENT — répondre avant 17h</span>' : '') + '</div>' +
+    '<div class="what">' + esc(NOMS[m.appart] || m.appart) + '</div>' +
+    infosHtml(m) +
+    '<div class="row">' +
+      '<button class="take" data-act="prendre" data-id="' + esc(m.id) + '" data-cal="' + esc(m.cal) + '">✅ Je prends</button>' +
+      '<button class="no" data-act="refuser" data-id="' + esc(m.id) + '" data-cal="' + esc(m.cal) + '">Je ne peux pas</button>' +
+    '</div>' +
+    '<div class="small">Réponse attendue sous 24 h. Passé ce délai, le ménage est proposé à quelqu\'un d\'autre.</div>' +
+  '</div>';
+}
+
+function carteConfirmee(m){
+  const lien = TUTO + '?appart=' + encodeURIComponent(m.slug) + '&presta=' + encodeURIComponent(DATA.cle);
+  return '<div class="card">' +
+    '<div class="when">' + jour(m.date) + '<span class="badge ok">à vous</span></div>' +
+    '<div class="what">' + esc(NOMS[m.appart] || m.appart) + '</div>' +
+    infosHtml(m) +
+    '<div class="row">' +
+      (m.slug ? '<a class="btn tuto" href="' + lien + '">📖 Ouvrir le tuto</a>' : '') +
+      (m.desistementPossible ? '<button class="no" data-act="desister" data-id="' + esc(m.id) + '" data-cal="' + esc(m.cal) + '">Je me désiste</button>' : '') +
+    '</div>' +
+    '<div class="small">' + (m.desistementPossible
+      ? 'Désistement possible jusqu\'à 3 jours avant. Après, prévenez Claudine par écrit.'
+      : 'Trop tard pour se désister : prévenez Claudine par écrit.') +
+      ' Les packs de linge et horaires peuvent changer : vérifiez votre calendrier le jour même.</div>' +
+  '</div>';
+}
+
+async function agir(btn){
+  const act = btn.dataset.act;
+  const mots = { prendre:'prendre ce ménage', refuser:'refuser ce ménage', desister:'vous désister de ce ménage' };
+  if(!confirm('Confirmer : ' + mots[act] + ' ?')) return;
+  btn.disabled = true; const avant = btn.textContent; btn.textContent = '⏳';
+  try {
+    const r = await fetch(API + '?action=' + act + '&k=' + encodeURIComponent(K) + '&id=' + encodeURIComponent(btn.dataset.id) + '&cal=' + encodeURIComponent(btn.dataset.cal));
+    const j = await r.json();
+    if(!j.ok){
+      alert(j.error === 'deja prise' ? 'Ce ménage vient d\'être pris.'
+          : j.error === 'trop tard' ? 'Trop tard pour se désister (moins de 3 jours). Prévenez Claudine par écrit.'
+          : j.error === 'plus disponible' ? 'Cette proposition n\'est plus disponible.'
+          : 'Impossible : ' + j.error);
+    } else if(act === 'prendre'){
+      alert('C\'est noté, le ménage est à vous. Il apparaît dans « Mes ménages confirmés ».');
+    }
+  } catch(e){ alert('Pas de réseau. Réessayez.'); }
+  btn.disabled = false; btn.textContent = avant;
+  charger();
+}
+
+charger();
+</script>
+</body>
+</html>
