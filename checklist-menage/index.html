@@ -551,6 +551,10 @@ async function markRoutineDone(taskId, label, btn){
   const heure = new Date().toISOString();
   let big;
   if(!(await photoFraiche(f))) return;
+  if(!(await netteteOk(f))){
+    if(!confirm('Cette photo semble floue.' + String.fromCharCode(10,10) + 'Refaites-la si possible. Valider quand même ?')) return;
+    label = label + ' (netteté à vérifier)';
+  }
   try { big = await compress(f, 1280, tampon(label)); } catch(e){ alert('Photo illisible, réessayez.'); return; }
   const presta = S.presta;
   routinesData[taskId] = { lastDone: heure, prestataire: presta };
@@ -915,6 +919,43 @@ function tampon(label){
   const d = new Date();
   return d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}) + ' · ' + appartLabel(S.appart) + ' · ' + S.presta + ' · ' + label;
 }
+// Netteté : variance du Laplacien sur une version réduite en noir et blanc.
+// En dessous du seuil, la photo est franchement floue → on la refuse.
+const NETTETE_MIN = 35;
+const essaisFlous = {};   // slot -> nombre de refus d'affilée
+async function netteteOk(file){
+  try {
+    const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(file); });
+    const L = 400, k = Math.min(1, L / Math.max(img.width, img.height));
+    const w = Math.max(80, Math.round(img.width * k)), h = Math.max(80, Math.round(img.height * k));
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const g = c.getContext('2d', {willReadFrequently:true});
+    g.drawImage(img, 0, 0, w, h);
+    URL.revokeObjectURL(img.src);
+    const d = g.getImageData(0, 0, w, h).data;
+    const gris = new Float32Array(w * h);
+    for(let i = 0, j = 0; i < d.length; i += 4, j++) gris[j] = 0.299*d[i] + 0.587*d[i+1] + 0.114*d[i+2];
+    // On mesure zone par zone et on garde la plus nette : un mur uni ne doit pas
+    // faire passer pour floue une photo dont le sujet est net.
+    const zones = [[0,0,.5,.5],[.5,0,1,.5],[0,.5,.5,1],[.5,.5,1,1],[.25,.25,.75,.75]];
+    let best = 0;
+    zones.forEach(z => {
+      const x0 = Math.max(1, Math.floor(z[0]*w)), y0 = Math.max(1, Math.floor(z[1]*h));
+      const x1 = Math.min(w-1, Math.floor(z[2]*w)), y1 = Math.min(h-1, Math.floor(z[3]*h));
+      let somme = 0, somme2 = 0, n = 0;
+      for(let y = y0; y < y1; y++){
+        for(let x = x0; x < x1; x++){
+          const i = y*w + x;
+          const lap = 4*gris[i] - gris[i-1] - gris[i+1] - gris[i-w] - gris[i+w];
+          somme += lap; somme2 += lap*lap; n++;
+        }
+      }
+      if(n){ const v = somme2/n - (somme/n)*(somme/n); if(v > best) best = v; }
+    });
+    return best >= NETTETE_MIN;
+  } catch(e){ return true; }   // dans le doute, on accepte
+}
+
 function prendrePhoto(){
   return new Promise(res => {
     const fi = document.createElement('input');
@@ -1062,6 +1103,16 @@ async function shoot(slotId, label, it){
   const heure = new Date().toISOString(); // heure de la photo, prise par le téléphone
   let big, thumb;
   if(!(await photoFraiche(f))) return;
+  if(!(await netteteOk(f))){
+    essaisFlous[slotId] = (essaisFlous[slotId] || 0) + 1;
+    if(essaisFlous[slotId] < 3){
+      alert('⛔ Photo floue (essai ' + essaisFlous[slotId] + ').' + String.fromCharCode(10,10) + 'Refaites-la : tenez le téléphone bien immobile, appuyez sur la zone à photographier pour faire la mise au point, puis déclenchez.');
+      return;
+    }
+    if(!confirm('Cette photo est encore jugée floue.' + String.fromCharCode(10,10) + 'Si elle est vraiment nette, vous pouvez l’envoyer quand même : Claudine la vérifiera.')) return;
+    label = label + ' (netteté à vérifier)';
+  }
+  essaisFlous[slotId] = 0;
   try { big = await compress(f, 1280, tampon(label)); thumb = await compress(f, 220); }
   catch(e){ alert('Photo illisible, réessayez.'); return; }
   const p = findSlot(slotId);
