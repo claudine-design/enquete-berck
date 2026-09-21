@@ -744,6 +744,40 @@ const LANCES = ['surf'];
 // Logements SANS canapé-lit (liste Claudine 19/09/2026) : pas de photo « canapé ouvert ».
 // Cocon, Apolove (Suite Romantique Face Mer), Maisonnette, Grande Love Room (Romantique Face Mer), Mini Love Room (Balnéo Face Mer).
 const SANS_CANAPE = ['cocon-romantique','apolove','maisonnette','grande-love-room','mini-love-room'];
+// Photo HEBDOMADAIRE de la cave réassort : 1 photo par adresse, au premier ménage de la semaine
+// (Claudine 21/09/2026). Elle part vers le robot qui lit les stocks et alerte pour les achats.
+const CAVES = {
+  'le-23':      { nom:'Le 23 rue Maréchal Juin', apparts:['kitesurf','hamac','paddle','surf','famille'] },
+  'le-25':      { nom:'Le 25 rue Maréchal Juin', apparts:['balneo','cocon-romantique'] },
+  'apollo':     { nom:'Apollo',                  apparts:['apollo','apolove','kingston','reserve'] },
+  'albatros':   { nom:'Albatros',                apparts:['albatros'] },
+  'face-mer':   { nom:'Face Mer',                apparts:['face-mer'] },
+  'grand-large':{ nom:'Grand Large',             apparts:['grand-large'] },
+  'esplanade':  { nom:'59 Esplanade',            apparts:['mini-love-room','grande-love-room'] },
+  'rue-jeanne': { nom:'Rue Jeanne',              apparts:['jeanne','evasion','rotonde','patio'] },
+  'terrasse':   { nom:'Terrasse / Maisonnette',  apparts:['terrasse','maisonnette'] }
+};
+function caveDe(s){ return Object.keys(CAVES).find(k => CAVES[k].apparts.includes(s)) || null; }
+const caveEtat = {};   // id de cave -> date ISO de la dernière photo
+function lundiDeLaSemaine(){ const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d; }
+function caveDue(s){
+  const c = caveDe(s);
+  if(!c || !(c in caveEtat)) return false;            // pas de cave, ou état inconnu (hors réseau) : on ne bloque pas
+  return !caveEtat[c] || new Date(caveEtat[c]) < lundiDeLaSemaine();
+}
+async function chargerCave(s){
+  const c = caveDe(s);
+  if(!c) return;
+  try { const v = localStorage.getItem('cave-' + c); if(v !== null) caveEtat[c] = v; } catch(e){}
+  try {
+    const r = await fetch(ROUTINES_API_URL + '?action=getRoutines&appart=cave-' + c + '&t=' + Date.now());
+    const j = await r.json();
+    caveEtat[c] = ((j.data || {})['photo-cave'] || {}).lastDone || '';
+    try { localStorage.setItem('cave-' + c, caveEtat[c]); } catch(e){}
+    if(slug() === s) render();
+  } catch(e){}
+}
+
 // Photo obligatoire de l'extérieur (liste Claudine 21/09/2026)
 const PHOTO_BALCON = ['hamac','paddle','kitesurf'];
 const PHOTO_JARDIN = ['balneo','cocon-romantique','famille','terrasse','maisonnette'];
@@ -758,6 +792,7 @@ const data = [
     {id:"machine", t:"Lancer la machine à laver."},
     {id:"fenetres", t:"Ouvrir les fenêtres. Vérifier le placard ménage : produits, lavettes, sacs, linge."},
     {id:"radiateurs", t:"Radiateurs : 12° l'hiver, éteints l'été."},
+    {id:"cave", t:"Photo de la cave réassort : toutes les étagères, de face, bien éclairées (une fois par semaine).", d:"Cette photo sert à prévoir les achats : produits, gâteaux, papier toilette. Reculez pour tout avoir sur la photo et allumez la lumière.", photos:[{id:"cave", label:"Étagères du réassort (cave)"}], only: s => MODE_MODELE ? !!caveDe(s) : (caveDue(s) || !!(S && S.photos && S.photos.cave))},
   ]],
   ["s2","2. Salle de bain : produits — dans cet ordre",[
     {id:"anticalcaire", t:"① Anti-calcaire sur toute la robinetterie : salle de bain, cuisine, balnéo, buses et commandes balnéo."},
@@ -869,7 +904,7 @@ async function flush(){
           j = await r.json();
         }
         ok = !!j.ok || j.error === 'cle';
-        if(ok && val.action === 'modele' && j.fileId && slug() === val.appart){ modeles[val.etape] = j.fileId; saveModeles(val.appart); render(); }
+        if(ok && val.action === 'modele' && j.fileId && (slug() === val.appart || val.appart === 'cave-' + caveDe(slug()))){ modeles[val.etape] = j.fileId; saveModeles(slug()); render(); }
       } catch(e){ ok = false; }
       if(!ok){ clearTimeout(flushRetry); flushRetry = setTimeout(flush, 30000); break; }
       await qDel(key);
@@ -1029,7 +1064,12 @@ async function loadModeles(s){
     const r = await fetch(SUIVI_API + '?action=modeles&appart=' + encodeURIComponent(s));
     const j = await r.json();
     if(j.ok && slug() === s){
-      modeles = j.modeles || {}; saveModeles(s); render();
+      modeles = j.modeles || {};
+      const c = caveDe(s);
+      if(c){
+        try { const rc = await fetch(SUIVI_API + '?action=modeles&appart=cave-' + c); const jc = await rc.json(); if(jc.ok && jc.modeles && jc.modeles.cave) modeles.cave = jc.modeles.cave; } catch(e){}
+      }
+      saveModeles(s); render();
       Object.values(modeles).forEach(id => imgModele(id)); // chargées une seule fois, et gardées pour la cave
     }
   } catch(e){}
@@ -1226,7 +1266,12 @@ async function shoot(slotId, label, it){
   const item = it || findItemOfSlot(slotId);
   if(item && itemReady(item)) S.checked[item.id] = true;
   saveS(); render();
-  await qAdd({action:'photo', id:S.id, appart:S.appart, presta:S.presta, etape:slotId, libelle:label, heure, mime:'image/jpeg', file: big.split(',')[1]});
+  const cave = slotId === 'cave' ? caveDe(S.appart) : null;
+  await qAdd({action:'photo', id:S.id, appart:S.appart, presta:S.presta, etape:slotId, libelle: cave ? 'Cave réassort — ' + CAVES[cave].nom : label, heure, mime:'image/jpeg', file: big.split(',')[1]});
+  if(cave){
+    caveEtat[cave] = heure; try { localStorage.setItem('cave-' + cave, heure); } catch(e){}
+    await qAdd({action:'routine', appart:'cave-' + cave, task:'photo-cave', label:'Photo cave reassort ' + CAVES[cave].nom, presta:S.presta, heure});
+  }
 }
 function findSlot(id){ for(const [,, items] of data) for(const it of items) for(const p of (it.photos||[])) if(p.id === id) return p; return {}; }
 function findItemOfSlot(id){ for(const [,, items] of itemsFor(slug())) for(const it of items) if(it.photos.some(p => p.id === id)) return it; return null; }
@@ -1352,7 +1397,7 @@ function renderModeModele(root, s){
       const f = await prendrePhoto(); if(!f) return;
       const big = await compress(f, 1280);
       d.querySelector('.slot-row').innerHTML = '<figure><img src="' + big + '" alt=""><figcaption>Nouveau (envoi…)</figcaption></figure>';
-      await qAdd({action:'modele', cle:CLE, appart:s, etape:p.id, heure:new Date().toISOString(), mime:'image/jpeg', file: big.split(',')[1]});
+      await qAdd({action:'modele', cle:CLE, appart: (p.id === 'cave' && caveDe(s)) ? 'cave-' + caveDe(s) : s, etape:p.id, heure:new Date().toISOString(), mime:'image/jpeg', file: big.split(',')[1]});
     };
     body.appendChild(d);
   });
@@ -1382,10 +1427,11 @@ function renderModeModele(root, s){
       renderGallery(S.appart); renderApartWarning(S.appart);
     }
   }
-  document.getElementById('appart').addEventListener('change', e => loadModeles(e.target.value));
+  document.getElementById('appart').addEventListener('change', e => { loadModeles(e.target.value); chargerCave(e.target.value); });
   sel.addEventListener('change', () => { try { localStorage.setItem('menage-presta', sel.value); } catch(e){} });
   if(!sel.value){ try { const p = localStorage.getItem('menage-presta'); if(p) sel.value = p; } catch(e){} }
   loadModeles(slug());
+  chargerCave(slug());
   updateSyncBar();
   flush();
   if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
