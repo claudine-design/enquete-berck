@@ -292,12 +292,17 @@
 <script>
 // ===== Galerie photos déco par appartement =====
 const apartPhotos = {
-  'albatros': 1, 'apollo': 2, 'apolove': 13, 'balneo': 14,
+  'albatros': 1, 'apollo': 2, 'apolove': 15, 'balneo': 14,
   'cocon-romantique': 16, 'evasion': 18, 'face-mer': 7, 'famille': 60,
   'grand-large': 1, 'grande-love-room': 14, 'hamac': 1,
   'helene': 21, 'jeanne': 16, 'kingston': 2, 'kitesurf': 41,
   'maisonnette': 13, 'mini-love-room': 9, 'paddle': 5, 'grande-roue': 0,
   'patio': 11, 'reserve': 16, 'rotonde': 0, 'surf': 20, 'terrasse': 1
+};
+
+// Légendes des photos déco qui portent une consigne précise (numéro de photo → texte)
+const apartPhotoNotes = {
+  'apolove': { 14:'Table à manger : bougies allumées, couverts dressés', 15:'Balnéo : les 5 bougies allumées' }
 };
 
 function renderGallery(slug){
@@ -313,7 +318,10 @@ function renderGallery(slug){
   for(let i=1; i<=count; i++){
     const n = String(i).padStart(2,'0');
     const src = `../checklist-menage/photos-menage/${slug}/${n}.jpg`;
-    html += `<img src="${src}" alt="${slug} ${n}" loading="lazy" onclick="openLightbox(this.src)">`;
+    const note = (apartPhotoNotes[slug] || {})[i];
+    html += note
+      ? `<figure style="margin:0"><img src="${src}" alt="${note}" loading="lazy" onclick="openLightbox(this.src)"><figcaption style="font-size:11px;color:#7a3b46;line-height:1.2;margin-top:2px">${note}</figcaption></figure>`
+      : `<img src="${src}" alt="${slug} ${n}" loading="lazy" onclick="openLightbox(this.src)">`;
   }
   html += '</div>';
   g.innerHTML = html;
