@@ -132,6 +132,28 @@
   .fin-bar{height:8px;background:#fde;border-radius:8px;overflow:hidden;margin:8px 0}
   .fin-bar > div{height:100%;background:linear-gradient(90deg,#86C28A,#7FB3DC);transition:width .3s}
   .fin-card button{margin-top:16px;width:100%;padding:14px;border:none;border-radius:12px;background:#E89BA3;color:#fff;font-size:16px;font-weight:700}
+  .fin-w.calme{background:#eff6ff;border-color:#7FB3DC;color:#1e3a5f;font-size:15px}
+  .fin-w b.gros{display:block;font-size:18px;margin-bottom:6px}
+  .fin-check{width:120px;height:120px;border-radius:50%;background:#16a34a;color:#fff;font-size:78px;line-height:120px;margin:14px auto 10px;font-weight:700;box-shadow:0 6px 18px rgba(22,163,74,.4)}
+  .fin-valide{font-size:23px;font-weight:800;color:#15803d;line-height:1.25;letter-spacing:.3px}
+  .fin-detail{font-weight:400;font-size:13.5px;margin-top:12px;text-align:left;color:#14532d;background:#f0fdf4;border-radius:12px;padding:10px 12px}
+  /* ----- caméra vidéo dans l'appli ----- */
+  .cam{position:fixed;inset:0;background:#000;z-index:10000;display:flex;flex-direction:column;color:#fff}
+  .cam video{flex:1;min-height:0;width:100%;object-fit:cover;background:#000}
+  .cam-top{position:absolute;top:0;left:0;right:0;padding:14px 12px;text-align:center;background:linear-gradient(rgba(0,0,0,.75),rgba(0,0,0,0))}
+  .cam-warn{display:inline-block;background:#dc2626;color:#fff;font-weight:800;font-size:19px;line-height:1.25;padding:10px 14px;border-radius:12px}
+  .cam-time{font-size:46px;font-weight:800;font-variant-numeric:tabular-nums;text-shadow:0 2px 6px #000;margin-top:6px}
+  .cam-time.fin-proche{color:#fca5a5}
+  .cam-time small{font-size:20px;font-weight:600;opacity:.85}
+  .cam-prog{height:10px;background:rgba(255,255,255,.3);border-radius:10px;overflow:hidden;margin:6px 20px 0}
+  .cam-prog > div{height:100%;width:0;background:#22c55e}
+  .cam-prog.fin-proche > div{background:#ef4444}
+  .cam-bottom{padding:14px 16px calc(18px + env(safe-area-inset-bottom));background:#111;text-align:center}
+  .cam-bottom .hint2{font-size:14px;margin-bottom:10px;color:#e5e7eb}
+  .cam-btn{width:100%;padding:18px;border:none;border-radius:14px;font-size:19px;font-weight:800;color:#fff;background:#dc2626}
+  .cam-btn.stop{background:#fff;color:#dc2626}
+  .cam-btn[disabled]{opacity:.5}
+  .cam-cancel{margin-top:10px;background:none;border:none;color:#d1d5db;font-size:15px;text-decoration:underline;padding:8px}
   .small-note{font-size:11.5px;color:#999;margin-top:6px}
   .hint{text-align:center;color:#888;font-size:14px;padding:20px;background:#fff;border-radius:14px}
   .modele-banner{margin:12px 0;padding:12px;border-radius:14px;background:#fde2e6;border:2px solid #c0606c;color:#5A2A33;font-size:13.5px}
@@ -820,39 +842,101 @@ async function qDel(key){
   const db = await idb();
   await new Promise(res => { const tx = db.transaction('q','readwrite'); tx.objectStore('q').delete(key); tx.oncomplete = res; });
 }
-let flushing = false, flushRetry = null;
+// Lectures légères : on ne charge JAMAIS toute la file d'un coup (une vidéo pèse lourd en mémoire).
+async function qKeys(){
+  const db = await idb();
+  return new Promise((res, rej) => { const r = db.transaction('q','readonly').objectStore('q').getAllKeys(); r.onsuccess = () => res(r.result || []); r.onerror = () => rej(r.error); });
+}
+async function qGet(key){
+  const db = await idb();
+  return new Promise((res, rej) => { const r = db.transaction('q','readonly').objectStore('q').get(key); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+}
+async function qCount(){
+  const db = await idb();
+  return new Promise((res, rej) => { const r = db.transaction('q','readonly').objectStore('q').count(); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+}
+// Ordre d'envoi : les petits messages d'abord (début, FIN du ménage, entretien), puis les photos,
+// et la vidéo (lourde) en dernier → Claudine est prévenue de la fin en quelques secondes,
+// même si la vidéo met plusieurs minutes à partir.
+function priorite(val){
+  if(!val) return 9;
+  if(val.action === 'start') return 0;
+  if(val.action === 'fin') return 1;
+  if(val.action === 'routine') return 2;
+  if(val.action === 'photo' && val.etape === 'video') return 5;
+  return 3;
+}
+// Envoi avec délai maximum : une connexion qui reste « pendue » ne bloque plus toute la file.
+async function fetchDelai(url, opts, ms){
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), ms);
+  try { return await fetch(url, Object.assign({}, opts || {}, {signal: ctl.signal})); }
+  finally { clearTimeout(t); }
+}
+// Deux files en parallèle : « léger » (début, fin, entretien, photos) et « lourd » (vidéo).
+// Ainsi la vidéo en cours d'envoi ne retarde jamais le message de FIN du ménage.
+const flushing = {leger:false, lourd:false};
+let flushRetry = null;
 async function flush(){
-  if(flushing || SUIVI_API.indexOf('http') !== 0) return;
-  flushing = true;
+  if(SUIVI_API.indexOf('http') !== 0) return;
+  const r = await Promise.all([flushFile('leger'), flushFile('lourd')]);
+  if(r.some(x => x === false)){ clearTimeout(flushRetry); flushRetry = setTimeout(flush, 20000); }
+  updateSyncBar();
+}
+async function flushFile(file){
+  if(flushing[file]) return true;
+  flushing[file] = true;
+  let toutOk = true;
   try {
-    const items = await qAll();
-    for(const {key, val} of items){
+   // On repasse tant que de nouveaux envois sont arrivés dans la file pendant qu'on envoyait les précédents.
+   const vus = new Set();
+   for(;;){
+    const metas = [];
+    for(const key of await qKeys()){
+      if(vus.has(key)) continue;
+      const val = await qGet(key);
+      if(val && (priorite(val) === 5) === (file === 'lourd')) metas.push({key, p: priorite(val)});
+    }
+    if(!metas.length) break;
+    metas.sort((a, b) => a.p - b.p || a.key - b.key);
+    for(const {key} of metas){
+      vus.add(key);
+      const val = await qGet(key);
+      if(!val) continue;
       let ok = false;
       try {
         let j;
         if(val.action === 'routine'){
-          const r = await fetch(ROUTINES_API_URL + '?' + new URLSearchParams({action:'markRoutineDone', appart:val.appart, task:val.task, label:val.label, presta:val.presta}).toString());
+          const r = await fetchDelai(ROUTINES_API_URL + '?' + new URLSearchParams({action:'markRoutineDone', appart:val.appart, task:val.task, label:val.label, presta:val.presta}).toString(), {}, 45000);
           j = await r.json(); j.ok = !!j.success;
         } else {
-          const r = await fetch(SUIVI_API, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(val)});
+          const r = await fetchDelai(SUIVI_API, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(val)}, file === 'lourd' ? 420000 : 90000);
           j = await r.json();
         }
         ok = !!j.ok || j.error === 'cle';
         if(ok && val.action === 'modele' && j.fileId && slug() === val.appart){ modeles[val.etape] = j.fileId; saveModeles(val.appart); render(); }
       } catch(e){ ok = false; }
-      if(!ok){ clearTimeout(flushRetry); flushRetry = setTimeout(flush, 30000); break; }
+      // Un envoi raté ne bloque plus les suivants : il repartira au prochain essai.
+      if(!ok){ toutOk = false; continue; }
       await qDel(key);
       updateSyncBar();
     }
-  } finally { flushing = false; updateSyncBar(); }
+   }
+  } catch(e){ toutOk = false; }
+  finally { flushing[file] = false; }
+  return toutOk;
 }
 async function updateSyncBar(){
   const bar = document.getElementById('sync-bar');
-  let n = 0; try { n = (await qAll()).length; } catch(e){}
+  let n = 0; try { n = await qCount(); } catch(e){}
   if(n === 0){ bar.className = 'sync ok'; bar.innerHTML = navigator.onLine ? '✅ Tout est envoyé' : '📴 Pas de réseau — rien en attente'; return; }
   bar.className = 'sync wait';
-  bar.innerHTML = '📡 <b>' + n + ' envoi' + (n>1?'s':'') + ' en attente</b> — gardé' + (n>1?'s':'') + ' dans le téléphone, ça partira dès qu\'il y a du réseau. <button type="button" onclick="flush()">Renvoyer</button>';
+  const quoi = '<b>' + n + ' envoi' + (n>1?'s':'') + '</b>';
+  bar.innerHTML = navigator.onLine
+    ? '📤 ' + quoi + ' en cours… tout est bien gardé, ça part tout seul. Continuez votre ménage. <button type="button" onclick="flush()">Renvoyer</button>'
+    : '📴 Pas de réseau ici — ' + quoi + ' gardé' + (n>1?'s':'') + ' dans le téléphone, ça partira tout seul dès que le réseau revient. <button type="button" onclick="flush()">Renvoyer</button>';
 }
+window.addEventListener('offline', () => updateSyncBar());
 window.addEventListener('online', () => flush());
 document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') flush(); });
 
@@ -1034,7 +1118,8 @@ function renderItem(it){
     photosHtml += '<div class="slot' + (v ? ' ok' : '') + '">' +
       '<div class="slot-title">🎥 Vidéo de fin' + (v ? ' ✓ ' + hhmm(v.heure) : '') + '</div>' +
       '<button type="button" class="shoot" data-video="1">' + (v ? '🔁 Refaire la vidéo' : '🎥 Filmer maintenant') + '</button>' +
-      '<div class="small-note">Toutes les pièces, sans couper. 45 secondes maximum, sinon la vidéo est trop lourde pour partir.</div></div>';
+      '<div class="small-note" style="font-size:14px;font-weight:700;color:#b91c1c">⚠️ ATTENTION : VIDÉO 45 SECONDES MAXIMUM</div>' +
+      '<div class="small-note">Toutes les pièces, sans couper (au moins 10 secondes). Un compteur s’affiche pendant que vous filmez, et l’appli s’arrête toute seule à 45 s.</div></div>';
   }
   it.photos.forEach(p => {
     const list = (S && S.photos[p.id]) || [];
@@ -1077,6 +1162,90 @@ function renderItem(it){
   return div;
 }
 
+// ---------- VIDÉO DE FIN ----------
+// La vidéo est filmée DANS l'appli (caméra arrière, qualité allégée) : compteur bien visible,
+// arrêt automatique à 45 s, et un fichier léger (~8 Mo) qui part même avec peu de réseau.
+// Avant (20-21/09/2026) on passait par la caméra du téléphone : en Full HD, 10 secondes pèsent
+// déjà plus de 20 Mo → vidéo refusée « trop lourde » (échec de Maëlys au Kingston).
+const VIDEO_MAX_S = 45;      // durée maximum (arrêt automatique)
+const VIDEO_MIN_S = 10;      // en dessous, on n'a pas pu filmer toutes les pièces
+const VIDEO_MAX_MO = 22;     // limite du serveur (secours « caméra du téléphone » uniquement)
+function typeVideo(){
+  if(!window.MediaRecorder) return null;
+  const types = ['video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
+  for(const t of types){ try { if(MediaRecorder.isTypeSupported(t)) return t; } catch(e){} }
+  return '';
+}
+function mmss(s){ return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(Math.floor(s % 60)).padStart(2, '0'); }
+
+// Ouvre la caméra plein écran. Rend {blob, duree} ; null si annulé ; 'secours' si la caméra de l'appli est indisponible.
+function filmerDansAppli(){
+  return new Promise(async res => {
+    const type = typeVideo();
+    if(type === null || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ res('secours'); return; }
+    let stream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}, width:{ideal:1280}, height:{ideal:720}, frameRate:{ideal:24}}, audio:false});
+    } catch(e){ res('secours'); return; }
+    const box = document.createElement('div');
+    box.className = 'cam';
+    box.innerHTML =
+      '<video playsinline muted autoplay></video>' +
+      '<div class="cam-top">' +
+        '<div class="cam-warn">⚠️ ATTENTION : VIDÉO ' + VIDEO_MAX_S + ' SECONDES MAXIMUM</div>' +
+        '<div class="cam-time" style="display:none"></div>' +
+        '<div class="cam-prog" style="display:none"><div></div></div>' +
+      '</div>' +
+      '<div class="cam-bottom">' +
+        '<div class="hint2">Toutes les pièces, <b>sans couper</b>, en marchant sans vous arrêter.<br>Entre ' + VIDEO_MIN_S + ' et ' + VIDEO_MAX_S + ' secondes. L’appli s’arrête toute seule à ' + VIDEO_MAX_S + ' s.</div>' +
+        '<button type="button" class="cam-btn">🔴 DÉMARRER LA VIDÉO</button>' +
+        '<button type="button" class="cam-cancel">Annuler</button>' +
+      '</div>';
+    document.body.appendChild(box);
+    const vid = box.querySelector('video'), btn = box.querySelector('.cam-btn'), cancel = box.querySelector('.cam-cancel');
+    const time = box.querySelector('.cam-time'), prog = box.querySelector('.cam-prog'), warn = box.querySelector('.cam-warn'), hint = box.querySelector('.hint2');
+    vid.srcObject = stream;
+    let rec = null, chunks = [], t0 = 0, tick = null, fini = false;
+    const fermer = out => {
+      if(fini) return; fini = true;
+      clearInterval(tick);
+      document.removeEventListener('visibilitychange', surCache);
+      try { stream.getTracks().forEach(t => t.stop()); } catch(e){}
+      box.remove();
+      res(out);
+    };
+    const arreter = () => { if(rec && rec.state !== 'inactive'){ btn.disabled = true; btn.textContent = '⏳ Enregistrement…'; rec.stop(); } };
+    const surCache = () => { if(document.visibilityState !== 'visible') arreter(); };
+    document.addEventListener('visibilitychange', surCache);
+    cancel.onclick = () => { if(rec && rec.state !== 'inactive'){ rec.onstop = null; try { rec.stop(); } catch(e){} } fermer(null); };
+    btn.onclick = () => {
+      if(rec){ arreter(); return; }
+      try { rec = new MediaRecorder(stream, Object.assign({videoBitsPerSecond: 1400000}, type ? {mimeType: type} : {})); }
+      catch(e){ try { rec = new MediaRecorder(stream); } catch(e2){ fermer('secours'); return; } }
+      rec.ondataavailable = e => { if(e.data && e.data.size) chunks.push(e.data); };
+      rec.onerror = () => fermer('secours');
+      rec.onstop = () => {
+        const duree = (Date.now() - t0) / 1000;
+        fermer({blob: new Blob(chunks, {type: (rec.mimeType || type || 'video/mp4').split(';')[0]}), duree});
+      };
+      rec.start(1000);
+      t0 = Date.now();
+      warn.style.display = 'none'; time.style.display = 'block'; prog.style.display = 'block';
+      hint.innerHTML = 'Filmez toutes les pièces sans couper. Arrêt automatique à ' + VIDEO_MAX_S + ' s.';
+      btn.className = 'cam-btn stop'; btn.textContent = '⏹ ARRÊTER LA VIDÉO';
+      const maj = () => {
+        const s = (Date.now() - t0) / 1000;
+        time.innerHTML = '🔴 ' + mmss(s) + ' <small>/ ' + mmss(VIDEO_MAX_S) + '</small>';
+        prog.firstChild.style.width = Math.min(100, s / VIDEO_MAX_S * 100) + '%';
+        const proche = s >= VIDEO_MAX_S - 10;
+        time.classList.toggle('fin-proche', proche); prog.classList.toggle('fin-proche', proche);
+        if(s >= VIDEO_MAX_S) arreter();
+      };
+      maj(); tick = setInterval(maj, 250);
+    };
+  });
+}
+// Secours : caméra du téléphone (si l'appli n'a pas le droit d'utiliser la caméra).
 function prendreVideo(){
   return new Promise(res => {
     const fi = document.createElement('input');
@@ -1085,22 +1254,50 @@ function prendreVideo(){
     fi.click();
   });
 }
-const VIDEO_MAX_MO = 22;
+function dureeFichier(f){
+  return new Promise(res => {
+    const v = document.createElement('video'); v.preload = 'metadata';
+    const fin = d => { try { URL.revokeObjectURL(v.src); } catch(e){} res(d); };
+    v.onloadedmetadata = () => fin(isFinite(v.duration) ? v.duration : 0);
+    v.onerror = () => fin(0);
+    setTimeout(() => fin(0), 4000);
+    v.src = URL.createObjectURL(f);
+  });
+}
+const NL2 = String.fromCharCode(10,10);
 async function filmer(it){
   if(!S){ alert('Appuyez d’abord sur « Je commence le ménage » (en haut).'); return; }
-  const f = await prendreVideo();
-  if(!f) return;
+  let f = await filmerDansAppli(), duree = 0;
+  if(f === null) return;
+  if(f === 'secours'){
+    alert('⚠️ ATTENTION : VIDÉO ' + VIDEO_MAX_S + ' SECONDES MAXIMUM' + NL2 +
+      'La caméra de votre téléphone va s’ouvrir. Filmez toutes les pièces sans couper, entre ' + VIDEO_MIN_S + ' et ' + VIDEO_MAX_S + ' secondes, en regardant le compteur de la caméra.' + NL2 +
+      'Astuce : si on vous demande d’autoriser la caméra pour cette appli, répondez OUI — la vidéo sera plus légère et partira plus vite.');
+    f = await prendreVideo();
+    if(!f) return;
+    duree = await dureeFichier(f);
+  } else { duree = f.duree; f = f.blob; }
+  if(duree && duree < VIDEO_MIN_S){
+    alert('⛔ Vidéo trop courte : ' + Math.round(duree) + ' secondes.' + NL2 + 'Il faut filmer TOUTES les pièces sans couper : au moins ' + VIDEO_MIN_S + ' secondes, ' + VIDEO_MAX_S + ' secondes maximum.' + NL2 + 'Appuyez sur « Filmer maintenant » pour la refaire.');
+    return;
+  }
+  if(!f.size){ alert('⛔ La vidéo n’a pas été enregistrée. Réessayez : appuyez sur « Filmer maintenant ».'); return; }
   const mo = f.size / 1048576;
   if(mo > VIDEO_MAX_MO){
-    alert('⛔ Vidéo trop longue (' + Math.round(mo) + ' Mo).' + String.fromCharCode(10,10) + 'Refaites-en une plus courte : 45 secondes maximum, en marchant sans vous arrêter.');
+    alert('⛔ Vidéo trop lourde pour partir (' + Math.round(mo) + ' Mo' + (duree ? ', ' + Math.round(duree) + ' secondes' : '') + ').' + NL2 +
+      'Refaites-la plus courte (' + VIDEO_MAX_S + ' secondes MAXIMUM). Si ça recommence : dans la caméra du téléphone, choisissez la qualité vidéo la plus basse (HD 720p), ou autorisez la caméra pour cette appli.');
     return;
   }
   const heure = new Date().toISOString();
-  const b64 = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result.split(',')[1]); r.onerror = rej; r.readAsDataURL(f); });
-  S.video = { heure, mo: Math.round(mo) };
+  let b64;
+  try { b64 = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result.split(',')[1]); r.onerror = rej; r.readAsDataURL(f); }); }
+  catch(e){ alert('⛔ La vidéo n’a pas pu être lue. Réessayez.'); return; }
+  try {
+    await qAdd({action:'photo', id:S.id, appart:S.appart, presta:S.presta, etape:'video', libelle:'Vidéo de fin de ménage' + (duree ? ' (' + Math.round(duree) + ' s)' : ''), heure, mime:f.type || 'video/mp4', file:b64});
+  } catch(e){ alert('⛔ Le téléphone n’a pas pu garder la vidéo (mémoire pleine ?). Libérez un peu de place et réessayez.'); return; }
+  S.video = { heure, mo: Math.round(mo), duree: Math.round(duree) };
   if(it) S.checked[it.id] = true;
   saveS(); render();
-  await qAdd({action:'photo', id:S.id, appart:S.appart, presta:S.presta, etape:'video', libelle:'Vidéo de fin de ménage', heure, mime:f.type || 'video/mp4', file:b64});
 }
 
 async function shoot(slotId, label, it){
@@ -1179,7 +1376,7 @@ async function send(){
     const retard = ROUTINES.filter(r => computeStatus(r.intervalDays, (routinesData[r.id] || {}).lastDone).cls === 'due-overdue');
     if(retard.length){ alert('⛔ Entretien en retard à faire AVANT de terminer (avec photo) :' + String.fromCharCode(10,10) + retard.map(r => '🔴 ' + r.label).join(String.fromCharCode(10)) + String.fromCharCode(10,10) + 'Voir l’encadré vert « Entretien périodique ».'); document.getElementById('routines-block').setAttribute('open',''); document.getElementById('routines-block').scrollIntoView({behavior:'smooth'}); return; }
   }
-  if(!S.checked['video']){ alert('⛔ Envoyez d\'abord la vidéo sur WhatsApp, puis cochez « Vidéo continue… » (étape 8).'); return; }
+  if(!S.checked['video']){ alert('⛔ Il manque la vidéo de fin : étape 8, bouton « 🎥 Filmer maintenant ».'); return; }
   const done = items.filter(it => S.checked[it.id]).length;
   let remarque = '';
   if(done < items.length){
@@ -1189,37 +1386,51 @@ async function send(){
   const fin = new Date().toISOString();
   const minutes = Math.round((new Date(fin) - new Date(S.debut)) / 60000);
   await qAdd({action:'fin', id:S.id, appart:S.appart, presta:S.presta, heure:fin, taches:done, total:items.length, remarque});
-  const nom = S.presta, appart = appartLabel(S.appart), nbPhotos = Object.values(S.photos).reduce((a, l) => a + l.length, 0) + (S.video ? 1 : 0);
+  const nom = S.presta, appart = appartLabel(S.appart), nbPhotos = Object.values(S.photos).reduce((a, l) => a + l.length, 0);
   S = null; saveS(); render();
   ecranFin(nom, appart, minutes, nbPhotos);
 }
 
-// Écran de fin : reste affiché et suit l'envoi en direct jusqu'à « tout est arrivé ».
+// Écran de fin — le prestataire ne doit avoir AUCUN doute (demande Claudine 21/09/2026) :
+//  1) tant que des envois partent : message calme « c'est bien arrivé, l'envoi est en cours,
+//     vous pouvez passer à autre chose » (l'envoi continue tout seul, écran fermé ou non) ;
+//  2) quand tout est parti : GROS CHECK VERT « MÉNAGE VALIDÉ ET ENVOYÉ À CLAUDINE ».
+// Le mot « réseau » n'apparaît que si le téléphone n'a VRAIMENT pas de réseau.
 function ecranFin(nom, appart, minutes, nbPhotos){
   const box = document.createElement('div');
   box.className = 'fin';
   document.body.appendChild(box);
+  const duree = Math.floor(minutes/60) + ' h ' + String(minutes%60).padStart(2,'0');
   const dessine = (restant, total) => {
+    let corps;
+    if(!restant){
+      corps = '<div class="fin-check">✓</div>' +
+        '<div class="fin-valide">MÉNAGE VALIDÉ<br>ET ENVOYÉ À CLAUDINE</div>' +
+        '<div class="fin-detail">' +
+          '• Vos ' + nbPhotos + ' photos et votre vidéo sont bien arrivées.<br>' +
+          '• Claudine a été prévenue de la fin du ménage.<br>' +
+          '• Temps passé sur place : <b>' + duree + '</b>.' +
+        '</div>';
+    } else if(navigator.onLine){
+      corps = '<div class="fin-w calme"><b class="gros">👍 C’est bien arrivé, l’envoi est en cours.</b>' +
+        'Vous pouvez passer à autre chose.' +
+        '<div class="fin-bar"><div style="width:' + Math.round((total - restant) / total * 100) + '%"></div></div>' +
+        '<span style="font-size:13px">Envoi ' + (total - restant) + ' / ' + total + ' — ça continue tout seul. Le grand ✓ vert s’affichera ici dès que tout est parti.</span></div>';
+    } else {
+      corps = '<div class="fin-w calme"><b class="gros">👍 C’est bien enregistré.</b>' +
+        'Votre ménage est terminé, vous pouvez passer à autre chose.' +
+        '<div style="font-size:13px;margin-top:8px">📴 Il n’y a pas de réseau ici : tout est gardé dans votre téléphone et partira <b>tout seul</b> dès que le réseau revient (rouvrez simplement l’appli une fois dehors).</div></div>';
+    }
     box.innerHTML = '<div class="fin-card">' +
       '<div class="fin-t">Merci ' + nom + ' ♥</div>' +
-      '<div class="fin-s">' + appart + '<br>' + nbPhotos + ' photos et vidéo envoyées</div>' +
-      (restant
-        ? '<div class="fin-w">📡 Envoi en cours… ' + (total - restant) + ' / ' + total + '<div class="fin-bar"><div style="width:' + Math.round((total - restant) / total * 100) + '%"></div></div>' +
-          'Ne fermez pas l’appli tant que ce n’est pas fini. Sans réseau, rouvrez-la une fois dehors : tout partira tout seul.</div>'
-        : '<div class="fin-ok">✅ Tout est arrivé chez Claudine.' +
-          '<div style="font-weight:400;font-size:13.5px;margin-top:8px;text-align:left">' +
-          '• Vos photos et votre vidéo sont enregistrées.<br>' +
-          '• Votre ménage est <b>validé</b> : il est coché sur le calendrier de Claudine.<br>' +
-          '• Claudine a été prévenue de la fin du ménage.<br>' +
-          '• Temps passé sur place : <b>' + Math.floor(minutes/60) + ' h ' + String(minutes%60).padStart(2,'0') + '</b>.' +
-          '</div></div>') +
-      '<button type="button" onclick="this.parentNode.parentNode.remove()">Fermer</button></div>';
+      '<div class="fin-s">' + appart + '</div>' + corps +
+      '<button type="button" onclick="this.parentNode.parentNode.remove()">' + (restant ? 'Fermer — l’envoi continue' : 'Fermer') + '</button></div>';
   };
   (async () => {
-    let total = Math.max(1, (await qAll()).length);
+    let total = Math.max(1, await qCount());
     dessine(total, total);
-    for(let i = 0; i < 900; i++){
-      const n = (await qAll()).length;
+    for(let i = 0; i < 1200 && box.isConnected; i++){
+      const n = await qCount();
       if(n > total) total = n;
       dessine(n, total);
       if(!n) break;
