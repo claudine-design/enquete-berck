@@ -156,6 +156,23 @@
   .cam-btn[disabled]{opacity:.5}
   .cam-cancel{margin-top:10px;background:none;border:none;color:#d1d5db;font-size:15px;text-decoration:underline;padding:8px}
   .small-note{font-size:11.5px;color:#999;margin-top:6px}
+  .finp{margin:18px 0 6px;background:#fff;border:3px solid #E89BA3;border-radius:18px;padding:16px;box-shadow:0 4px 14px rgba(232,155,163,.3)}
+  .finp-t{font-size:20px;font-weight:800;color:#5A2A33;text-align:center;margin-bottom:10px}
+  .finp-step{display:flex;gap:10px;align-items:flex-start;padding:12px 0;border-top:1px dashed #f3d6da}
+  .finp-step .num{flex:0 0 32px;height:32px;border-radius:50%;background:#E89BA3;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:16px}
+  .finp-step .num.ok{background:#16a34a}
+  .finp-step .grow{flex:1;min-width:0;font-size:15px}
+  .finp-miss{color:#b42318;font-size:13.5px;margin:4px 0 6px}
+  .finp-ok{color:#166534;font-size:14px;margin-top:4px}
+  .finp-go{display:flex;justify-content:space-between;align-items:center;width:100%;margin:5px 0;padding:11px 12px;border-radius:10px;border:1px solid #f2a57a;background:#fff7f0;color:#7c2d12;font-size:14px;font-weight:600;text-align:left;cursor:pointer}
+  .finp-go span{font-size:20px;line-height:1}
+  .bigbtn{display:block;width:100%;margin-top:8px;padding:20px 14px;border:none;border-radius:16px;font-size:19px;font-weight:800;letter-spacing:.3px;color:#fff;cursor:pointer;box-shadow:0 5px 14px rgba(0,0,0,.2)}
+  .bigbtn.video{background:linear-gradient(135deg,#2563eb,#3b82f6);animation:pulse 1.6s ease-in-out infinite}
+  .bigbtn.done{background:#e8f5ec;color:#166534;box-shadow:none;font-size:15px;font-weight:600;padding:14px}
+  .bigbtn.go{background:linear-gradient(135deg,#16a34a,#22c55e);font-size:21px;animation:pulse 1.6s ease-in-out infinite}
+  .bigbtn.wait{background:#d1d5db;color:#4b5563;box-shadow:none;font-size:15px;font-weight:600}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.025)}}
+  .item.flash{outline:3px solid #f59e0b;border-radius:10px;background:#fffbeb}
   .hint{text-align:center;color:#888;font-size:14px;padding:20px;background:#fff;border-radius:14px}
   .modele-banner{margin:12px 0;padding:12px;border-radius:14px;background:#fde2e6;border:2px solid #c0606c;color:#5A2A33;font-size:13.5px}
   select:disabled{opacity:.75}
@@ -259,9 +276,10 @@
 
 <div id="sections"></div>
 
+<div id="fin-panel"></div>
+
 <div class="actions">
   <button class="reset" onclick="reset()">Annuler ce ménage</button>
-  <button class="send" onclick="send()">✓ Terminer</button>
 </div>
 
 <div id="lightbox" class="lightbox" onclick="this.classList.remove('open')">
@@ -1060,7 +1078,21 @@ function prendrePhoto(){
 
 // ---------- photos modèles ----------
 let modeles = {};
-function modeleUrl(id){ return 'https://lh3.googleusercontent.com/d/' + id + '=w900'; }
+// Une photo modèle n'est demandée à Google QU'UNE FOIS par ouverture de l'appli : la même image
+// est replacée à chaque rafraîchissement de l'écran (sinon Google refuse : « trop de requêtes »).
+const modeleImgs = {};
+function imgModele(id){
+  if(modeleImgs[id]) return modeleImgs[id];
+  const im = new Image();
+  im.alt = ''; im.loading = 'lazy';
+  im.onclick = () => openLightbox(im.src);
+  let essais = 0;
+  im.onerror = () => { if(essais++ < 3) setTimeout(() => { im.src = modeleUrl(id) + '&r=' + essais; }, 3000 * essais); };
+  im.src = modeleUrl(id);
+  modeleImgs[id] = im;
+  return im;
+}
+function modeleUrl(id){ return 'https://lh3.googleusercontent.com/d/' + id + '=w500'; }
 function saveModeles(s){ try { localStorage.setItem('modeles-' + s, JSON.stringify(modeles)); } catch(e){} }
 async function loadModeles(s){
   try { modeles = JSON.parse(localStorage.getItem('modeles-' + s) || '{}'); } catch(e){ modeles = {}; }
@@ -1071,7 +1103,7 @@ async function loadModeles(s){
     const j = await r.json();
     if(j.ok && slug() === s){
       modeles = j.modeles || {}; saveModeles(s); render();
-      Object.values(modeles).forEach(id => { const i = new Image(); i.src = modeleUrl(id); }); // mise en cache pour la cave
+      Object.values(modeles).forEach(id => imgModele(id)); // chargées une seule fois, et gardées pour la cave
     }
   } catch(e){}
 }
@@ -1105,7 +1137,58 @@ function render(){
     items.forEach(it => body.appendChild(renderItem(it)));
     root.appendChild(sec);
   });
+  renderFin();
   updateProgress();
+}
+
+// ---------- Bloc de fin : 3 étapes numérotées, 2 gros boutons, et la liste de ce qui manque ----------
+function manquants(){
+  if(!S) return [];
+  const out = [];
+  itemsFor(S.appart).forEach(([cls, title, items], si) => {
+    items.forEach(it => it.photos.forEach(p => { if(!slotDone(p)) out.push({txt:'📷 ' + p.label, item:it.id, si}); }));
+  });
+  if(LANCES.includes(S.appart)){
+    ROUTINES.filter(r => !routinesData['sans-' + r.id] && computeStatus(r.intervalDays, (routinesData[r.id] || {}).lastDone).cls === 'due-overdue')
+      .forEach(r => out.push({txt:'🔧 ' + r.label, routine:true}));
+  }
+  return out;
+}
+function allerA(itemId, si){
+  openSec[si] = true; render();
+  const el = document.getElementById('item-' + itemId);
+  if(el){ el.scrollIntoView({behavior:'smooth', block:'center'}); el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 2500); }
+}
+function renderFin(){
+  const box = document.getElementById('fin-panel');
+  if(!box) return;
+  if(!S || MODE_MODELE){ box.innerHTML = ''; return; }
+  const manque = manquants();
+  const videoOk = !!S.video;
+  const pret = videoOk && !manque.length;
+  let h = '<div class="finp"><div class="finp-t">🏁 Fin du ménage</div>';
+  h += '<div class="finp-step"><span class="num' + (manque.length ? '' : ' ok') + '">1</span><div class="grow"><b>Les photos</b>' +
+    (manque.length > 5
+      ? '<div class="finp-miss">Il en reste ' + manque.length + ' à prendre. Elles se prennent au fur et à mesure du ménage.</div>'
+      : manque.length
+      ? '<div class="finp-miss">Il en manque ' + manque.length + ' :</div>' + manque.map((m, i) =>
+          '<button type="button" class="finp-go" data-i="' + i + '">' + m.txt + ' <span>›</span></button>').join('')
+      : '<div class="finp-ok">✅ Toutes les photos sont prises</div>') + '</div></div>';
+  h += '<div class="finp-step"><span class="num' + (videoOk ? ' ok' : '') + '">2</span><div class="grow"><b>La vidéo de fin</b>' +
+    '<button type="button" id="finp-video" class="bigbtn ' + (videoOk ? 'done' : 'video') + '">' +
+    (videoOk ? '✅ Vidéo enregistrée à ' + hhmm(S.video.heure) + ' — refaire' : '🎥 FILMER LA VIDÉO') + '</button>' +
+    '<div class="small-note">Toutes les pièces, sans couper. Entre ' + VIDEO_MIN_S + ' et ' + VIDEO_MAX_S + ' secondes.</div></div></div>';
+  h += '<div class="finp-step"><span class="num' + (pret ? ' ok' : '') + '">3</span><div class="grow"><b>Valider</b>' +
+    '<button type="button" id="finp-send" class="bigbtn ' + (pret ? 'go' : 'wait') + '">' + (pret ? '✓ TERMINER LE MÉNAGE' : '✓ Terminer (il manque des éléments)') + '</button>' +
+    '</div></div></div>';
+  box.innerHTML = h;
+  box.querySelectorAll('.finp-go').forEach(b => b.onclick = () => {
+    const m = manque[+b.dataset.i];
+    if(m.routine){ const r = document.getElementById('routines-block'); r.setAttribute('open', ''); r.scrollIntoView({behavior:'smooth'}); }
+    else allerA(m.item, m.si);
+  });
+  document.getElementById('finp-video').onclick = () => filmer(itemsFor(S.appart).flatMap(x => x[2]).find(it => it.video));
+  document.getElementById('finp-send').onclick = () => send();
 }
 const openSec = {};
 function firstOpen(items){ return items.some(it => !S.checked[it.id]); }
@@ -1114,6 +1197,7 @@ function renderItem(it){
   const div = document.createElement('div');
   const checked = !!(S && S.checked[it.id]);
   div.className = 'item' + (checked ? ' done' : '');
+  div.id = 'item-' + it.id;
   let photosHtml = '';
   if(it.video){
     const v = S && S.video;
@@ -1130,7 +1214,7 @@ function renderItem(it){
     photosHtml += '<div class="slot' + (list.length || nc ? ' ok' : '') + '">' +
       '<div class="slot-title">📷 ' + p.label + (list.length ? ' ✓' : '') + (nc ? ' — non concerné' : '') + '</div>' +
       '<div class="slot-row">' +
-        (m ? '<figure><img src="' + modeleUrl(m) + '" onclick="openLightbox(this.src)" alt=""><figcaption>Modèle</figcaption></figure>' : '<figure class="nomodel"><div>Pas encore de photo modèle</div></figure>') +
+        (m ? '<figure class="mfig" data-m="' + m + '"><figcaption>Modèle</figcaption></figure>' : '<figure class="nomodel"><div>Pas encore de photo modèle</div></figure>') +
         list.map((ph, k) => '<figure><img src="' + ph.thumb + '" onclick="openLightbox(this.src)" alt=""><figcaption>' + hhmm(ph.heure) + '</figcaption></figure>').join('') +
       '</div>' +
       (nc ? '' : '<button type="button" class="shoot" data-slot="' + p.id + '">' + (list.length ? (p.multi ? '➕ Photo d\'un autre lit' : '🔁 Reprendre la photo') : '📷 Prendre la photo') + '</button>') +
@@ -1140,6 +1224,7 @@ function renderItem(it){
   div.innerHTML = '<input type="checkbox"' + (checked ? ' checked' : '') + '><div class="col"><div style="display:flex;align-items:flex-start"><span style="flex:1">' + it.t + '</span>' +
     (it.d ? '<button type="button" class="info-btn" aria-label="Détail">ⓘ</button>' : '') + '</div>' +
     (it.d ? '<div class="detail">' + it.d + '</div>' : '') + photosHtml + '</div>';
+  div.querySelectorAll('.mfig').forEach(fg => fg.insertBefore(imgModele(fg.dataset.m), fg.firstChild));
   const cb = div.querySelector('input');
   cb.onclick = e => {
     if(!S){ e.preventDefault(); alert('▶️ Appuyez d\'abord sur « Je commence le ménage » (en haut).'); return; }
@@ -1378,7 +1463,7 @@ async function send(){
     const retard = ROUTINES.filter(r => computeStatus(r.intervalDays, (routinesData[r.id] || {}).lastDone).cls === 'due-overdue');
     if(retard.length){ alert('⛔ Entretien en retard à faire AVANT de terminer (avec photo) :' + String.fromCharCode(10,10) + retard.map(r => '🔴 ' + r.label).join(String.fromCharCode(10)) + String.fromCharCode(10,10) + 'Voir l’encadré vert « Entretien périodique ».'); document.getElementById('routines-block').setAttribute('open',''); document.getElementById('routines-block').scrollIntoView({behavior:'smooth'}); return; }
   }
-  if(!S.checked['video']){ alert('⛔ Il manque la vidéo de fin : étape 8, bouton « 🎥 Filmer maintenant ».'); return; }
+  if(!S.video){ alert('⛔ Il manque la vidéo de fin.' + String.fromCharCode(10,10) + 'Appuyez sur le gros bouton bleu « 🎥 FILMER LA VIDÉO », en bas de la page.'); document.getElementById('fin-panel').scrollIntoView({behavior:'smooth'}); return; }
   const done = items.filter(it => S.checked[it.id]).length;
   let remarque = '';
   if(done < items.length){
