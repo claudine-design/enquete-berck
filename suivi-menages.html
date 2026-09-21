@@ -30,6 +30,8 @@
   .ph .pair{display:flex;gap:2px}
   .ph img{width:100%;height:100px;object-fit:cover;border-radius:8px;display:block;background:#eee}
   .ph .pair img{width:58px}
+  .ph .vid{width:100%;height:100px;border-radius:8px;background:#1f3b57;color:#fff;font-size:34px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+  .ph .vid span{font-size:12px;font-weight:600;letter-spacing:.5px}
   .ph .cap{font-size:11.5px;color:var(--mut);margin-top:3px;line-height:1.25}
   .ph .cap b{color:var(--txt)}
   .empty{color:var(--mut);text-align:center;padding:40px 10px}
@@ -78,8 +80,14 @@ async function load(){
   if(!CLE){ out.innerHTML = '<div class="empty">Lien incomplet : ouvrez cette page depuis votre lien personnel (avec la clé).</div>'; return; }
   out.innerHTML = '<div class="empty">Chargement…</div>';
   try {
-    const r = await fetch(API + '?action=suivi&cle=' + encodeURIComponent(CLE) + '&jours=' + document.getElementById('jours').value);
-    DATA = await r.json();
+    let err = null; DATA = null;
+    for(let essai = 0; essai < 3 && !DATA; essai++){
+      try {
+        const r = await fetch(API + '?action=suivi&cle=' + encodeURIComponent(CLE) + '&jours=' + document.getElementById('jours').value + '&t=' + Date.now());
+        DATA = await r.json();
+      } catch(e){ err = e; DATA = null; await new Promise(x => setTimeout(x, 1200)); }
+    }
+    if(!DATA) throw (err || new Error('serveur'));
     if(!DATA.ok) throw new Error(DATA.error || 'erreur');
   } catch(e){ out.innerHTML = '<div class="empty">Impossible de charger le suivi (' + esc(e.message) + ').</div>'; return; }
   const sel = document.getElementById('presta'), cur = sel.value;
@@ -111,6 +119,9 @@ function render(){
       '<div class="photos">' + photos.map((p, k) => {
         const mn = s.debut ? Math.round((new Date(p.heure) - new Date(s.debut)) / 60000) : null;
         const m = mods[p.etape];
+        if(p.etape === 'video') return '<div class="ph" data-s="' + i + '" data-k="' + k + '">' +
+          '<div class="vid">▶<span>Vidéo</span></div>' +
+          '<div class="cap"><b>Vidéo de fin</b><br>' + hm(p.heure) + (mn != null ? ' · +' + mn + ' min' : '') + '</div></div>';
         return '<div class="ph" data-s="' + i + '" data-k="' + k + '">' +
           (m ? '<div class="pair"><img loading="lazy" src="' + img(p.fileId, 300) + '" alt=""><img loading="lazy" src="' + img(m, 300) + '" alt="" style="opacity:.75"></div>' : '<img loading="lazy" src="' + img(p.fileId, 300) + '" alt="">') +
           '<div class="cap"><b>' + esc(p.libelle || p.etape) + '</b><br>' + hm(p.heure) + (mn != null ? ' · +' + mn + ' min' : '') + '</div></div>';
@@ -120,6 +131,13 @@ function render(){
   out.querySelectorAll('.ph').forEach(el => el.onclick = () => {
     const s = list[+el.dataset.s];
     const p = s.photos.slice().sort((a, b) => a.heure > b.heure ? 1 : -1)[+el.dataset.k];
+    if(p.etape === 'video'){
+      document.getElementById('cmp-imgs').innerHTML =
+        '<figure><iframe src="https://drive.google.com/file/d/' + p.fileId + '/preview" allow="autoplay; fullscreen" allowfullscreen style="flex:1;width:100%;border:0;border-radius:8px;background:#000"></iframe>' +
+        '<figcaption>' + esc(s.presta) + ' — vidéo de fin — ' + hm(p.heure) + ' · <a style="color:#9cf" target="_blank" rel="noopener" href="https://drive.google.com/file/d/' + p.fileId + '/view">ouvrir dans Drive</a></figcaption></figure>';
+      document.getElementById('cmp').classList.add('open');
+      return;
+    }
     const m = ((DATA.modeles || {})[s.appart] || {})[p.etape];
     document.getElementById('cmp-imgs').innerHTML =
       '<figure><img src="' + img(p.fileId, 1400) + '" alt=""><figcaption>' + esc(s.presta) + ' — ' + esc(p.libelle) + ' — ' + hm(p.heure) + '</figcaption></figure>' +
