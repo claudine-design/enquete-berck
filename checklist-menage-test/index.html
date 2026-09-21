@@ -1,0 +1,1510 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta name="robots" content="noindex">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Checklist ménage — Berck</title>
+<style>
+  :root{
+    --rose:#F8D7DA; --rose-d:#E89BA3;
+    --vert:#CDEAC0; --vert-d:#86C28A;
+    --bleu:#D6E9F8; --bleu-d:#7FB3DC;
+    --lilas:#E7D6F2; --lilas-d:#B79AD1;
+    --peche:#FDE2CF; --peche-d:#F2A57A;
+    --beige:#FBF3E4;
+    --txt:#3B3B3B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#FFF7F8;color:var(--txt);padding:16px;max-width:560px;margin:0 auto}
+  header{background:linear-gradient(135deg,#F6C6CE,#FBD9CF);border-radius:18px;padding:18px;text-align:center;box-shadow:0 4px 14px rgba(232,155,163,.25)}
+  header h1{margin:0;font-size:22px;color:#5A2A33}
+  header p{margin:4px 0 0;font-size:13px;color:#7a3b46}
+  .pick{margin:14px 0;background:white;border-radius:14px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+  .pick label{font-size:13px;color:#666;display:block;margin-bottom:6px}
+  .pick select,.pick input{width:100%;padding:10px;border-radius:10px;border:1px solid #eed;background:#FFF8FA;font-size:15px}
+  .progress{margin:10px 0;height:10px;background:#fde;border-radius:10px;overflow:hidden}
+  .progress > div{height:100%;background:linear-gradient(90deg,#86C28A,#7FB3DC);width:0%;transition:width .3s}
+  .progress-text{text-align:center;font-size:13px;color:#888;margin-top:-4px;margin-bottom:8px}
+  section{border-radius:16px;padding:0;margin:10px 0;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.06)}
+  section h2{margin:0;padding:14px 16px;color:white;font-size:15px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;user-select:none}
+  section h2 .arrow{font-size:11px;transition:transform .25s;opacity:.85}
+  section.open h2 .arrow{transform:rotate(180deg)}
+  section h2 .count{background:rgba(255,255,255,.25);padding:2px 9px;border-radius:10px;font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
+  section h2 .count.done{background:rgba(255,255,255,.6);color:#2e5a30}
+  section h2 .title-wrap{flex:1;display:flex;align-items:center;gap:8px;min-width:0}
+  section .body{padding:0 10px;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .25s ease}
+  section.open .body{max-height:3000px;padding:6px 10px 12px}
+  .item .info-btn{margin-left:auto;flex-shrink:0;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.07);color:#5a3b46;border:none;font-size:13px;font-weight:600;cursor:pointer;font-style:italic;font-family:Georgia,serif}
+  .item .info-btn:active{background:rgba(0,0,0,.15)}
+  .item .detail{display:none;background:rgba(255,255,255,.85);border-left:3px solid #E89BA3;padding:8px 10px;margin:6px 0 4px 30px;border-radius:6px;font-size:13px;line-height:1.45;color:#5a3b46}
+  .item.show-detail .detail{display:block}
+  .item{display:flex;align-items:flex-start;gap:10px;padding:8px 6px;border-bottom:1px dashed rgba(0,0,0,.06);cursor:pointer}
+  .item:last-child{border-bottom:none}
+  .item input{margin-top:3px;width:20px;height:20px;accent-color:#E89BA3;flex-shrink:0}
+  .item span{font-size:14.5px;line-height:1.35}
+  .item.done span{text-decoration:line-through;color:#aaa}
+  .item .photo-tag{display:inline-block;background:#E89BA3;color:#fff;font-size:10px;padding:2px 6px;border-radius:8px;margin-left:6px;vertical-align:middle}
+  .item .thumb{display:block;margin-top:6px;max-width:140px;max-height:140px;border-radius:10px;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+  .item .photo-input{display:none}
+  .item .video-tag{display:inline-block;background:#7FB3DC;color:#fff;font-size:10px;padding:2px 6px;border-radius:8px;margin-left:6px;vertical-align:middle}
+  .item video{display:block;margin-top:6px;max-width:220px;border-radius:10px;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+  .item .col{flex:1}
+  .s1{background:var(--bleu)}.s1 h2{background:var(--bleu-d)}
+  .s2{background:var(--rose)}.s2 h2{background:var(--rose-d)}
+  .s3{background:var(--vert)}.s3 h2{background:var(--vert-d)}
+  .s4{background:var(--lilas)}.s4 h2{background:var(--lilas-d)}
+  .s5{background:var(--peche)}.s5 h2{background:var(--peche-d)}
+  .s6{background:var(--beige)}.s6 h2{background:var(--peche-d)}
+  .s7{background:var(--vert)}.s7 h2{background:var(--vert-d)}
+  details.guide{margin:14px 0;background:#fff;border-radius:16px;padding:0;box-shadow:0 3px 10px rgba(0,0,0,.06);overflow:hidden}
+  details.guide > summary{list-style:none;cursor:pointer;padding:14px 16px;background:linear-gradient(135deg,#F6C6CE,#FBD9CF);color:#5A2A33;font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:space-between}
+  details.guide > summary::-webkit-details-marker{display:none}
+  details.guide > summary::after{content:"▼";font-size:11px;transition:transform .2s}
+  details.guide[open] > summary::after{transform:rotate(180deg)}
+  details.guide .guide-body{padding:8px 16px 14px;font-size:14px;line-height:1.5}
+  details.guide h3{margin:14px 0 6px;font-size:14px;color:#5A2A33;border-left:4px solid #E89BA3;padding-left:8px}
+  details.guide h4{margin:10px 0 4px;font-size:13px;color:#7a3b46}
+  details.guide ul{margin:4px 0 8px;padding-left:20px}
+  details.guide li{margin:2px 0}
+  details.guide .tip{background:#FFF8FA;border-left:3px solid #F2A57A;padding:6px 10px;border-radius:6px;margin:6px 0;font-size:13px;color:#7a3b46}
+  /* ROUTINES SWEEPY */
+  .routine{display:flex;align-items:flex-start;gap:8px;padding:10px;background:#fff;border-radius:10px;margin:6px 0;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  .routine.due-overdue{background:#fef2f2;border-left:4px solid #dc2626}
+  .routine.due-soon{background:#fffbeb;border-left:4px solid #f59e0b}
+  .routine.due-ok{background:#f0fdf4;border-left:4px solid #22c55e}
+  .routine .r-status{font-size:18px;flex-shrink:0;margin-top:2px}
+  .routine .r-info{flex:1;min-width:0}
+  .routine .r-label{font-weight:600;font-size:14px;color:#3B3B3B;line-height:1.3}
+  .routine .r-meta{font-size:11px;color:#666;margin-top:3px}
+  .routine .r-meta b{color:#3B3B3B}
+  .routine .r-btn{flex-shrink:0;background:#16a34a;color:#fff;border:none;padding:7px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;min-width:80px}
+  .routine .r-btn:active{transform:scale(.95)}
+  .routine .r-btn.r-btn-undo{background:#94a3b8}
+  .routine .r-btn-absent{display:block;margin-top:6px;background:#f3f4f6;color:#555;border:1px solid #e5e7eb;font-weight:500;font-size:11.5px;padding:5px 8px;min-width:0}
+  .routine .r-btn.r-btn-undo:hover{background:#64748b}
+  .routine .r-btn:disabled{opacity:0.5;cursor:default}
+  #routines-summary-count.due{background:rgba(255,255,255,0.4) !important;font-weight:700}
+  .gallery{margin:14px 0;display:none}
+  .gallery.has-photos{display:block;background:#fff;border-radius:16px;padding:12px;box-shadow:0 3px 10px rgba(0,0,0,.06)}
+  .gallery h3{margin:0 0 10px;font-size:14px;color:#5A2A33;display:flex;align-items:center;gap:8px}
+  .gallery .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:6px}
+  .gallery .grid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.1);transition:transform .15s}
+  .gallery .grid img:active{transform:scale(.95)}
+  .gallery .empty{color:#999;font-size:13px;font-style:italic;text-align:center;padding:20px}
+  .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;z-index:9999;align-items:center;justify-content:center;padding:20px}
+  .lightbox.open{display:flex}
+  .lightbox img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px}
+  .lightbox .close{position:absolute;top:15px;right:20px;color:#fff;font-size:32px;background:none;border:none;cursor:pointer;line-height:1}
+  .actions{display:flex;gap:10px;margin:18px 0 30px}
+  .actions button{flex:1;padding:14px;border:none;border-radius:14px;font-size:15px;font-weight:600;cursor:pointer}
+  .reset{background:#fff;color:#888;border:1px solid #eed !important}
+  .send{background:linear-gradient(135deg,#E89BA3,#F2A57A);color:white;box-shadow:0 4px 12px rgba(232,155,163,.4)}
+  .s8{background:var(--bleu)}.s8 h2{background:#5b7fa3}
+  .s2 h2,.s4 h2{background:#c0606c}
+  .item .col{min-width:0}
+  .slot{margin:8px 0 2px;padding:8px;border-radius:10px;background:#fff;border:2px dashed #E89BA3}
+  .slot.ok{border:2px solid #86C28A;background:#f4fbf1}
+  .slot-title{font-size:13px;font-weight:700;color:#7a3b46;margin-bottom:6px}
+  .slot.ok .slot-title{color:#2e5a30}
+  .slot-row{display:flex;gap:6px;overflow-x:auto}
+  .slot figure{margin:0;flex:0 0 auto;text-align:center}
+  .slot figure img{width:96px;height:96px;object-fit:cover;border-radius:8px;display:block;border:1px solid #ddd}
+  .slot figure figcaption{font-size:11px;color:#777;margin-top:2px}
+  .slot figure.nomodel div{width:96px;height:96px;border-radius:8px;background:#f3f3f3;color:#999;font-size:11px;display:flex;align-items:center;justify-content:center;text-align:center;padding:6px}
+  .slot button{margin-top:8px;margin-right:6px;padding:10px 12px;border-radius:10px;border:none;font-size:14px;font-weight:600;cursor:pointer}
+  .slot .shoot{background:#E89BA3;color:#fff}
+  .slot.ok .shoot{background:#e8e8e8;color:#555}
+  .slot .nc{background:#f3f3f3;color:#666;font-weight:500}
+  .start{margin:12px 0;padding:12px;border-radius:14px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.06);text-align:center;font-size:14px}
+  .start button{width:100%;padding:16px;border:none;border-radius:14px;font-size:18px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16a34a,#22c55e);box-shadow:0 4px 12px rgba(22,163,74,.35);cursor:pointer}
+  .start.on{background:#f0fdf4;border:2px solid #16a34a;color:#14532d;text-align:left}
+  .start .small{font-size:12px;color:#666;margin-top:6px}
+  .sync{margin:6px 0;padding:8px 10px;border-radius:10px;font-size:12.5px}
+  .sync.ok{color:#2e5a30;background:#f0fdf4}
+  .sync.wait{color:#7c4a03;background:#fff7e6;border:1px solid #f2a57a}
+  .sync button{margin-left:6px;padding:4px 10px;border-radius:8px;border:1px solid #f2a57a;background:#fff;font-size:12px}
+  .fin{position:fixed;inset:0;background:rgba(90,42,51,.55);display:flex;align-items:center;justify-content:center;padding:18px;z-index:9998}
+  .fin-card{background:#fff;border-radius:18px;padding:22px;max-width:420px;width:100%;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+  .fin-t{font-size:22px;font-weight:700;color:#5A2A33}
+  .fin-s{font-size:15px;color:#7a3b46;margin-top:6px}
+  .fin-w{margin-top:16px;background:#fff7e6;border:1px solid #f2a57a;border-radius:12px;padding:12px;color:#7c4a03;font-size:13.5px}
+  .fin-ok{margin-top:16px;background:#f0fdf4;border:1px solid #16a34a;border-radius:12px;padding:14px;color:#14532d;font-size:16px;font-weight:600}
+  .fin-bar{height:8px;background:#fde;border-radius:8px;overflow:hidden;margin:8px 0}
+  .fin-bar > div{height:100%;background:linear-gradient(90deg,#86C28A,#7FB3DC);transition:width .3s}
+  .fin-card button{margin-top:16px;width:100%;padding:14px;border:none;border-radius:12px;background:#E89BA3;color:#fff;font-size:16px;font-weight:700}
+  .fin-w.calme{background:#eff6ff;border-color:#7FB3DC;color:#1e3a5f;font-size:15px}
+  .fin-w b.gros{display:block;font-size:18px;margin-bottom:6px}
+  .fin-check{width:120px;height:120px;border-radius:50%;background:#16a34a;color:#fff;font-size:78px;line-height:120px;margin:14px auto 10px;font-weight:700;box-shadow:0 6px 18px rgba(22,163,74,.4)}
+  .fin-valide{font-size:23px;font-weight:800;color:#15803d;line-height:1.25;letter-spacing:.3px}
+  .fin-detail{font-weight:400;font-size:13.5px;margin-top:12px;text-align:left;color:#14532d;background:#f0fdf4;border-radius:12px;padding:10px 12px}
+  /* ----- caméra vidéo dans l'appli ----- */
+  .cam{position:fixed;inset:0;background:#000;z-index:10000;display:flex;flex-direction:column;color:#fff}
+  .cam video{flex:1;min-height:0;width:100%;object-fit:cover;background:#000}
+  .cam-top{position:absolute;top:0;left:0;right:0;padding:14px 12px;text-align:center;background:linear-gradient(rgba(0,0,0,.75),rgba(0,0,0,0))}
+  .cam-warn{display:inline-block;background:#dc2626;color:#fff;font-weight:800;font-size:19px;line-height:1.25;padding:10px 14px;border-radius:12px}
+  .cam-time{font-size:46px;font-weight:800;font-variant-numeric:tabular-nums;text-shadow:0 2px 6px #000;margin-top:6px}
+  .cam-time.fin-proche{color:#fca5a5}
+  .cam-time small{font-size:20px;font-weight:600;opacity:.85}
+  .cam-prog{height:10px;background:rgba(255,255,255,.3);border-radius:10px;overflow:hidden;margin:6px 20px 0}
+  .cam-prog > div{height:100%;width:0;background:#22c55e}
+  .cam-prog.fin-proche > div{background:#ef4444}
+  .cam-bottom{padding:14px 16px calc(18px + env(safe-area-inset-bottom));background:#111;text-align:center}
+  .cam-bottom .hint2{font-size:14px;margin-bottom:10px;color:#e5e7eb}
+  .cam-btn{width:100%;padding:18px;border:none;border-radius:14px;font-size:19px;font-weight:800;color:#fff;background:#dc2626}
+  .cam-btn.stop{background:#fff;color:#dc2626}
+  .cam-btn[disabled]{opacity:.5}
+  .cam-cancel{margin-top:10px;background:none;border:none;color:#d1d5db;font-size:15px;text-decoration:underline;padding:8px}
+  .small-note{font-size:11.5px;color:#999;margin-top:6px}
+  .hint{text-align:center;color:#888;font-size:14px;padding:20px;background:#fff;border-radius:14px}
+  .modele-banner{margin:12px 0;padding:12px;border-radius:14px;background:#fde2e6;border:2px solid #c0606c;color:#5A2A33;font-size:13.5px}
+  select:disabled{opacity:.75}
+  footer{text-align:center;color:#b88;font-size:12px;padding:10px 0 30px}
+</style>
+</head>
+<body>
+<div style="background:#1d4ed8;color:#fff;text-align:center;font-weight:700;padding:8px;font-size:14px">🧪 VERSION DE TEST du 21/09 — les envois arrivent vraiment chez Claudine</div>
+<header>
+  <h1>♥ Ma checklist ménage</h1>
+  <p>Appartements Berck-sur-Mer</p>
+</header>
+
+<div class="pick">
+  <label>Appartement</label>
+  <select id="appart">
+    <option value="">— Choisir —</option>
+    <optgroup label="Le 23 rue Maréchal Juin (Rémi)">
+      <option value="kitesurf">Kitesurf</option>
+      <option value="hamac">Hamac</option>
+      <option value="paddle">Paddle</option>
+      <option value="surf">Surf</option>
+      <option value="famille">Famille</option>
+    </optgroup>
+    <optgroup label="17 rue Maréchal Juin">
+      <option value="grande-roue">Grande Roue</option>
+    </optgroup>
+    <optgroup label="Le 25 rue Maréchal Juin (Clara)">
+      <option value="balneo">Balnéo</option>
+      <option value="cocon-romantique">Cocon Romantique</option>
+    </optgroup>
+    <optgroup label="Terrasse / Face Mer (Christelle)">
+      <option value="terrasse">Terrasse</option>
+      <option value="maisonnette">Maisonnette</option>
+      <option value="face-mer">Face Mer</option>
+    </optgroup>
+    <optgroup label="Apollo · Albatros (Clara)">
+      <option value="apollo">Apollo</option>
+      <option value="apolove">Apolove</option>
+      <option value="kingston">Kingston</option>
+      <option value="reserve">La Réserve</option>
+      <option value="albatros">Albatros</option>
+    </optgroup>
+    <optgroup label="59 Esplanade (Christelle)">
+      <option value="mini-love-room">Mini Love Room</option>
+      <option value="grande-love-room">Grande Love Room</option>
+    </optgroup>
+    <optgroup label="Rue Jeanne (Christelle)">
+      <option value="jeanne">Jeanne</option>
+      <option value="evasion">Évasion</option>
+      <option value="rotonde">Rotonde</option>
+      <option value="patio">Patio</option>
+    </optgroup>
+    <optgroup label="Grand Large (Christelle)">
+      <option value="grand-large">Grand Large</option>
+    </optgroup>
+    <optgroup label="Conciergerie">
+      <option value="helene">Studio Hélène</option>
+    </optgroup>
+  </select>
+  <label style="margin-top:10px">Prestataire</label>
+  <select id="nom">
+    <option value="">— Choisir votre prénom —</option>
+    <option>Rémi</option>
+    <option>Christelle</option>
+    <option>Claire et Sébastien</option>
+    <option>Stéphanie</option>
+    <option>Aimance</option>
+    <option>Maëlys</option>
+    <option>Priscillia</option>
+    <option>Claudine</option>
+  </select>
+</div>
+
+<div id="mode-modele" style="display:none" class="modele-banner">📸 <b>MODE PHOTOS MODÈLES</b> — Claudine. Choisissez l'appartement, puis prenez chaque photo telle que vous voulez la voir. Les prestataires la verront à côté de leur bouton photo.</div>
+<div id="start-box" class="start"></div>
+<div id="sync-bar" class="sync ok"></div>
+
+<div id="warning-appart" style="display:none;margin:14px 16px;padding:14px 16px;border-radius:12px"></div>
+
+<div id="signalements-block" style="display:none;margin:14px 16px;padding:14px 16px;border-radius:12px;background:linear-gradient(135deg,#fef2f2,#fee2e2);border:2px solid #dc2626;color:#7f1d1d">
+  <div style="font-weight:700;font-size:15px;color:#991b1b;margin-bottom:8px">🚨 Signalements voyageurs récents <span id="signalements-count" style="background:#dc2626;color:#fff;border-radius:10px;padding:2px 8px;font-size:12px;margin-left:6px"></span></div>
+  <div style="font-size:12px;color:#7f1d1d;font-style:italic;margin-bottom:10px">À vérifier / corriger pendant le ménage. Cocher "✓ Réglé" une fois traité.</div>
+  <div id="signalements-list"></div>
+</div>
+
+<div id="gallery" class="gallery"></div>
+
+<details id="routines-block" class="guide" style="display:none;border:2px solid #16a34a;background:#f0fdf4">
+  <summary style="background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;font-weight:600">
+    🔄 Entretien périodique <span id="routines-summary-count" style="background:rgba(255,255,255,0.25);padding:2px 8px;border-radius:10px;font-size:11px;margin-left:8px"></span>
+  </summary>
+  <div class="guide-body">
+    <div style="font-size:13px;color:#166534;margin-bottom:12px;font-style:italic">Tâches à faire à fréquence régulière (pas à chaque ménage). <b>Une photo est obligatoire pour valider.</b> 🔴 = en retard · 🟡 = bientôt due · 🟢 = à jour.</div>
+    <div id="routines-list"></div>
+  </div>
+</details>
+
+<div class="progress"><div id="bar"></div></div>
+<div class="progress-text" id="ptext">0 / 0 tâches</div>
+
+<div id="sections"></div>
+
+<div class="actions">
+  <button class="reset" onclick="reset()">Annuler ce ménage</button>
+  <button class="send" onclick="send()">✓ Terminer</button>
+</div>
+
+<div id="lightbox" class="lightbox" onclick="this.classList.remove('open')">
+  <button class="close" onclick="document.getElementById('lightbox').classList.remove('open')">×</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<footer>Merci infiniment ♥ — Claudine</footer>
+
+<script>
+// ===== Galerie photos déco par appartement =====
+const apartPhotos = {
+  'albatros': 1, 'apollo': 2, 'apolove': 13, 'balneo': 14,
+  'cocon-romantique': 16, 'evasion': 18, 'face-mer': 7, 'famille': 60,
+  'grand-large': 1, 'grande-love-room': 14, 'hamac': 1,
+  'helene': 21, 'jeanne': 16, 'kingston': 2, 'kitesurf': 41,
+  'maisonnette': 13, 'mini-love-room': 9, 'paddle': 5, 'grande-roue': 0,
+  'patio': 11, 'reserve': 16, 'rotonde': 0, 'surf': 20, 'terrasse': 1
+};
+
+function renderGallery(slug){
+  const g = document.getElementById('gallery');
+  if(!slug){ g.className='gallery'; g.innerHTML=''; return; }
+  const count = apartPhotos[slug] || 0;
+  g.className = 'gallery has-photos';
+  if(count === 0){
+    g.innerHTML = '<h3>🖼️ Photos déco de référence</h3><div class="empty">Pas encore de photos pour cet appartement.<br>Demander à Claudine de les ajouter sur Trello.</div>';
+    return;
+  }
+  let html = `<h3>🖼️ Photos déco de référence <span style="font-weight:normal;font-size:12px;color:#999">(${count})</span></h3><div class="grid">`;
+  for(let i=1; i<=count; i++){
+    const n = String(i).padStart(2,'0');
+    const src = `../checklist-menage/photos-menage/${slug}/${n}.jpg`;
+    html += `<img src="${src}" alt="${slug} ${n}" loading="lazy" onclick="openLightbox(this.src)">`;
+  }
+  html += '</div>';
+  g.innerHTML = html;
+}
+
+function openLightbox(src){
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox').classList.add('open');
+}
+
+// ===== Caractéristiques spécifiques par appartement =====
+// panier: 'classique' (1 panier + accessoires évier) | 'loveroom' (2 paniers : gourmand + petit utilitaire)
+// capacite: nombre max de personnes — pilote la quantité de dosettes/thé/sucrettes (règle: max(4, capacite))
+// balneo: a une balnéo/jacuzzi → anti-calcaire sur buses + chrome
+// peignoirs: nombre de peignoirs propres à installer (apparts balnéo/spa)
+// sauna: a un sauna → 2 grandes serviettes dans le sauna
+// tapisExtra: balnéo loin de la douche → tapis de douche supplémentaire à côté de la balnéo
+// litConditional: lit 1ère chambre installé, autres linges juste déposés (sauf si signalé sur calendrier)
+// exterieur: a jardin/terrasse/balcon/patio → vérifier mégots, déchets, mobilier remis en place
+const apartFeatures = {
+  // ───── CLASSIQUES (14) — 1 panier + accessoires évier ─────
+  'kitesurf':         { panier:'classique', capacite:4 },
+  'hamac':            { panier:'classique', capacite:4, exterieur:true }, // balcon
+  'paddle':           { panier:'classique', capacite:4, exterieur:true }, // balcon
+  'surf':             { panier:'classique', capacite:4, exterieur:true }, // balcon
+  'famille':          { panier:'classique', capacite:6 },
+  'terrasse':         { panier:'classique', capacite:8, exterieur:true }, // grande terrasse
+  'maisonnette':      { panier:'classique', capacite:4, exterieur:true }, // petit extérieur arrière
+  'face-mer':         { panier:'classique', capacite:4, exterieur:true }, // balcon
+  'grand-large':      { panier:'classique', capacite:4, exterieur:true }, // balcon
+  'apollo':           { panier:'classique', capacite:6, litConditional:true, exterieur:true }, // T3, lit 1ère chambre installé, balcon
+  'kingston':         { panier:'classique', capacite:4 },
+  'reserve':          { panier:'classique', capacite:4 }, // capacité à confirmer
+  'albatros':         { panier:'classique', capacite:4 },
+  'jeanne':           { panier:'classique', capacite:4 },
+  'grande-roue':      { panier:'classique', capacite:5, balneo:true, exterieur:true, litConditional:true,
+                        note:'🛏️ <b>Lit double (chambre 1) fait</b> avec le linge fourni. <b>2 parures de lit simple déposées sur les étagères de la chambre 2</b> (2 lits 80×190) : les voyageurs à 3 ou 4 font ces lits eux-mêmes, c’est dans le contrat. 🛋️ Canapé convertible : linge déposé, pas installé.' }, // 17 rue Maréchal Juin, 5 pers, balnéo double, mini balcon — 20/09/2026
+  // ───── LOVE ROOMS (8) — 2 paniers : gourmand + petit utilitaire ─────
+  'balneo':           { panier:'loveroom',  capacite:6, balneo:true, peignoirs:2, litConditional:true, exterieur:true }, // jardin + brasero
+  'cocon-romantique': { panier:'loveroom',  capacite:2, balneo:true, peignoirs:2, sauna:true, tapisExtra:true, litConditional:true, exterieur:true }, // brasero
+  'apolove':          { panier:'loveroom',  capacite:2, balneo:true }, // bain à remous — ajouté 05/09/2026, il manquait
+  'mini-love-room':   { panier:'loveroom',  capacite:2, balneo:true, peignoirs:2, tapisExtra:true },
+  'grande-love-room': { panier:'loveroom',  capacite:2 },
+  'evasion':          { panier:'loveroom',  capacite:4, balneo:true, peignoirs:2, sauna:true, tapisExtra:true, litConditional:true },
+  'rotonde':          { panier:'loveroom',  capacite:5, balneo:true, peignoirs:2, litConditional:true },
+  'patio':            { panier:'loveroom',  capacite:6, balneo:true, peignoirs:2, tapisExtra:true, litConditional:true, exterieur:true } // patio
+};
+
+function renderApartWarning(slug){
+  const w = document.getElementById('warning-appart');
+  const f = apartFeatures[slug];
+  if(!f){ w.style.display='none'; w.innerHTML=''; return; }
+  let bullets = [];
+  // 🎁 Panier de bienvenue (TOUJOURS en premier — c'est ce que le voyageur voit en arrivant)
+  if(f.panier){
+    const qty = Math.max(4, f.capacite || 4);
+    if(f.panier === 'classique'){
+      bullets.push(
+        '🎁 <b>Panier de bienvenue</b> à préparer (posé sur la table) :' +
+        '<ul style="margin:6px 0 0 0;padding-left:20px;list-style:disc">' +
+          '<li><b>' + qty + ' dosettes de café</b>, <b>' + qty + ' sachets de thé</b>, <b>' + qty + ' sucrettes</b></li>' +
+          '<li><b>1 paquet de gâteaux</b> (cadeau de bienvenue)</li>' +
+          '<li><b>1 torchon</b> + <b>1 essuie-main</b></li>' +
+        '</ul>' +
+        '<div style="margin-top:6px"><b>À côté de l\'évier</b> (hors panier) : <b>liquide vaisselle</b> + <b>1 éponge</b> avec <b>1 dosette lave-vaisselle posée dessus</b>.</div>'
+      );
+    } else if(f.panier === 'loveroom'){
+      bullets.push(
+        '🎁 <b>Panier d\'accueil gourmand</b> à préparer :' +
+        '<ul style="margin:6px 0 0 0;padding-left:20px;list-style:disc">' +
+          '<li><b>' + qty + ' dosettes de café</b>, <b>' + qty + ' sachets de thé</b>, <b>' + qty + ' sucrettes</b></li>' +
+          '<li><b>Gâteaux sucrés</b> (petits cœurs) + <b>gâteaux salés</b> (chips)</li>' +
+          '<li><b>1 petite bouteille</b></li>' +
+        '</ul>' +
+        '<div style="margin-top:6px">🧺 <b>Petit panier à côté</b> : <b>1 torchon</b> + <b>1 essuie-main</b>, <b>liquide vaisselle</b>, <b>1 éponge</b>, <b>1 dosette lave-vaisselle</b>.</div>'
+      );
+    }
+  }
+  if(f.balneo){
+    bullets.push(
+      '🛁 <b>Balnéo / jacuzzi — protocole en 5 temps, dans cet ordre</b> :' +
+      '<ol style="margin:6px 0 0 0;padding-left:20px">' +
+        '<li><b>Purger les buses.</b> Remplir la cuve d\'eau chaude jusqu\'à <b>5 cm au-dessus du jet le plus haut</b>, verser le produit de désinfection balnéo, <b>faire tourner les jets 5 minutes</b>, puis vider.</li>' +
+        '<li><b>Rincer et contrôler.</b> Remplir à l\'eau claire, relancer les jets <b>1 minute</b>, vider. <b>Rien ne doit sortir des buses</b> — ni sable, ni dépôt gris. Si du sable sort, recommencer.</li>' +
+        '<li><b>Anti-calcaire</b> sur <b>toutes les buses</b> (chaque jet) et sur tout le <b>chrome</b> (robinetterie, têtes de jets, pourtour). Sans ça : pièces coûteuses + panne.</li>' +
+        '<li><b>Receveur, bonde et pourtour</b> : sable et cheveux, <b>y compris sous le repose-nuque et la têtière</b>. À Berck le sable se dépose à chaque séjour.</li>' +
+        '<li><b>Cuve vide, sèche et sans trace</b> avant de partir — la filmer dans la vidéo de fin de ménage.</li>' +
+      '</ol>' +
+      '<div style="margin-top:6px">⚠️ Trois voyageurs ont noté la propreté du bain à remous cet été, et <b>un kilo de sable est sorti des buses</b> le 20/07. C\'est le premier point de contrôle de ces appartements.</div>'
+    );
+  }
+  if(f.peignoirs){
+    bullets.push('🥋 <b>' + f.peignoirs + ' peignoirs propres</b> à installer dans le logement.');
+  }
+  if(f.sauna){
+    bullets.push('🧖 <b>Sauna</b> — déposer <b>2 grandes serviettes</b> dans le sauna.');
+  }
+  if(f.tapisExtra){
+    bullets.push('🚿 La balnéo est loin de la douche → mettre un <b>tapis de douche supplémentaire à côté de la balnéo</b>.');
+  }
+  if(f.note){
+    bullets.push(f.note);
+  } else if(f.litConditional){
+    bullets.push('🛏️ <b>Lit de la 1ère chambre uniquement installé</b>. Les autres linges de lit sont <b>juste déposés</b> sauf <b>si signalé sur le calendrier</b> — dans ce cas faire les autres lits.');
+  }
+  if(f.exterieur){
+    bullets.push('🌿 <b>Espace extérieur</b> (jardin / terrasse / balcon / patio) — vérifier qu\'il n\'y a <b>pas de mégots ni de déchets</b>, et <b>remettre le mobilier</b> en place s\'il a été déplacé.');
+  }
+  // Style coloré selon la criticité
+  const isCritical = !!f.balneo;
+  w.style.background = isCritical
+    ? 'linear-gradient(135deg,#fef2f2,#fee2e2)'
+    : 'linear-gradient(135deg,#fef9c3,#fde68a)';
+  w.style.border = isCritical ? '2px solid #dc2626' : '2px solid #ca8a04';
+  w.style.color = isCritical ? '#7f1d1d' : '#713f12';
+  const titleColor = isCritical ? '#991b1b' : '#854d0e';
+  const titleText = isCritical ? '⚠️ ATTENTION — consignes spécifiques pour cet appartement' : '📋 Consignes spécifiques pour cet appartement';
+  w.innerHTML =
+    '<div style="font-weight:700;font-size:15px;color:'+titleColor+';margin-bottom:8px">'+titleText+'</div>' +
+    '<ul style="margin:0;padding-left:20px;font-size:13.5px;line-height:1.55;list-style:none">' +
+      bullets.map(b => '<li style="margin:8px 0;padding-left:0">'+b+'</li>').join('') +
+    '</ul>' +
+    '<div style="margin-top:10px;padding-top:10px;border-top:1px dashed currentColor;font-size:13px;font-style:italic;opacity:0.9">📸 Toujours respecter la déco — voir les photos de référence en bas de la page.</div>';
+  w.style.display = 'block';
+}
+
+document.getElementById('appart').addEventListener('change', e => {
+  renderGallery(e.target.value);
+  renderApartWarning(e.target.value);
+});
+
+// ===== Pré-remplissage du nom prestataire depuis ?presta=remi/clara/christelle =====
+(function preFillPresta(){
+  const params = new URLSearchParams(location.search);
+  const presta = (params.get('presta') || '').trim();
+  if(!presta) return;
+  const map = { 'remi': 'Rémi', 'maylis': 'Maëlys', 'mailys': 'Maëlys', 'priscilia': 'Priscillia', 'christelle': 'Christelle', 'claire': 'Claire et Sébastien', 'stephanie': 'Stéphanie', 'aimance': 'Aimance' };
+  const nice = map[presta.toLowerCase()] || (presta.charAt(0).toUpperCase() + presta.slice(1));
+  const nomInput = document.getElementById('nom');
+  if(nomInput && !nomInput.value) nomInput.value = nice;
+})();
+
+// ===== Pré-sélection de l'appartement depuis ?appart=<slug> =====
+// Utilisé par les QR codes collés sur les sacs de ménage.
+(function preFillAppart(){
+  const params = new URLSearchParams(location.search);
+  const slug = (params.get('appart') || '').trim().toLowerCase();
+  if(!slug) return;
+  const select = document.getElementById('appart');
+  if(!select) return;
+  const opt = Array.from(select.options).find(o => o.value === slug);
+  if(opt){
+    select.value = slug;
+    // Déclenche manuellement les rendus dépendants (warning + galerie + routines)
+    select.dispatchEvent(new Event('change'));
+  }
+})();
+
+// ===== ROUTINES PÉRIODIQUES (entretien Sweepy-style) =====
+const ROUTINES_API_URL = 'https://script.google.com/macros/s/AKfycbyZ50d01GyAOXi4LKQteCrGKkEcq4eKzLBMh3_G9hM4TI-5IAfjhrnxDZyKZO3-0IolBA/exec';
+
+const ROUTINES = [
+  { id:'reassort',        label:'Vérifier et remplir le réassort si besoin', intervalDays:7   },
+  { id:'radiateurs',      label:'Nettoyer les radiateurs',                   intervalDays:15  },
+  { id:'portes',          label:'Nettoyer portes et poignées',               intervalDays:15  },
+  { id:'luminaires',      label:'Enlever poussière des luminaires',          intervalDays:17  },
+  { id:'dessus-meubles-cuisine', label:'Nettoyer au-dessus des meubles de cuisine', intervalDays:20, absent:'Il n’y a pas de meuble en hauteur' },
+  { id:'interrupteurs',   label:'Nettoyer les interrupteurs',                intervalDays:21  },
+  { id:'tete-lit',        label:'Aspirer la tête de lit',                    intervalDays:26  },
+  { id:'cafetiere',       label:'Détartrer cafetière + bouilloire',          intervalDays:28  },
+  { id:'derriere-canape', label:'Aspirer derrière le canapé',                intervalDays:30  },
+  { id:'plaids',          label:'Laver les plaids',                          intervalDays:32  },
+  { id:'rails-fenetres',  label:'Nettoyer les rails de fenêtres et baies vitrées', intervalDays:35 },
+  { id:'plantes',         label:'Nettoyer les plantes (essuyer feuilles)',   intervalDays:38, absent:'Il n’y a pas de plantes' },
+  { id:'joints-porte',    label:'Nettoyer l’embrasure et les joints de la porte d’entrée', intervalDays:45 },
+  { id:'coussins',        label:'Laver les coussins',                        intervalDays:90  },
+  { id:'couettes',        label:'Laver les couettes',                        intervalDays:180 },
+  { id:'rideaux',         label:'Laver les rideaux',                         intervalDays:180, absent:'Il n’y a pas de rideaux' }
+];
+
+let routinesData = {}; // { task_id: { lastDone: ISO } }
+let currentRoutinesSlug = null;
+
+function formatInterval(days){
+  if(days < 14) return 'tous les ' + days + ' jours';
+  if(days < 30) return 'toutes les ' + Math.round(days/7) + ' semaines';
+  if(days < 360) return 'tous les ' + Math.round(days/30) + ' mois';
+  return 'tous les ' + Math.round(days/30) + ' mois';
+}
+
+function formatLastDone(iso){
+  if(!iso) return 'jamais fait';
+  const d = new Date(iso);
+  const days = Math.floor((Date.now() - d.getTime()) / 86400000);
+  if(days === 0) return 'fait aujourd\'hui';
+  if(days === 1) return 'fait hier';
+  if(days < 30) return 'fait il y a ' + days + ' jours';
+  const months = Math.round(days/30);
+  return 'fait il y a ~' + months + ' mois';
+}
+
+function computeStatus(intervalDays, iso){
+  if(!iso) return { cls:'due-overdue', icon:'🔴', label:'À FAIRE', daysAgo:null };
+  const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+  if(days >= intervalDays) return { cls:'due-overdue', icon:'🔴', label:'EN RETARD', daysAgo:days };
+  if(days >= intervalDays - 3) return { cls:'due-soon', icon:'🟡', label:'BIENTÔT DUE', daysAgo:days };
+  return { cls:'due-ok', icon:'🟢', label:'À JOUR', daysAgo:days };
+}
+
+async function loadRoutinesForAppart(slug){
+  currentRoutinesSlug = slug;
+  const block = document.getElementById('routines-block');
+  if(!slug){ block.style.display = 'none'; return; }
+  block.style.display = 'block';
+  document.getElementById('routines-list').innerHTML =
+    '<div style="text-align:center;padding:20px;color:#666;font-size:13px">Chargement…</div>';
+  try {
+    const res = await fetch(ROUTINES_API_URL + '?action=getRoutines&appart=' + encodeURIComponent(slug) + '&t=' + Date.now());
+    const json = await res.json();
+    routinesData = json.data || {};
+    try { localStorage.setItem('routines-' + slug, JSON.stringify(routinesData)); } catch(e2){}
+  } catch(e) {
+    try { routinesData = JSON.parse(localStorage.getItem('routines-' + slug) || '{}'); } catch(e3){ routinesData = {}; }
+  }
+  renderRoutines();
+}
+
+function escapeHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function renderRoutines(){
+  let dueCount = 0;
+  const html = ROUTINES.filter(r => !routinesData['sans-' + r.id]).map(r => {
+    const last = routinesData[r.id];
+    const lastIso = last ? last.lastDone : null;
+    const st = computeStatus(r.intervalDays, lastIso);
+    if(st.cls === 'due-overdue' || st.cls === 'due-soon') dueCount++;
+    const meta = formatInterval(r.intervalDays) + ' · <b>' + formatLastDone(lastIso) + '</b>';
+    // Si la routine a été marquée faite AUJOURD'HUI → bouton Annuler (gris)
+    // Sinon → bouton Fait (vert)
+    const doneToday = lastIso && (Math.floor((Date.now() - new Date(lastIso).getTime()) / 86400000) === 0);
+    const btnHtml = doneToday
+      ? `<button class="r-btn r-btn-undo" data-task="${escapeHtml(r.id)}" data-action="undo">↶ Annuler</button>`
+      : `<button class="r-btn" data-task="${escapeHtml(r.id)}" data-label="${escapeHtml(r.label)}" data-action="done">📷 Fait</button>`;
+    const absentHtml = r.absent && !doneToday
+      ? `<button class="r-btn r-btn-absent" data-task="${escapeHtml(r.id)}" data-label="${escapeHtml(r.absent)}" data-action="absent">${escapeHtml(r.absent)}</button>`
+      : '';
+    return `
+      <div class="routine ${st.cls}">
+        <div class="r-status">${st.icon}</div>
+        <div class="r-info">
+          <div class="r-label">${escapeHtml(r.label)}</div>
+          <div class="r-meta">${meta}</div>
+          ${absentHtml}
+        </div>
+        ${btnHtml}
+      </div>
+    `;
+  }).join('');
+  document.getElementById('routines-list').innerHTML = html;
+  // Met à jour le badge sur le summary
+  const cntEl = document.getElementById('routines-summary-count');
+  if(dueCount > 0){
+    cntEl.textContent = dueCount + ' à faire';
+    cntEl.classList.add('due');
+  } else {
+    cntEl.textContent = '✓ tout à jour';
+    cntEl.classList.remove('due');
+  }
+  // Auto-ouvre la section s'il y a des routines dues
+  const block = document.getElementById('routines-block');
+  if(dueCount > 0) block.setAttribute('open', '');
+  else block.removeAttribute('open');
+}
+
+// Tâche périodique : PHOTO OBLIGATOIRE (décision Claudine 19/09/2026 — une coche ne prouve rien).
+// La photo et la validation passent par la file d'envoi → marche aussi sans réseau.
+async function markRoutineDone(taskId, label, btn){
+  if(!currentRoutinesSlug) return;
+  if(!S){ alert('▶️ Appuyez d’abord sur « Je commence le ménage » (en haut).'); return; }
+  const f = await prendrePhoto();
+  if(!f) return;
+  const heure = new Date().toISOString();
+  let big;
+  if(!(await photoFraiche(f))) return;
+  if(!(await netteteOk(f))){
+    if(!confirm('Cette photo semble floue.' + String.fromCharCode(10,10) + 'Refaites-la si possible. Valider quand même ?')) return;
+    label = label + ' (netteté à vérifier)';
+  }
+  try { big = await compress(f, 1280, tampon(label)); } catch(e){ alert('Photo illisible, réessayez.'); return; }
+  const presta = S.presta;
+  routinesData[taskId] = { lastDone: heure, prestataire: presta };
+  try { localStorage.setItem('routines-' + currentRoutinesSlug, JSON.stringify(routinesData)); } catch(e){}
+  S.routines = S.routines || {}; S.routines[taskId] = heure; saveS();
+  renderRoutines();
+  await qAdd({action:'photo', id:S.id, appart:S.appart, presta, etape:'routine-' + taskId, libelle:'Entretien : ' + label, heure, mime:'image/jpeg', file: big.split(',')[1]});
+  await qAdd({action:'routine', appart:S.appart, task:taskId, label, presta, heure});
+}
+
+// « Il n'y a pas de meuble en hauteur / de plantes… » : la tâche disparaît pour CE logement,
+// définitivement, et Claudine le voit dans l'historique (tâche « sans-<id> »).
+async function marquerAbsent(taskId, label, btn){
+  if(!currentRoutinesSlug) return;
+  if(!confirm(label + ' dans ce logement ?' + String.fromCharCode(10,10) + 'Cette tâche ne sera plus demandée ici.')) return;
+  btn.disabled = true; btn.textContent = '⏳';
+  routinesData['sans-' + taskId] = { lastDone: new Date().toISOString(), prestataire: (S && S.presta) || '' };
+  try { localStorage.setItem('routines-' + currentRoutinesSlug, JSON.stringify(routinesData)); } catch(e){}
+  renderRoutines();
+  await qAdd({action:'routine', appart:currentRoutinesSlug, task:'sans-' + taskId, label:'SANS OBJET — ' + label, presta:(S && S.presta) || '', heure:new Date().toISOString()});
+}
+
+async function undoRoutineDone(taskId, btn){
+  if(!currentRoutinesSlug) return;
+  btn.disabled = true;
+  btn.textContent = '⏳';
+  const params = new URLSearchParams({
+    action: 'undoRoutineDone',
+    appart: currentRoutinesSlug,
+    task: taskId
+  });
+  try {
+    const res = await fetch(ROUTINES_API_URL + '?' + params.toString());
+    const json = await res.json();
+    if(json.lastDone){
+      // Une entrée précédente existe encore → la garder comme "dernière fois"
+      routinesData[taskId] = { lastDone: json.lastDone, prestataire: '' };
+    } else {
+      // Plus aucune entrée → routine n'a jamais été faite
+      delete routinesData[taskId];
+    }
+    renderRoutines();
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = '↶ Annuler';
+    alert('Erreur lors de l\'annulation. Réessayez.');
+  }
+}
+
+// Délégation d'événements (évite les bugs d'échappement HTML)
+document.getElementById('routines-list').addEventListener('click', function(e){
+  const btn = e.target.closest('.r-btn');
+  if(!btn || btn.disabled) return;
+  const taskId = btn.getAttribute('data-task');
+  const action = btn.getAttribute('data-action');
+  if(!taskId) return;
+  if(action === 'absent'){
+    marquerAbsent(taskId, btn.getAttribute('data-label'), btn);
+  } else if(action === 'undo'){
+    undoRoutineDone(taskId, btn);
+  } else {
+    const label = btn.getAttribute('data-label');
+    markRoutineDone(taskId, label, btn);
+  }
+});
+
+// Hook : quand l'appart change, recharger les routines
+document.getElementById('appart').addEventListener('change', e => {
+  loadRoutinesForAppart(e.target.value);
+  loadSignalementsForAppart(e.target.value);
+});
+
+// ===== SIGNALEMENTS VOYAGEURS (problèmes signalés à régler) =====
+async function loadSignalementsForAppart(slug){
+  const block = document.getElementById('signalements-block');
+  if(!slug){ block.style.display='none'; return; }
+  try {
+    const res = await fetch(ROUTINES_API_URL + '?action=getSignalements&appart=' + encodeURIComponent(slug) + '&t=' + Date.now());
+    const json = await res.json();
+    const sigs = json.data || [];
+    if(sigs.length === 0){ block.style.display='none'; return; }
+    block.style.display='block';
+    document.getElementById('signalements-count').textContent = sigs.length + ' à régler';
+    document.getElementById('signalements-list').innerHTML = sigs.map(s => {
+      const dateCre = s.dateCreation ? String(s.dateCreation).substring(0,10) : '';
+      const elem = s.element ? '<b>' + escapeHtml(s.element) + '</b> · ' : '';
+      const desc = escapeHtml(s.description || '');
+      const src = s.source ? '<span style="font-size:10px;background:#fee2e2;padding:1px 6px;border-radius:6px;margin-left:4px">'+escapeHtml(s.source)+'</span>' : '';
+      const voy = s.voyageur ? ' · <span style="color:#7f1d1d;opacity:0.8">' + escapeHtml(s.voyageur) + '</span>' : '';
+      const actionBlock = s.action ? `
+          <div style="background:#fef3c7;border-left:3px solid #ca8a04;padding:6px 10px;margin:6px 0;border-radius:6px;font-size:13px;color:#713f12">
+            👉 <b>Action</b> : ${escapeHtml(s.action)}
+          </div>` : '';
+      return `
+        <div style="background:#fff;padding:10px 12px;border-radius:8px;margin-bottom:6px;border-left:4px solid #dc2626">
+          <div style="font-size:11px;color:#7f1d1d;opacity:0.8;margin-bottom:3px">📅 ${dateCre}${voy}${src}</div>
+          <div style="font-size:14px;color:#1e293b;margin-bottom:4px">${elem}<i>${desc}</i></div>
+          ${actionBlock}
+          <button class="sig-btn" data-sig-id="${escapeHtml(s.id)}" style="background:#16a34a;color:#fff;border:none;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">✓ Réglé</button>
+        </div>
+      `;
+    }).join('');
+  } catch(e){
+    block.style.display='none';
+  }
+}
+
+// Délégation pour bouton "Réglé"
+document.getElementById('signalements-list').addEventListener('click', async function(e){
+  const btn = e.target.closest('.sig-btn');
+  if(!btn || btn.disabled) return;
+  const sigId = btn.getAttribute('data-sig-id');
+  const presta = (document.getElementById('nom').value || '').trim();
+  btn.disabled = true;
+  btn.textContent = '⏳';
+  try {
+    await fetch(ROUTINES_API_URL + '?action=markSignalementResolu&id=' + encodeURIComponent(sigId) + '&par=' + encodeURIComponent(presta));
+    // Refresh
+    loadSignalementsForAppart(document.getElementById('appart').value);
+  } catch(err){
+    btn.disabled = false;
+    btn.textContent = '✓ Réglé';
+    alert('Erreur. Réessayez.');
+  }
+});
+
+// Si l'appart était DÉJÀ pré-sélectionné via ?appart= (QR code), le change event
+// a été dispatché AVANT que ce listener soit installé. On rattrape ici.
+{
+  const sel = document.getElementById('appart');
+  if(sel && sel.value) {
+    loadRoutinesForAppart(sel.value);
+    loadSignalementsForAppart(sel.value);
+  }
+}
+
+// =====================================================================
+// TUTO MÉNAGE v2 — basé sur la fiche de contrôle v3 (19/09/2026)
+// Bouton « Je commence » + photos obligatoires avec photo modèle
+// + fonctionne SANS RÉSEAU (caves) : tout est daté par le téléphone,
+//   gardé dans le téléphone, et envoyé dès que le réseau revient.
+// =====================================================================
+const SUIVI_API = 'https://script.google.com/macros/s/AKfycbwABUZlluUlyKrlL0zyl--vhXu9YD4x8RYIs3_RZgs3raxqAmr8yGFAspp6livjN62dcQ/exec';
+const PARAMS = new URLSearchParams(location.search);
+const MODE_MODELE = PARAMS.has('modele');
+const CLE = (function(){
+  const c = PARAMS.get('cle');
+  try { if(c) localStorage.setItem('menage-cle', c); return c || localStorage.getItem('menage-cle') || ''; } catch(e){ return c || ''; }
+})();
+// Logements sans linge prévu : photo de l'alèse (lit défait) obligatoire — liste Claudine 19/09/2026
+// Appartements « lancés » (règles strictes : entretien en retard obligatoire pour terminer).
+// Claudine les ajoute un par un, après avoir formé le prestataire. Surf = premier (19/09/2026).
+const LANCES = ['surf'];
+// Logements SANS canapé-lit (liste Claudine 19/09/2026) : pas de photo « canapé ouvert ».
+// Cocon, Apolove (Suite Romantique Face Mer), Maisonnette, Grande Love Room (Romantique Face Mer), Mini Love Room (Balnéo Face Mer).
+const SANS_CANAPE = ['cocon-romantique','apolove','maisonnette','grande-love-room','mini-love-room'];
+const SANS_LINGE = ['hamac','paddle','kitesurf','surf','face-mer','grand-large','albatros','terrasse'];
+
+// Photos : {id, label, multi?:true (plusieurs lits), nonConcerne?:true}
+// Items : {id, t, d?, photos?:[...], only?:fn(slug)->bool}
+const data = [
+  ["s1","1. Arrivée",[
+    {id:"questionnaire", t:"Photo du questionnaire d'arrivée + lire les annotations."},
+    {id:"premier-tour", t:"Premier tour : casse, manque, panne, saleté anormale → photo + signalement AVANT de commencer."},
+    {id:"machine", t:"Lancer la machine à laver."},
+    {id:"fenetres", t:"Ouvrir les fenêtres. Vérifier le placard ménage : produits, lavettes, sacs, linge."},
+    {id:"radiateurs", t:"Radiateurs : 12° l'hiver, éteints l'été."},
+  ]],
+  ["s2","2. Salle de bain : produits — dans cet ordre",[
+    {id:"anticalcaire", t:"① Anti-calcaire sur toute la robinetterie : salle de bain, cuisine, balnéo, buses et commandes balnéo."},
+    {id:"robinet-douche", t:"② Tout de suite, à l'anti-calcaire : nettoyer la robinetterie de la douche."},
+    {id:"pare-douche", t:"③ Faire le pare-douche."},
+    {id:"siphon", t:"④ Faire le siphon : zéro cheveu.", photos:[{id:"siphon", label:"Siphon propre"}]},
+    {id:"javel-receveur", t:"⑤ Enchaîner : spray javel sur tout le receveur + le carrelage au-dessus, sur les joints.", d:"Pour que les joints ne deviennent pas marron. Le receveur sera rincé à la toute fin (étape 8)."},
+    {id:"javel-wc", t:"⑥ Javel sur tout le WC, SAUF le dessus de la lunette. Puis on laisse agir ⏳ et on passe à l'étape 3.", d:"Le dessus de la lunette touche la peau : même essuyée, la javel colle à la peau."},
+  ]],
+  ["s3","3. Pendant que ça agit",[
+    {id:"poubelles", t:"Vider toutes les poubelles et remettre un sac propre partout."},
+    {id:"cuisine", t:"Cuisine : frigo, four, micro-ondes, plaques, cafetière, bouilloire, lave-vaisselle et TOUS les placards propres, rien d'oublié.", photos:[{id:"cuisine", label:"Placards de la cuisine ouverts"},{id:"frigo", label:"Frigo ET congélateur ouverts en même temps"},{id:"four", label:"Four ouvert"}]},
+    {id:"evier", t:"Liquide vaisselle, éponge, dosettes lave-vaisselle, torchon, essuie-main."},
+    {id:"sdb-produits", t:"Salle de bain : savon, gel douche, coton, sèche-cheveux, tapis. Papier toilette : 1 rouleau + 3/4 minimum, pliage en pointe."},
+    {id:"surfaces", t:"Surfaces : plan de travail, crédence, table, miroir, plan vasque (sans toucher aux produits qui agissent).", photos:[{id:"plan-travail", label:"Plan de travail de la cuisine"}]},
+    {id:"panier", t:"Panier d'accueil + petites cartes de visite.", d:"Voir le détail du panier dans l'encadré « Consignes spécifiques » en haut de la page."},
+  ]],
+  ["s4","4. Retour sur les produits — dans cet ordre",[
+    {id:"essuyer-javel", t:"① Javel du WC essuyée au papier toilette, jeté dans les WC. Tirer la chasse."},
+    {id:"lunette", t:"② Dessus de la lunette au produit fait maison : seul endroit (contact peau).", d:"Spray fait maison : 50 % vinaigre blanc + 25 % alcool ménager + 1 c. à café de liquide vaisselle, compléter avec de l'eau. Jamais avec la javel.", photos:[{id:"wc", label:"Cuvette des toilettes ouverte, lunette relevée"}]},
+    {id:"mains", t:"③ Se rincer les mains."},
+    {id:"essuyer-anticalcaire", t:"④ Anti-calcaire : on ESSUIE, on ne rince PAS (lavabo, cuisine…). On ne remouille plus.", photos:[{id:"robinet-sdb", label:"Zoom sur la robinetterie de la salle de bain"},{id:"robinet-cuisine", label:"Robinet cuisine"}]},
+    {id:"balneo", t:"Balnéo : buses une par une, purge, zéro sable.", only: s => !!(apartFeatures[s] && apartFeatures[s].balneo)},
+    {id:"plan-sdb", t:"Plan de la salle de bain propre, tapis de sol enroulé posé dessus.", photos:[{id:"plan-sdb", label:"Plan de la salle de bain + tapis enroulé"}]},
+  ]],
+  ["s5","5. Chambre",[
+    {id:"aleses", t:"Check des alèses : tache, odeur, humidité → on change.", photos:[{id:"alese", label:"Alèse, lit défait", only: s => SANS_LINGE.includes(s)}]},
+    {id:"lits", t:"Draps propres si besoin, sinon lit refait. Déco du lit selon les photos de référence.", photos:[{id:"lit", label:"Chaque lit refait", multi:true}]},
+    {id:"sous-lit", t:"Sous le lit et tables de chevet : rien d'oublié."},
+  ]],
+  ["s6","6. Salon — extérieur — vitres",[
+    {id:"canape", t:"Ouvrir le canapé-lit : dedans et dessous, rien d'oublié. Ranger coussins, plaids, déco.", photos:[{id:"canape", label:"Canapé OUVERT (déplié)"}], only: s => !SANS_CANAPE.includes(s)},
+    {id:"deco-salon", t:"Ranger coussins, plaids, déco.", only: s => SANS_CANAPE.includes(s)},
+    {id:"exterieur", t:"Balcon / terrasse / patio : mégots, déchets, crottes de chien. Sol balayé.", only: s => !!(apartFeatures[s] && apartFeatures[s].exterieur)},
+    {id:"vitres", t:"Faire les vitres et baies vitrées.", photos:[{id:"vitres", label:"Fenêtres"}]},
+  ]],
+  ["s7","7. Aspirateur puis poussière",[
+    {id:"aspi", t:"Aspirer tout le logement, tous les angles : plinthes, recoins, sous le canapé."},
+    {id:"cotes-lit", t:"Insister sur les côtés du lit et dessous.", photos:[{id:"coin-lit-gauche", label:"À côté de la tête de lit — côté gauche"},{id:"coin-lit-droit", label:"À côté de la tête de lit — côté droit"}]},
+    {id:"sol", t:"Laver le sol là où il y a des traces."},
+    {id:"lavette", t:"Petite lavette : dessus des plinthes, meubles, cadres, TV, étagères, déco."},
+  ]],
+  ["s8","8. Regard final — vidéo — départ",[
+    {id:"regard", t:"Regarder l'appart comme le voyageur qui entre. Casse → photo + signalement."},
+    {id:"rincer-receveur", t:"Rincer le receveur (javel)."},
+    {id:"video", t:"Vidéo continue de toutes les pièces (45 secondes maximum).", d:"Filmer sans couper : entrée, cuisine, salon, chambre(s), salle de bain. La vidéo part directement chez Claudine depuis l'appli.", video:true},
+    {id:"linge", t:"Sortir le linge de la machine et l'étendre. Hublot entrouvert."},
+    {id:"reassort", t:"Noter le réassort dans l'appli.", d:"Appli réassort : https://claudine-design.github.io/enquete-berck/reassort/"},
+    {id:"fermeture", t:"Fenêtres fermées, lumières éteintes, robinets vérifiés, clés en place, code brouillé."},
+  ]],
+];
+
+// ---------- état du ménage en cours (gardé dans le téléphone) ----------
+let S = null; // {id, appart, presta, debut, checked:{}, photos:{slot:[{heure,thumb}]}, nc:{}}
+function saveS(){ try { if(S) localStorage.setItem('menage-en-cours', JSON.stringify(S)); else localStorage.removeItem('menage-en-cours'); } catch(e){} }
+function loadS(){ try { return JSON.parse(localStorage.getItem('menage-en-cours') || 'null'); } catch(e){ return null; } }
+function hhmm(iso){ const d = new Date(iso); return d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}); }
+function slug(){ return document.getElementById('appart').value; }
+function presta(){ return document.getElementById('nom').value; }
+function appartLabel(s){ const o = Array.from(document.getElementById('appart').options).find(o => o.value === s); return o ? o.textContent : s; }
+
+// ---------- file d'attente d'envoi (IndexedDB) ----------
+function idb(){
+  return new Promise((res, rej) => {
+    const r = indexedDB.open('menage-queue', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('q', {autoIncrement:true});
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+async function qAdd(item){
+  const db = await idb();
+  await new Promise((res, rej) => { const tx = db.transaction('q','readwrite'); tx.objectStore('q').add(item); tx.oncomplete = res; tx.onerror = () => rej(tx.error); });
+  updateSyncBar();
+  if('serviceWorker' in navigator && navigator.serviceWorker.ready){
+    navigator.serviceWorker.ready.then(r => r.sync && r.sync.register('menage-flush')).catch(()=>{});
+  }
+  flush();
+}
+async function qAll(){
+  const db = await idb();
+  return new Promise((res, rej) => {
+    const out = []; const tx = db.transaction('q','readonly');
+    tx.objectStore('q').openCursor().onsuccess = e => { const c = e.target.result; if(c){ out.push({key:c.key, val:c.value}); c.continue(); } else res(out); };
+    tx.onerror = () => rej(tx.error);
+  });
+}
+async function qDel(key){
+  const db = await idb();
+  await new Promise(res => { const tx = db.transaction('q','readwrite'); tx.objectStore('q').delete(key); tx.oncomplete = res; });
+}
+// Lectures légères : on ne charge JAMAIS toute la file d'un coup (une vidéo pèse lourd en mémoire).
+async function qKeys(){
+  const db = await idb();
+  return new Promise((res, rej) => { const r = db.transaction('q','readonly').objectStore('q').getAllKeys(); r.onsuccess = () => res(r.result || []); r.onerror = () => rej(r.error); });
+}
+async function qGet(key){
+  const db = await idb();
+  return new Promise((res, rej) => { const r = db.transaction('q','readonly').objectStore('q').get(key); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+}
+async function qCount(){
+  const db = await idb();
+  return new Promise((res, rej) => { const r = db.transaction('q','readonly').objectStore('q').count(); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+}
+// Ordre d'envoi : les petits messages d'abord (début, FIN du ménage, entretien), puis les photos,
+// et la vidéo (lourde) en dernier → Claudine est prévenue de la fin en quelques secondes,
+// même si la vidéo met plusieurs minutes à partir.
+function priorite(val){
+  if(!val) return 9;
+  if(val.action === 'start') return 0;
+  if(val.action === 'fin') return 1;
+  if(val.action === 'routine') return 2;
+  if(val.action === 'photo' && val.etape === 'video') return 5;
+  return 3;
+}
+// Envoi avec délai maximum : une connexion qui reste « pendue » ne bloque plus toute la file.
+async function fetchDelai(url, opts, ms){
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), ms);
+  try { return await fetch(url, Object.assign({}, opts || {}, {signal: ctl.signal})); }
+  finally { clearTimeout(t); }
+}
+// Deux files en parallèle : « léger » (début, fin, entretien, photos) et « lourd » (vidéo).
+// Ainsi la vidéo en cours d'envoi ne retarde jamais le message de FIN du ménage.
+const flushing = {leger:false, lourd:false};
+let flushRetry = null;
+async function flush(){
+  if(SUIVI_API.indexOf('http') !== 0) return;
+  const r = await Promise.all([flushFile('leger'), flushFile('lourd')]);
+  if(r.some(x => x === false)){ clearTimeout(flushRetry); flushRetry = setTimeout(flush, 20000); }
+  updateSyncBar();
+}
+async function flushFile(file){
+  if(flushing[file]) return true;
+  flushing[file] = true;
+  let toutOk = true;
+  try {
+   // On repasse tant que de nouveaux envois sont arrivés dans la file pendant qu'on envoyait les précédents.
+   const vus = new Set();
+   for(;;){
+    const metas = [];
+    for(const key of await qKeys()){
+      if(vus.has(key)) continue;
+      const val = await qGet(key);
+      if(val && (priorite(val) === 5) === (file === 'lourd')) metas.push({key, p: priorite(val)});
+    }
+    if(!metas.length) break;
+    metas.sort((a, b) => a.p - b.p || a.key - b.key);
+    for(const {key} of metas){
+      vus.add(key);
+      const val = await qGet(key);
+      if(!val) continue;
+      let ok = false;
+      try {
+        let j;
+        if(val.action === 'routine'){
+          const r = await fetchDelai(ROUTINES_API_URL + '?' + new URLSearchParams({action:'markRoutineDone', appart:val.appart, task:val.task, label:val.label, presta:val.presta}).toString(), {}, 45000);
+          j = await r.json(); j.ok = !!j.success;
+        } else {
+          const r = await fetchDelai(SUIVI_API, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(val)}, file === 'lourd' ? 420000 : 90000);
+          j = await r.json();
+        }
+        ok = !!j.ok || j.error === 'cle';
+        if(ok && val.action === 'modele' && j.fileId && slug() === val.appart){ modeles[val.etape] = j.fileId; saveModeles(val.appart); render(); }
+      } catch(e){ ok = false; }
+      // Un envoi raté ne bloque plus les suivants : il repartira au prochain essai.
+      if(!ok){ toutOk = false; continue; }
+      await qDel(key);
+      updateSyncBar();
+    }
+   }
+  } catch(e){ toutOk = false; }
+  finally { flushing[file] = false; }
+  return toutOk;
+}
+async function updateSyncBar(){
+  const bar = document.getElementById('sync-bar');
+  let n = 0; try { n = await qCount(); } catch(e){}
+  if(n === 0){ bar.className = 'sync ok'; bar.innerHTML = navigator.onLine ? '✅ Tout est envoyé' : '📴 Pas de réseau — rien en attente'; return; }
+  bar.className = 'sync wait';
+  const quoi = '<b>' + n + ' envoi' + (n>1?'s':'') + '</b>';
+  bar.innerHTML = navigator.onLine
+    ? '📤 ' + quoi + ' en cours… tout est bien gardé, ça part tout seul. Continuez votre ménage. <button type="button" onclick="flush()">Renvoyer</button>'
+    : '📴 Pas de réseau ici — ' + quoi + ' gardé' + (n>1?'s':'') + ' dans le téléphone, ça partira tout seul dès que le réseau revient. <button type="button" onclick="flush()">Renvoyer</button>';
+}
+window.addEventListener('offline', () => updateSyncBar());
+window.addEventListener('online', () => flush());
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') flush(); });
+
+// ---------- photos : compression avant envoi ----------
+// stamp (optionnel) : texte incrusté en bas de la photo (date/heure, appart, prénom) — preuve visible.
+function compress(file, max, stamp){
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      const g = c.getContext('2d');
+      g.drawImage(img, 0, 0, c.width, c.height);
+      if(stamp){
+        const fs = Math.max(16, Math.round(c.width / 32));
+        g.font = 'bold ' + fs + 'px sans-serif';
+        const h = Math.round(fs * 1.7);
+        g.fillStyle = 'rgba(0,0,0,.6)'; g.fillRect(0, c.height - h, c.width, h);
+        g.fillStyle = '#fff'; g.textBaseline = 'middle';
+        g.fillText(stamp, Math.round(fs * 0.6), c.height - h / 2);
+      }
+      URL.revokeObjectURL(img.src);
+      res(c.toDataURL('image/jpeg', 0.72));
+    };
+    img.onerror = rej;
+    img.src = URL.createObjectURL(file);
+  });
+}
+// Date de prise de vue d'une photo : EXIF DateTimeOriginal si présent, sinon date du fichier.
+async function datePrise(file){
+  try {
+    const buf = new DataView(await file.slice(0, 131072).arrayBuffer());
+    if(buf.getUint16(0) === 0xFFD8){
+      let o = 2;
+      while(o < buf.byteLength - 4){
+        const mk = buf.getUint16(o), len = buf.getUint16(o + 2);
+        if(mk === 0xFFE1 && buf.getUint32(o + 4) === 0x45786966){
+          const t = o + 10, le = buf.getUint16(t) === 0x4949;
+          const u16 = x => buf.getUint16(x, le), u32 = x => buf.getUint32(x, le);
+          const lire = (ifd, tag) => { const n = u16(ifd); for(let i = 0; i < n; i++){ const e = ifd + 2 + i * 12; if(u16(e) === tag) return e; } return 0; };
+          const ex = lire(t + u32(t + 4), 0x8769);
+          if(ex){
+            const d = lire(t + u32(ex + 8), 0x9003);
+            if(d){
+              let str = ''; const off = t + u32(d + 8);
+              for(let i = 0; i < 19; i++) str += String.fromCharCode(buf.getUint8(off + i));
+              const m = str.match(/(\d{4}):(\d{2}):(\d{2}) (\d{2}):(\d{2}):(\d{2})/);
+              if(m) return new Date(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6]);
+            }
+          }
+          break;
+        }
+        o += 2 + len;
+      }
+    }
+  } catch(e){}
+  return file.lastModified ? new Date(file.lastModified) : null;
+}
+// Refuse une photo prise avant le début du ménage (ex. vieille photo choisie dans la galerie).
+async function photoFraiche(file){
+  const d = await datePrise(file);
+  if(!d || !S) return true;
+  if(d.getTime() < new Date(S.debut).getTime() - 10 * 60000){
+    alert('⛔ Cette photo a été prise le ' + d.toLocaleDateString('fr-FR') + ' à ' + d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}) + ', avant le début du ménage.' + String.fromCharCode(10,10) + 'Prenez la photo MAINTENANT avec l’appareil photo.');
+    return false;
+  }
+  return true;
+}
+function tampon(label){
+  const d = new Date();
+  return d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}) + ' · ' + appartLabel(S.appart) + ' · ' + S.presta + ' · ' + label;
+}
+// Netteté : variance du Laplacien sur une version réduite en noir et blanc.
+// En dessous du seuil, la photo est franchement floue → on la refuse.
+const NETTETE_MIN = 35;
+const essaisFlous = {};   // slot -> nombre de refus d'affilée
+async function netteteOk(file){
+  try {
+    const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(file); });
+    const L = 400, k = Math.min(1, L / Math.max(img.width, img.height));
+    const w = Math.max(80, Math.round(img.width * k)), h = Math.max(80, Math.round(img.height * k));
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const g = c.getContext('2d', {willReadFrequently:true});
+    g.drawImage(img, 0, 0, w, h);
+    URL.revokeObjectURL(img.src);
+    const d = g.getImageData(0, 0, w, h).data;
+    const gris = new Float32Array(w * h);
+    for(let i = 0, j = 0; i < d.length; i += 4, j++) gris[j] = 0.299*d[i] + 0.587*d[i+1] + 0.114*d[i+2];
+    // On mesure zone par zone et on garde la plus nette : un mur uni ne doit pas
+    // faire passer pour floue une photo dont le sujet est net.
+    const zones = [[0,0,.5,.5],[.5,0,1,.5],[0,.5,.5,1],[.5,.5,1,1],[.25,.25,.75,.75]];
+    let best = 0;
+    zones.forEach(z => {
+      const x0 = Math.max(1, Math.floor(z[0]*w)), y0 = Math.max(1, Math.floor(z[1]*h));
+      const x1 = Math.min(w-1, Math.floor(z[2]*w)), y1 = Math.min(h-1, Math.floor(z[3]*h));
+      let somme = 0, somme2 = 0, n = 0;
+      for(let y = y0; y < y1; y++){
+        for(let x = x0; x < x1; x++){
+          const i = y*w + x;
+          const lap = 4*gris[i] - gris[i-1] - gris[i+1] - gris[i-w] - gris[i+w];
+          somme += lap; somme2 += lap*lap; n++;
+        }
+      }
+      if(n){ const v = somme2/n - (somme/n)*(somme/n); if(v > best) best = v; }
+    });
+    return best >= NETTETE_MIN;
+  } catch(e){ return true; }   // dans le doute, on accepte
+}
+
+function prendrePhoto(){
+  return new Promise(res => {
+    const fi = document.createElement('input');
+    fi.type = 'file'; fi.accept = 'image/*'; fi.capture = 'environment';
+    fi.onchange = () => res(fi.files[0] || null);
+    fi.click();
+  });
+}
+
+// ---------- photos modèles ----------
+let modeles = {};
+function modeleUrl(id){ return 'https://lh3.googleusercontent.com/d/' + id + '=w900'; }
+function saveModeles(s){ try { localStorage.setItem('modeles-' + s, JSON.stringify(modeles)); } catch(e){} }
+async function loadModeles(s){
+  try { modeles = JSON.parse(localStorage.getItem('modeles-' + s) || '{}'); } catch(e){ modeles = {}; }
+  render();
+  if(!s || SUIVI_API.indexOf('http') !== 0) return;
+  try {
+    const r = await fetch(SUIVI_API + '?action=modeles&appart=' + encodeURIComponent(s));
+    const j = await r.json();
+    if(j.ok && slug() === s){
+      modeles = j.modeles || {}; saveModeles(s); render();
+      Object.values(modeles).forEach(id => { const i = new Image(); i.src = modeleUrl(id); }); // mise en cache pour la cave
+    }
+  } catch(e){}
+}
+
+// ---------- rendu ----------
+function itemsFor(s){
+  return data.map(([cls, title, items]) => [cls, title, items
+    .filter(it => !it.only || it.only(s))
+    .map(it => Object.assign({}, it, {photos: (it.photos || []).filter(p => !p.only || p.only(s))}))]);
+}
+function slotDone(p){ return (S && S.nc[p.id]) || (S && S.photos[p.id] && S.photos[p.id].length > 0); }
+function itemReady(it){ return it.photos.every(slotDone); }
+
+function render(){
+  const s = slug();
+  document.getElementById('mode-modele').style.display = MODE_MODELE ? 'block' : 'none';
+  document.getElementById('start-box').style.display = MODE_MODELE ? 'none' : 'block';
+  document.querySelector('.actions').style.display = MODE_MODELE ? 'none' : 'flex';
+  renderStartBox();
+  const root = document.getElementById('sections');
+  root.innerHTML = '';
+  if(!s){ root.innerHTML = '<div class="hint">👆 Choisissez l\'appartement pour afficher le tuto.</div>'; updateProgress(); return; }
+  if(MODE_MODELE){ renderModeModele(root, s); return; }
+  itemsFor(s).forEach(([cls, title, items], si) => {
+    const sec = document.createElement('section');
+    sec.className = cls + ((S && openSec[si]) || (!S && si === 0) || (S && openSec[si] === undefined && firstOpen(items)) ? ' open' : '');
+    const done = items.filter(it => S && S.checked[it.id]).length;
+    sec.innerHTML = '<h2><span class="title-wrap">' + title + '</span><span class="count' + (done === items.length ? ' done' : '') + '">' + done + '/' + items.length + '</span><span class="arrow">▼</span></h2><div class="body"></div>';
+    sec.querySelector('h2').onclick = () => { openSec[si] = !sec.classList.contains('open'); sec.classList.toggle('open'); };
+    const body = sec.querySelector('.body');
+    items.forEach(it => body.appendChild(renderItem(it)));
+    root.appendChild(sec);
+  });
+  updateProgress();
+}
+const openSec = {};
+function firstOpen(items){ return items.some(it => !S.checked[it.id]); }
+
+function renderItem(it){
+  const div = document.createElement('div');
+  const checked = !!(S && S.checked[it.id]);
+  div.className = 'item' + (checked ? ' done' : '');
+  let photosHtml = '';
+  if(it.video){
+    const v = S && S.video;
+    photosHtml += '<div class="slot' + (v ? ' ok' : '') + '">' +
+      '<div class="slot-title">🎥 Vidéo de fin' + (v ? ' ✓ ' + hhmm(v.heure) : '') + '</div>' +
+      '<button type="button" class="shoot" data-video="1">' + (v ? '🔁 Refaire la vidéo' : '🎥 Filmer maintenant') + '</button>' +
+      '<div class="small-note" style="font-size:14px;font-weight:700;color:#b91c1c">⚠️ ATTENTION : VIDÉO 45 SECONDES MAXIMUM</div>' +
+      '<div class="small-note">Toutes les pièces, sans couper (au moins 10 secondes). Un compteur s’affiche pendant que vous filmez, et l’appli s’arrête toute seule à 45 s.</div></div>';
+  }
+  it.photos.forEach(p => {
+    const list = (S && S.photos[p.id]) || [];
+    const nc = S && S.nc[p.id];
+    const m = modeles[p.id];
+    photosHtml += '<div class="slot' + (list.length || nc ? ' ok' : '') + '">' +
+      '<div class="slot-title">📷 ' + p.label + (list.length ? ' ✓' : '') + (nc ? ' — non concerné' : '') + '</div>' +
+      '<div class="slot-row">' +
+        (m ? '<figure><img src="' + modeleUrl(m) + '" onclick="openLightbox(this.src)" alt=""><figcaption>Modèle</figcaption></figure>' : '<figure class="nomodel"><div>Pas encore de photo modèle</div></figure>') +
+        list.map((ph, k) => '<figure><img src="' + ph.thumb + '" onclick="openLightbox(this.src)" alt=""><figcaption>' + hhmm(ph.heure) + '</figcaption></figure>').join('') +
+      '</div>' +
+      (nc ? '' : '<button type="button" class="shoot" data-slot="' + p.id + '">' + (list.length ? (p.multi ? '➕ Photo d\'un autre lit' : '🔁 Reprendre la photo') : '📷 Prendre la photo') + '</button>') +
+      (p.nonConcerne && !list.length ? '<button type="button" class="nc" data-slot="' + p.id + '">' + (nc ? 'Annuler « non concerné »' : 'Pas de canapé-lit ici') + '</button>' : '') +
+    '</div>';
+  });
+  div.innerHTML = '<input type="checkbox"' + (checked ? ' checked' : '') + '><div class="col"><div style="display:flex;align-items:flex-start"><span style="flex:1">' + it.t + '</span>' +
+    (it.d ? '<button type="button" class="info-btn" aria-label="Détail">ⓘ</button>' : '') + '</div>' +
+    (it.d ? '<div class="detail">' + it.d + '</div>' : '') + photosHtml + '</div>';
+  const cb = div.querySelector('input');
+  cb.onclick = e => {
+    if(!S){ e.preventDefault(); alert('▶️ Appuyez d\'abord sur « Je commence le ménage » (en haut).'); return; }
+    if(cb.checked && it.video && !(S && S.video)){
+      e.preventDefault(); filmer(it); return;
+    }
+    if(cb.checked && !itemReady(it)){
+      e.preventDefault();
+      const missing = it.photos.find(p => !slotDone(p));
+      shoot(missing.id, missing.label);
+      return;
+    }
+    S.checked[it.id] = cb.checked; saveS(); render();
+  };
+  const info = div.querySelector('.info-btn');
+  if(info) info.onclick = e => { e.preventDefault(); e.stopPropagation(); div.classList.toggle('show-detail'); };
+  div.querySelectorAll('.shoot').forEach(b => b.onclick = e => { e.preventDefault(); e.stopPropagation();
+    if(b.dataset.video){ filmer(it); return; }
+    const p = it.photos.find(x => x.id === b.dataset.slot); shoot(p.id, p.label, it); });
+  div.querySelectorAll('.nc').forEach(b => b.onclick = e => { e.preventDefault(); e.stopPropagation();
+    S.nc[b.dataset.slot] = !S.nc[b.dataset.slot]; if(itemReady(it) && S.nc[b.dataset.slot]) S.checked[it.id] = true; saveS(); render(); });
+  return div;
+}
+
+// ---------- VIDÉO DE FIN ----------
+// La vidéo est filmée DANS l'appli (caméra arrière, qualité allégée) : compteur bien visible,
+// arrêt automatique à 45 s, et un fichier léger (~8 Mo) qui part même avec peu de réseau.
+// Avant (20-21/09/2026) on passait par la caméra du téléphone : en Full HD, 10 secondes pèsent
+// déjà plus de 20 Mo → vidéo refusée « trop lourde » (échec de Maëlys au Kingston).
+const VIDEO_MAX_S = 45;      // durée maximum (arrêt automatique)
+const VIDEO_MIN_S = 10;      // en dessous, on n'a pas pu filmer toutes les pièces
+const VIDEO_MAX_MO = 22;     // limite du serveur (secours « caméra du téléphone » uniquement)
+function typeVideo(){
+  if(!window.MediaRecorder) return null;
+  const types = ['video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
+  for(const t of types){ try { if(MediaRecorder.isTypeSupported(t)) return t; } catch(e){} }
+  return '';
+}
+function mmss(s){ return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(Math.floor(s % 60)).padStart(2, '0'); }
+
+// Ouvre la caméra plein écran. Rend {blob, duree} ; null si annulé ; 'secours' si la caméra de l'appli est indisponible.
+function filmerDansAppli(){
+  return new Promise(async res => {
+    const type = typeVideo();
+    if(type === null || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ res('secours'); return; }
+    let stream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}, width:{ideal:1280}, height:{ideal:720}, frameRate:{ideal:24}}, audio:false});
+    } catch(e){ res('secours'); return; }
+    const box = document.createElement('div');
+    box.className = 'cam';
+    box.innerHTML =
+      '<video playsinline muted autoplay></video>' +
+      '<div class="cam-top">' +
+        '<div class="cam-warn">⚠️ ATTENTION : VIDÉO ' + VIDEO_MAX_S + ' SECONDES MAXIMUM</div>' +
+        '<div class="cam-time" style="display:none"></div>' +
+        '<div class="cam-prog" style="display:none"><div></div></div>' +
+      '</div>' +
+      '<div class="cam-bottom">' +
+        '<div class="hint2">Toutes les pièces, <b>sans couper</b>, en marchant sans vous arrêter.<br>Entre ' + VIDEO_MIN_S + ' et ' + VIDEO_MAX_S + ' secondes. L’appli s’arrête toute seule à ' + VIDEO_MAX_S + ' s.</div>' +
+        '<button type="button" class="cam-btn">🔴 DÉMARRER LA VIDÉO</button>' +
+        '<button type="button" class="cam-cancel">Annuler</button>' +
+      '</div>';
+    document.body.appendChild(box);
+    const vid = box.querySelector('video'), btn = box.querySelector('.cam-btn'), cancel = box.querySelector('.cam-cancel');
+    const time = box.querySelector('.cam-time'), prog = box.querySelector('.cam-prog'), warn = box.querySelector('.cam-warn'), hint = box.querySelector('.hint2');
+    vid.srcObject = stream;
+    let rec = null, chunks = [], t0 = 0, tick = null, fini = false;
+    const fermer = out => {
+      if(fini) return; fini = true;
+      clearInterval(tick);
+      document.removeEventListener('visibilitychange', surCache);
+      try { stream.getTracks().forEach(t => t.stop()); } catch(e){}
+      box.remove();
+      res(out);
+    };
+    const arreter = () => { if(rec && rec.state !== 'inactive'){ btn.disabled = true; btn.textContent = '⏳ Enregistrement…'; rec.stop(); } };
+    const surCache = () => { if(document.visibilityState !== 'visible') arreter(); };
+    document.addEventListener('visibilitychange', surCache);
+    cancel.onclick = () => { if(rec && rec.state !== 'inactive'){ rec.onstop = null; try { rec.stop(); } catch(e){} } fermer(null); };
+    btn.onclick = () => {
+      if(rec){ arreter(); return; }
+      try { rec = new MediaRecorder(stream, Object.assign({videoBitsPerSecond: 1400000}, type ? {mimeType: type} : {})); }
+      catch(e){ try { rec = new MediaRecorder(stream); } catch(e2){ fermer('secours'); return; } }
+      rec.ondataavailable = e => { if(e.data && e.data.size) chunks.push(e.data); };
+      rec.onerror = () => fermer('secours');
+      rec.onstop = () => {
+        const duree = (Date.now() - t0) / 1000;
+        fermer({blob: new Blob(chunks, {type: (rec.mimeType || type || 'video/mp4').split(';')[0]}), duree});
+      };
+      rec.start(1000);
+      t0 = Date.now();
+      warn.style.display = 'none'; time.style.display = 'block'; prog.style.display = 'block';
+      hint.innerHTML = 'Filmez toutes les pièces sans couper. Arrêt automatique à ' + VIDEO_MAX_S + ' s.';
+      btn.className = 'cam-btn stop'; btn.textContent = '⏹ ARRÊTER LA VIDÉO';
+      const maj = () => {
+        const s = (Date.now() - t0) / 1000;
+        time.innerHTML = '🔴 ' + mmss(s) + ' <small>/ ' + mmss(VIDEO_MAX_S) + '</small>';
+        prog.firstChild.style.width = Math.min(100, s / VIDEO_MAX_S * 100) + '%';
+        const proche = s >= VIDEO_MAX_S - 10;
+        time.classList.toggle('fin-proche', proche); prog.classList.toggle('fin-proche', proche);
+        if(s >= VIDEO_MAX_S) arreter();
+      };
+      maj(); tick = setInterval(maj, 250);
+    };
+  });
+}
+// Secours : caméra du téléphone (si l'appli n'a pas le droit d'utiliser la caméra).
+function prendreVideo(){
+  return new Promise(res => {
+    const fi = document.createElement('input');
+    fi.type = 'file'; fi.accept = 'video/*'; fi.capture = 'environment';
+    fi.onchange = () => res(fi.files[0] || null);
+    fi.click();
+  });
+}
+function dureeFichier(f){
+  return new Promise(res => {
+    const v = document.createElement('video'); v.preload = 'metadata';
+    const fin = d => { try { URL.revokeObjectURL(v.src); } catch(e){} res(d); };
+    v.onloadedmetadata = () => fin(isFinite(v.duration) ? v.duration : 0);
+    v.onerror = () => fin(0);
+    setTimeout(() => fin(0), 4000);
+    v.src = URL.createObjectURL(f);
+  });
+}
+const NL2 = String.fromCharCode(10,10);
+async function filmer(it){
+  if(!S){ alert('Appuyez d’abord sur « Je commence le ménage » (en haut).'); return; }
+  let f = await filmerDansAppli(), duree = 0;
+  if(f === null) return;
+  if(f === 'secours'){
+    alert('⚠️ ATTENTION : VIDÉO ' + VIDEO_MAX_S + ' SECONDES MAXIMUM' + NL2 +
+      'La caméra de votre téléphone va s’ouvrir. Filmez toutes les pièces sans couper, entre ' + VIDEO_MIN_S + ' et ' + VIDEO_MAX_S + ' secondes, en regardant le compteur de la caméra.' + NL2 +
+      'Astuce : si on vous demande d’autoriser la caméra pour cette appli, répondez OUI — la vidéo sera plus légère et partira plus vite.');
+    f = await prendreVideo();
+    if(!f) return;
+    duree = await dureeFichier(f);
+  } else { duree = f.duree; f = f.blob; }
+  if(duree && duree < VIDEO_MIN_S){
+    alert('⛔ Vidéo trop courte : ' + Math.round(duree) + ' secondes.' + NL2 + 'Il faut filmer TOUTES les pièces sans couper : au moins ' + VIDEO_MIN_S + ' secondes, ' + VIDEO_MAX_S + ' secondes maximum.' + NL2 + 'Appuyez sur « Filmer maintenant » pour la refaire.');
+    return;
+  }
+  if(!f.size){ alert('⛔ La vidéo n’a pas été enregistrée. Réessayez : appuyez sur « Filmer maintenant ».'); return; }
+  const mo = f.size / 1048576;
+  if(mo > VIDEO_MAX_MO){
+    alert('⛔ Vidéo trop lourde pour partir (' + Math.round(mo) + ' Mo' + (duree ? ', ' + Math.round(duree) + ' secondes' : '') + ').' + NL2 +
+      'Refaites-la plus courte (' + VIDEO_MAX_S + ' secondes MAXIMUM). Si ça recommence : dans la caméra du téléphone, choisissez la qualité vidéo la plus basse (HD 720p), ou autorisez la caméra pour cette appli.');
+    return;
+  }
+  const heure = new Date().toISOString();
+  let b64;
+  try { b64 = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result.split(',')[1]); r.onerror = rej; r.readAsDataURL(f); }); }
+  catch(e){ alert('⛔ La vidéo n’a pas pu être lue. Réessayez.'); return; }
+  try {
+    await qAdd({action:'photo', id:S.id, appart:S.appart, presta:S.presta, etape:'video', libelle:'Vidéo de fin de ménage' + (duree ? ' (' + Math.round(duree) + ' s)' : ''), heure, mime:f.type || 'video/mp4', file:b64});
+  } catch(e){ alert('⛔ Le téléphone n’a pas pu garder la vidéo (mémoire pleine ?). Libérez un peu de place et réessayez.'); return; }
+  S.video = { heure, mo: Math.round(mo), duree: Math.round(duree) };
+  if(it) S.checked[it.id] = true;
+  saveS(); render();
+}
+
+async function shoot(slotId, label, it){
+  if(!S){ alert('▶️ Appuyez d\'abord sur « Je commence le ménage » (en haut).'); return; }
+  const f = await prendrePhoto();
+  if(!f) return;
+  const heure = new Date().toISOString(); // heure de la photo, prise par le téléphone
+  let big, thumb;
+  if(!(await photoFraiche(f))) return;
+  if(!(await netteteOk(f))){
+    essaisFlous[slotId] = (essaisFlous[slotId] || 0) + 1;
+    if(essaisFlous[slotId] < 3){
+      alert('⛔ Photo floue (essai ' + essaisFlous[slotId] + ').' + String.fromCharCode(10,10) + 'Refaites-la : tenez le téléphone bien immobile, appuyez sur la zone à photographier pour faire la mise au point, puis déclenchez.');
+      return;
+    }
+    if(!confirm('Cette photo est encore jugée floue.' + String.fromCharCode(10,10) + 'Si elle est vraiment nette, vous pouvez l’envoyer quand même : Claudine la vérifiera.')) return;
+    label = label + ' (netteté à vérifier)';
+  }
+  essaisFlous[slotId] = 0;
+  try { big = await compress(f, 1280, tampon(label)); thumb = await compress(f, 220); }
+  catch(e){ alert('Photo illisible, réessayez.'); return; }
+  const p = findSlot(slotId);
+  if(!p.multi) S.photos[slotId] = [];
+  (S.photos[slotId] = S.photos[slotId] || []).push({heure, thumb});
+  const item = it || findItemOfSlot(slotId);
+  if(item && itemReady(item)) S.checked[item.id] = true;
+  saveS(); render();
+  await qAdd({action:'photo', id:S.id, appart:S.appart, presta:S.presta, etape:slotId, libelle:label, heure, mime:'image/jpeg', file: big.split(',')[1]});
+}
+function findSlot(id){ for(const [,, items] of data) for(const it of items) for(const p of (it.photos||[])) if(p.id === id) return p; return {}; }
+function findItemOfSlot(id){ for(const [,, items] of itemsFor(slug())) for(const it of items) if(it.photos.some(p => p.id === id)) return it; return null; }
+
+function updateProgress(){
+  const s = slug();
+  const items = s ? itemsFor(s).flatMap(x => x[2]) : [];
+  const done = items.filter(it => S && S.checked[it.id]).length;
+  document.getElementById('bar').style.width = (items.length ? done / items.length * 100 : 0) + '%';
+  const slots = items.flatMap(it => it.photos);
+  const ph = slots.filter(slotDone).length;
+  document.getElementById('ptext').textContent = done + ' / ' + items.length + ' tâches · ' + ph + ' / ' + slots.length + ' photos';
+}
+
+// ---------- Je commence / Terminer ----------
+function renderStartBox(){
+  const box = document.getElementById('start-box');
+  if(S){
+    box.className = 'start on';
+    box.innerHTML = '🟢 Ménage commencé à <b>' + hhmm(S.debut) + '</b> — <b>' + S.presta + '</b> — ' + appartLabel(S.appart) +
+      '<div class="small">Si vous fermez l\'appli, tout est gardé : rouvrez-la, vous reprenez où vous en étiez.</div>';
+    document.getElementById('appart').disabled = true;
+    document.getElementById('nom').disabled = true;
+  } else {
+    box.className = 'start';
+    box.innerHTML = '<button type="button" id="btn-start">▶️ Je commence le ménage</button><div class="small">L\'heure est notée tout de suite, même sans réseau.</div>';
+    document.getElementById('btn-start').onclick = demarrer;
+    document.getElementById('appart').disabled = false;
+    document.getElementById('nom').disabled = false;
+  }
+}
+async function demarrer(){
+  if(!slug()){ alert('Choisissez d\'abord l\'appartement.'); return; }
+  if(!presta()){ alert('Choisissez d\'abord votre prénom dans la liste « Prestataire ».'); document.getElementById('nom').focus(); return; }
+  const debut = new Date().toISOString();
+  S = { id: 'M' + debut.replace(/\D/g,'').slice(0,14) + Math.random().toString(36).slice(2,6), appart: slug(), presta: presta(), debut, checked:{}, photos:{}, nc:{} };
+  saveS(); render();
+  window.scrollTo({top: document.getElementById('sections').offsetTop - 10, behavior:'smooth'});
+  await qAdd({action:'start', id:S.id, appart:S.appart, presta:S.presta, heure:debut});
+}
+async function send(){
+  if(!S){ alert('▶️ Le ménage n\'a pas été commencé : appuyez sur « Je commence le ménage ».'); return; }
+  const s = S.appart;
+  const items = itemsFor(s).flatMap(x => x[2]);
+  const missing = items.flatMap(it => it.photos).filter(p => !slotDone(p)).map(p => '📷 ' + p.label);
+  if(missing.length){ alert('⛔ Il manque des photos :\n\n' + missing.join('\n') + '\n\nPrenez-les pour pouvoir terminer.'); return; }
+  if(LANCES.includes(s)){
+    const retard = ROUTINES.filter(r => computeStatus(r.intervalDays, (routinesData[r.id] || {}).lastDone).cls === 'due-overdue');
+    if(retard.length){ alert('⛔ Entretien en retard à faire AVANT de terminer (avec photo) :' + String.fromCharCode(10,10) + retard.map(r => '🔴 ' + r.label).join(String.fromCharCode(10)) + String.fromCharCode(10,10) + 'Voir l’encadré vert « Entretien périodique ».'); document.getElementById('routines-block').setAttribute('open',''); document.getElementById('routines-block').scrollIntoView({behavior:'smooth'}); return; }
+  }
+  if(!S.checked['video']){ alert('⛔ Il manque la vidéo de fin : étape 8, bouton « 🎥 Filmer maintenant ».'); return; }
+  const done = items.filter(it => S.checked[it.id]).length;
+  let remarque = '';
+  if(done < items.length){
+    if(!confirm('Il reste ' + (items.length - done) + ' tâche(s) non cochée(s). Terminer quand même ?')) return;
+    remarque = (items.length - done) + ' tâche(s) non cochée(s) : ' + items.filter(it => !S.checked[it.id]).map(it => it.id).join(', ');
+  }
+  const fin = new Date().toISOString();
+  const minutes = Math.round((new Date(fin) - new Date(S.debut)) / 60000);
+  await qAdd({action:'fin', id:S.id, appart:S.appart, presta:S.presta, heure:fin, taches:done, total:items.length, remarque});
+  const nom = S.presta, appart = appartLabel(S.appart), nbPhotos = Object.values(S.photos).reduce((a, l) => a + l.length, 0);
+  S = null; saveS(); render();
+  ecranFin(nom, appart, minutes, nbPhotos);
+}
+
+// Écran de fin — le prestataire ne doit avoir AUCUN doute (demande Claudine 21/09/2026) :
+//  1) tant que des envois partent : message calme « c'est bien arrivé, l'envoi est en cours,
+//     vous pouvez passer à autre chose » (l'envoi continue tout seul, écran fermé ou non) ;
+//  2) quand tout est parti : GROS CHECK VERT « MÉNAGE VALIDÉ ET ENVOYÉ À CLAUDINE ».
+// Le mot « réseau » n'apparaît que si le téléphone n'a VRAIMENT pas de réseau.
+function ecranFin(nom, appart, minutes, nbPhotos){
+  const box = document.createElement('div');
+  box.className = 'fin';
+  document.body.appendChild(box);
+  const duree = Math.floor(minutes/60) + ' h ' + String(minutes%60).padStart(2,'0');
+  const dessine = (restant, total) => {
+    let corps;
+    if(!restant){
+      corps = '<div class="fin-check">✓</div>' +
+        '<div class="fin-valide">MÉNAGE VALIDÉ<br>ET ENVOYÉ À CLAUDINE</div>' +
+        '<div class="fin-detail">' +
+          '• Vos ' + nbPhotos + ' photos et votre vidéo sont bien arrivées.<br>' +
+          '• Claudine a été prévenue de la fin du ménage.<br>' +
+          '• Temps passé sur place : <b>' + duree + '</b>.' +
+        '</div>';
+    } else if(navigator.onLine){
+      corps = '<div class="fin-w calme"><b class="gros">👍 C’est bien arrivé, l’envoi est en cours.</b>' +
+        'Vous pouvez passer à autre chose.' +
+        '<div class="fin-bar"><div style="width:' + Math.round((total - restant) / total * 100) + '%"></div></div>' +
+        '<span style="font-size:13px">Envoi ' + (total - restant) + ' / ' + total + ' — ça continue tout seul. Le grand ✓ vert s’affichera ici dès que tout est parti.</span></div>';
+    } else {
+      corps = '<div class="fin-w calme"><b class="gros">👍 C’est bien enregistré.</b>' +
+        'Votre ménage est terminé, vous pouvez passer à autre chose.' +
+        '<div style="font-size:13px;margin-top:8px">📴 Il n’y a pas de réseau ici : tout est gardé dans votre téléphone et partira <b>tout seul</b> dès que le réseau revient (rouvrez simplement l’appli une fois dehors).</div></div>';
+    }
+    box.innerHTML = '<div class="fin-card">' +
+      '<div class="fin-t">Merci ' + nom + ' ♥</div>' +
+      '<div class="fin-s">' + appart + '</div>' + corps +
+      '<button type="button" onclick="this.parentNode.parentNode.remove()">' + (restant ? 'Fermer — l’envoi continue' : 'Fermer') + '</button></div>';
+  };
+  (async () => {
+    let total = Math.max(1, await qCount());
+    dessine(total, total);
+    for(let i = 0; i < 1200 && box.isConnected; i++){
+      const n = await qCount();
+      if(n > total) total = n;
+      dessine(n, total);
+      if(!n) break;
+      await new Promise(r => setTimeout(r, 1500));
+      flush();
+    }
+  })();
+}
+
+function reset(){
+  if(!S) return;
+  if(!confirm('Annuler ce ménage ? Les coches et les photos du téléphone seront effacées (les photos déjà envoyées restent chez Claudine).')) return;
+  qAdd({action:'fin', id:S.id, appart:S.appart, presta:S.presta, heure:new Date().toISOString(), taches:0, total:0, remarque:'ANNULÉ par le prestataire'});
+  S = null; saveS(); render();
+}
+
+// ---------- Mode photos modèles (Claudine) ----------
+function renderModeModele(root, s){
+  const slots = itemsFor(s).flatMap(x => x[2]).flatMap(it => it.photos);
+  const box = document.createElement('section');
+  box.className = 's1 open';
+  box.innerHTML = '<h2><span class="title-wrap">📸 Photos modèles — ' + appartLabel(s) + '</span><span class="count">' + slots.filter(p => modeles[p.id]).length + '/' + slots.length + '</span></h2><div class="body"></div>';
+  const body = box.querySelector('.body');
+  if(!CLE) body.innerHTML = '<div class="hint">⚠️ Lien incomplet : il manque la clé Claudine.</div>';
+  slots.forEach(p => {
+    const d = document.createElement('div');
+    d.className = 'slot' + (modeles[p.id] ? ' ok' : '');
+    d.innerHTML = '<div class="slot-title">' + p.label + '</div><div class="slot-row">' +
+      (modeles[p.id] ? '<figure><img src="' + modeleUrl(modeles[p.id]) + '" onclick="openLightbox(this.src)" alt=""><figcaption>Modèle actuel</figcaption></figure>' : '<figure class="nomodel"><div>Aucun modèle</div></figure>') +
+      '</div><button type="button" class="shoot">' + (modeles[p.id] ? '🔁 Remplacer le modèle' : '📷 Prendre la photo modèle') + '</button>';
+    d.querySelector('.shoot').onclick = async () => {
+      const f = await prendrePhoto(); if(!f) return;
+      const big = await compress(f, 1280);
+      d.querySelector('.slot-row').innerHTML = '<figure><img src="' + big + '" alt=""><figcaption>Nouveau (envoi…)</figcaption></figure>';
+      await qAdd({action:'modele', cle:CLE, appart:s, etape:p.id, heure:new Date().toISOString(), mime:'image/jpeg', file: big.split(',')[1]});
+    };
+    body.appendChild(d);
+  });
+  root.appendChild(box);
+}
+
+// ---------- démarrage ----------
+(function init(){
+  const sel = document.getElementById('nom');
+  const saved = loadS();
+  if(saved && (Date.now() - new Date(saved.debut)) > 14 * 3600000){
+    // ménage oublié depuis plus de 14 h : on le clôt côté suivi, sans heure de fin
+    qAdd({action:'fin', id:saved.id, appart:saved.appart, presta:saved.presta, heure:saved.debut, taches:0, total:0, remarque:'Jamais terminé dans l\'appli (clôturé automatiquement)'});
+    try { localStorage.removeItem('menage-en-cours'); } catch(e){}
+  } else if(saved && !MODE_MODELE){
+    const qr = PARAMS.get('appart');
+    if(qr && qr !== saved.appart && confirm('Un ménage est en cours sur ' + appartLabel(saved.appart) + ' (commencé à ' + hhmm(saved.debut) + ').\n\nOK = le reprendre\nAnnuler = l\'abandonner et commencer ' + appartLabel(qr))){
+      S = saved;
+    } else if(qr && qr !== saved.appart){
+      qAdd({action:'fin', id:saved.id, appart:saved.appart, presta:saved.presta, heure:new Date().toISOString(), taches:0, total:0, remarque:'Abandonné pour un autre appartement'});
+    } else {
+      S = saved;
+    }
+    if(S){
+      document.getElementById('appart').value = S.appart;
+      sel.value = S.presta;
+      renderGallery(S.appart); renderApartWarning(S.appart);
+    }
+  }
+  document.getElementById('appart').addEventListener('change', e => loadModeles(e.target.value));
+  sel.addEventListener('change', () => { try { localStorage.setItem('menage-presta', sel.value); } catch(e){} });
+  if(!sel.value){ try { const p = localStorage.getItem('menage-presta'); if(p) sel.value = p; } catch(e){} }
+  loadModeles(slug());
+  updateSyncBar();
+  flush();
+  if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+})();
+</script>
+</body>
+</html>

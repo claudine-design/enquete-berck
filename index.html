@@ -654,6 +654,7 @@ var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyZ50d01GyAOXi4LKQteCr
 // RESIDENCES = mapping slug -> r\u00e9sidence (gard\u00e9 pour la logique m\u00e9tier interne)
 var RESIDENCES = {
   'Kitesurf':'Le 23','Hamac':'Le 23','Paddle':'Le 23','Surf':'Le 23','Famille':'Le 23',
+  'Grande Roue':'Le 17',
   'Baln\u00e9o':'Le 25','Cocon Romantique':'Le 25',
   'La R\u00e9serve':'Apollo','Kingston':'Apollo','Apolove':'Apollo','Apollo':'Apollo',
   'Albatros':'Albatros',
@@ -672,6 +673,7 @@ var NOMS_COMMERCIAUX = {
   'Paddle':'Paddle',
   'Surf':'Surf',
   'Famille':'3 Chambres 100m Plage',
+  'Grande Roue':'Vue Mer et Grande Roue',
   'Baln\u00e9o':'Baln\u00e9o Garden',
   'Cocon Romantique':'Cocon Romantique',
   'La R\u00e9serve':'La R\u00e9serve',
@@ -694,6 +696,8 @@ var NOMS_COMMERCIAUX = {
 // ===== INIT =====
 var params = new URLSearchParams(window.location.search);
 var appart = params.get('appart');
+// Le générateur de QR codes écrit « Évasion » avec accent, le reste du système « Evasion » sans accent : on accepte les deux.
+if (appart === 'Évasion') appart = 'Evasion';
 
 if (!appart || !RESIDENCES[appart]) {
   document.getElementById('formHeader').style.display = 'none';
