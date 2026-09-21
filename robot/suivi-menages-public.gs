@@ -110,6 +110,9 @@ function photo_(p) {
   shP.appendRow([p.id, p.appart || '', p.presta || '', p.etape, p.libelle || '', h, f.getId(), cle]);
   var nb = Number(shS.getRange(row, 7).getValue()) || 0;
   shS.getRange(row, 7).setValue(nb + 1);
+  if (p.etape === 'cave') {
+    try { analyserCave_(p.file, p.libelle || ('Cave ' + (p.appart || '')), p.presta || '', f.getId()); } catch (eCave) {}
+  }
   return { ok: true, fileId: f.getId() };
 }
 
@@ -297,4 +300,76 @@ function installerPurge() {
   });
   ScriptApp.newTrigger('purgeAnciennes').timeBased().everyDays(1).atHour(3).create();
   Logger.log('Purge quotidienne installée (3h).');
+}
+
+// ---------- Robot réassort : lit la photo hebdomadaire de la cave et alerte Claudine ----------
+// Seuils donnés par Claudine le 21/09/2026 : racheter quand il reste 2 produits ou moins,
+// 10 gâteaux ou moins, 10 rouleaux de papier toilette ou moins.
+// La clé d'accès à l'IA se range dans Paramètres du projet > Propriétés du script : ANTHROPIC_API_KEY.
+// Sans clé, le robot envoie quand même la photo par mail, sans analyse.
+var REASSORT = {
+  EMAIL: 'claudine.podvin@gmail.com',
+  SEUILS: 'Produits ménagers (anti-calcaire, javel, produit vitres, liquide vaisselle, pastilles lave-vaisselle, produit WC, sacs poubelle, savon, gel douche, éponges…) : alerter à 2 unités ou moins PAR produit. ' +
+          'Paquets de gâteaux : alerter à 10 ou moins. Rouleaux de papier toilette : alerter à 10 ou moins.'
+};
+var NL = String.fromCharCode(10);
+
+function analyserCave_(b64, lieu, presta, fileId) {
+  var lien = 'https://drive.google.com/file/d/' + fileId + '/view';
+  var cle = PropertiesService.getScriptProperties().getProperty('ANTHROPIC_API_KEY');
+  var sujet, corps;
+  if (!cle) {
+    sujet = '📦 Photo de la cave — ' + lieu;
+    corps = 'Photo hebdomadaire prise par ' + presta + '.' + NL + lien + NL + NL + '(Analyse automatique non activée : clé IA absente des propriétés du script.)';
+    MailApp.sendEmail(REASSORT.EMAIL, sujet, corps);
+    return;
+  }
+  var consigne = 'Tu regardes la photo des étagères de réassort d’une cave d’appart-hôtel (' + lieu + '). ' +
+    'Compte ce qui est VISIBLE, produit par produit. Seuils : ' + REASSORT.SEUILS + ' ' +
+    'Réponds UNIQUEMENT par un objet JSON, sans texte autour : ' +
+    '{"lisible": true|false, "a_racheter": [{"article": "...", "vu": nombre, "seuil": nombre}], ' +
+    '"ok": [{"article": "...", "vu": nombre}], "incertain": ["ce que tu ne peux pas compter et pourquoi"], "remarque": "..."}. ' +
+    'Si un produit attendu est absent de la photo, mets-le dans a_racheter avec vu = 0 seulement si l’étagère est clairement vide à cet endroit ; sinon dans incertain. ' +
+    'N’invente aucun chiffre : ce qui est caché, empilé derrière ou dans un carton fermé va dans incertain.';
+  var rep = UrlFetchApp.fetch('https://api.anthropic.com/v1/messages', {
+    method: 'post', contentType: 'application/json', muteHttpExceptions: true,
+    headers: { 'x-api-key': cle, 'anthropic-version': '2023-06-01' },
+    payload: JSON.stringify({
+      model: 'claude-opus-5', max_tokens: 4000,
+      messages: [{ role: 'user', content: [
+        { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: b64 } },
+        { type: 'text', text: consigne }
+      ] }]
+    })
+  });
+  var res = null;
+  try {
+    var j = JSON.parse(rep.getContentText());
+    if (j.stop_reason === 'refusal') throw new Error('refus');
+    var brut = (j.content || []).filter(function (b) { return b.type === 'text'; }).map(function (b) { return b.text; }).join('');
+    var d = brut.indexOf('{'), f = brut.lastIndexOf('}');
+    res = (d !== -1 && f > d) ? JSON.parse(brut.slice(d, f + 1)) : null;
+  } catch (e) { res = null; }
+  if (!res) {
+    MailApp.sendEmail(REASSORT.EMAIL, '📦 Photo de la cave — ' + lieu + ' (analyse impossible)',
+      'Photo prise par ' + presta + ' :' + NL + lien + NL + NL + 'Le robot n’a pas pu lire la photo (code ' + rep.getResponseCode() + ').');
+    return;
+  }
+  var ach = res.a_racheter || [];
+  sujet = (ach.length ? '🛒 À racheter — ' : '✅ Stock correct — ') + lieu +
+    (ach.length ? ' : ' + ach.map(function (x) { return x.article; }).slice(0, 4).join(', ') : '');
+  corps = 'Photo hebdomadaire de la cave, prise par ' + presta + '.' + NL + lien + NL + NL +
+    (res.lisible === false ? '⚠️ Photo difficile à lire : ' + (res.remarque || '') + NL + NL : '') +
+    (ach.length ? 'À RACHETER :' + NL + ach.map(function (x) { return '• ' + x.article + ' — vu : ' + x.vu + ' (seuil ' + x.seuil + ')'; }).join(NL) + NL + NL : 'Rien à racheter d’après la photo.' + NL + NL) +
+    ((res.ok || []).length ? 'Stock suffisant :' + NL + res.ok.map(function (x) { return '• ' + x.article + ' — vu : ' + x.vu; }).join(NL) + NL + NL : '') +
+    ((res.incertain || []).length ? 'Non vérifiable sur la photo :' + NL + '• ' + res.incertain.join(NL + '• ') + NL + NL : '') +
+    (res.remarque && res.lisible !== false ? 'Remarque : ' + res.remarque + NL : '');
+  MailApp.sendEmail(REASSORT.EMAIL, sujet, corps);
+}
+
+// À lancer une fois depuis l'éditeur pour accorder les nouvelles autorisations (internet + envoi de mail).
+function autoriserRobotReassort() {
+  UrlFetchApp.fetch('https://api.anthropic.com/v1/models', { muteHttpExceptions: true });
+  MailApp.getRemainingDailyQuota();
+  Logger.log('Autorisations OK. Clé IA ' + (PropertiesService.getScriptProperties().getProperty('ANTHROPIC_API_KEY') ? 'présente' : 'ABSENTE'));
 }
