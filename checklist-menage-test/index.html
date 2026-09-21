@@ -824,6 +824,7 @@ const data = [
   ["s8","8. Regard final — vidéo — départ",[
     {id:"regard", t:"Regarder l'appart comme le voyageur qui entre. Casse → photo + signalement."},
     {id:"rincer-receveur", t:"Rincer le receveur (javel)."},
+    {id:"bougies", t:"Allumer les bougies : celles de la table à manger ET les 5 de la balnéo.", d:"Toutes les bougies doivent fonctionner. Une bougie qui ne s’allume plus : changer les piles, ou le signaler.", photos:[{id:"bougies-table", label:"Table à manger, bougies allumées"},{id:"bougies-balneo", label:"Balnéo, les 5 bougies allumées"}], only: s => s === 'apolove'},
     {id:"video", t:"Vidéo continue de toutes les pièces (45 secondes maximum).", d:"Filmer sans couper : entrée, cuisine, salon, chambre(s), salle de bain. La vidéo part directement chez Claudine depuis l'appli.", video:true},
     {id:"linge", t:"Sortir le linge de la machine et l'étendre. Hublot entrouvert."},
     {id:"reassort", t:"Noter le réassort dans l'appli.", d:"Appli réassort : https://claudine-design.github.io/enquete-berck/reassort/"},
