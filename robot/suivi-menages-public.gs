@@ -10,6 +10,7 @@
 // Et sert :
 //   modeles : photos modeles d'un appart (public, pour le prestataire)
 //   suivi   : tous les menages des N derniers jours (cle obligatoire)
+//   encours : menage EN COURS du jour pour un appart (reprise si le telephone a perdu sa memoire)
 // Les heures viennent du telephone (champ "heure") : un envoi differe
 // (cave sans reseau) garde la vraie heure.
 // =============================================
@@ -52,6 +53,7 @@ function handle_(p) {
     var a = p.action;
     if (a === 'modeles') return json_(getModeles_(p.appart));
     if (a === 'ping') return json_({ ok: true });
+    if (a === 'encours') return json_(encours_(p.appart, p.presta));
     if (a === 'suivi') {
       if (p.cle !== CLE_CLAUDINE) return json_({ ok: false, error: 'cle' });
       return json_(getSuivi_(Number(p.jours) || 14));
@@ -111,7 +113,7 @@ function photo_(p) {
   var nb = Number(shS.getRange(row, 7).getValue()) || 0;
   shS.getRange(row, 7).setValue(nb + 1);
   if (p.etape === 'cave') {
-    try { analyserCave_(p.file, p.libelle || ('Cave ' + (p.appart || '')), p.presta || '', f.getId()); } catch (eCave) {}
+    try { analyserCave_(p.file, p.libelle || ('Local ménage ' + (p.appart || '')), p.presta || '', f.getId()); } catch (eCave) {}
   }
   return { ok: true, fileId: f.getId() };
 }
@@ -192,6 +194,31 @@ function getSuivi_(jours) {
   }
   sessions.sort(function (a, b) { return (b.debut || b.fin) > (a.debut || a.fin) ? 1 : -1; });
   return { ok: true, sessions: sessions, modeles: getModeles_('').modeles };
+}
+
+
+// Ménage EN COURS du jour pour un appart : permet au tuto de REPRENDRE un ménage quand le
+// téléphone a perdu sa mémoire (appli de scan coupée, QR code rescanné — incident Priscillia 22/09/2026).
+// Sans clé : ne renvoie que l'id, le prénom, l'heure de début et la liste des étapes photographiées.
+function encours_(appart, presta) {
+  if (!appart) return { ok: false, error: 'appart manquant' };
+  var jour = Utilities.formatDate(new Date(), 'Europe/Paris', 'yyyy-MM-dd');
+  var s = sheet_('Sessions', HEAD_SESSIONS).getDataRange().getValues();
+  var best = null;
+  for (var i = s.length - 1; i >= 1; i--) {
+    if (String(s[i][1]) !== String(appart) || String(s[i][9]) !== 'EN COURS') continue;
+    if (presta && String(s[i][2]) !== String(presta)) continue;
+    if (!(s[i][3] instanceof Date) || Utilities.formatDate(s[i][3], 'Europe/Paris', 'yyyy-MM-dd') !== jour) continue;
+    best = { id: s[i][0], appart: s[i][1], presta: s[i][2], debut: s[i][3].toISOString(), photos: [] };
+    break;
+  }
+  if (!best) return { ok: true, session: null };
+  var ph = sheet_('Photos', HEAD_PHOTOS).getDataRange().getValues();
+  for (var j = 1; j < ph.length; j++) {
+    if (String(ph[j][0]) !== String(best.id)) continue;
+    best.photos.push({ etape: ph[j][3], heure: ph[j][5] instanceof Date ? ph[j][5].toISOString() : '' });
+  }
+  return { ok: true, session: best };
 }
 
 // ---------- outils ----------
@@ -302,7 +329,7 @@ function installerPurge() {
   Logger.log('Purge quotidienne installée (3h).');
 }
 
-// ---------- Robot réassort : lit la photo hebdomadaire de la cave et alerte Claudine ----------
+// ---------- Robot réassort : lit la photo hebdomadaire du local ménage et alerte Claudine ----------
 // Seuils donnés par Claudine le 21/09/2026 : racheter quand il reste 2 produits ou moins,
 // 10 gâteaux ou moins, 10 rouleaux de papier toilette ou moins.
 // La clé d'accès à l'IA se range dans Paramètres du projet > Propriétés du script : ANTHROPIC_API_KEY.
@@ -319,12 +346,12 @@ function analyserCave_(b64, lieu, presta, fileId) {
   var cle = PropertiesService.getScriptProperties().getProperty('ANTHROPIC_API_KEY');
   var sujet, corps;
   if (!cle) {
-    sujet = '📦 Photo de la cave — ' + lieu;
+    sujet = '📦 Photo du local ménage — ' + lieu;
     corps = 'Photo hebdomadaire prise par ' + presta + '.' + NL + lien + NL + NL + '(Analyse automatique non activée : clé IA absente des propriétés du script.)';
     MailApp.sendEmail(REASSORT.EMAIL, sujet, corps);
     return;
   }
-  var consigne = 'Tu regardes la photo des étagères de réassort d’une cave d’appart-hôtel (' + lieu + '). ' +
+  var consigne = 'Tu regardes la photo des étagères de réassort du local ménage d’un appart-hôtel (' + lieu + '). ' +
     'Compte ce qui est VISIBLE, produit par produit. Seuils : ' + REASSORT.SEUILS + ' ' +
     'Réponds UNIQUEMENT par un objet JSON, sans texte autour : ' +
     '{"lisible": true|false, "a_racheter": [{"article": "...", "vu": nombre, "seuil": nombre}], ' +
@@ -351,14 +378,14 @@ function analyserCave_(b64, lieu, presta, fileId) {
     res = (d !== -1 && f > d) ? JSON.parse(brut.slice(d, f + 1)) : null;
   } catch (e) { res = null; }
   if (!res) {
-    MailApp.sendEmail(REASSORT.EMAIL, '📦 Photo de la cave — ' + lieu + ' (analyse impossible)',
+    MailApp.sendEmail(REASSORT.EMAIL, '📦 Photo du local ménage — ' + lieu + ' (analyse impossible)',
       'Photo prise par ' + presta + ' :' + NL + lien + NL + NL + 'Le robot n’a pas pu lire la photo (code ' + rep.getResponseCode() + ').');
     return;
   }
   var ach = res.a_racheter || [];
   sujet = (ach.length ? '🛒 À racheter — ' : '✅ Stock correct — ') + lieu +
     (ach.length ? ' : ' + ach.map(function (x) { return x.article; }).slice(0, 4).join(', ') : '');
-  corps = 'Photo hebdomadaire de la cave, prise par ' + presta + '.' + NL + lien + NL + NL +
+  corps = 'Photo hebdomadaire du local ménage, prise par ' + presta + '.' + NL + lien + NL + NL +
     (res.lisible === false ? '⚠️ Photo difficile à lire : ' + (res.remarque || '') + NL + NL : '') +
     (ach.length ? 'À RACHETER :' + NL + ach.map(function (x) { return '• ' + x.article + ' — vu : ' + x.vu + ' (seuil ' + x.seuil + ')'; }).join(NL) + NL + NL : 'Rien à racheter d’après la photo.' + NL + NL) +
     ((res.ok || []).length ? 'Stock suffisant :' + NL + res.ok.map(function (x) { return '• ' + x.article + ' — vu : ' + x.vu; }).join(NL) + NL + NL : '') +
