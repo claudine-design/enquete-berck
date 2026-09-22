@@ -768,7 +768,8 @@ const LANCES = ['surf'];
 // Logements SANS canapé-lit (liste Claudine 19/09/2026) : pas de photo « canapé ouvert ».
 // Cocon, Apolove (Suite Romantique Face Mer), Maisonnette, Grande Love Room (Romantique Face Mer), Mini Love Room (Balnéo Face Mer).
 const SANS_CANAPE = ['cocon-romantique','apolove','maisonnette','grande-love-room','mini-love-room'];
-// Photo HEBDOMADAIRE de la cave réassort : 1 photo par adresse, au premier ménage de la semaine
+// Photo HEBDOMADAIRE du local ménage (parfois une cave, parfois un local) : 1 photo par adresse,
+// au premier ménage de la semaine
 // (Claudine 21/09/2026). Elle part vers le robot qui lit les stocks et alerte pour les achats.
 const CAVES = {
   'le-23':      { nom:'Le 23 rue Maréchal Juin', apparts:['kitesurf','hamac','paddle','surf','famille'] },
@@ -779,7 +780,8 @@ const CAVES = {
   'grand-large':{ nom:'Grand Large',             apparts:['grand-large'] },
   'esplanade':  { nom:'59 Esplanade',            apparts:['mini-love-room','grande-love-room'] },
   'rue-jeanne': { nom:'Rue Jeanne',              apparts:['jeanne','evasion','rotonde','patio'] },
-  'terrasse':   { nom:'Terrasse / Maisonnette',  apparts:['terrasse','maisonnette'] }
+  'terrasse':   { nom:'Terrasse / Maisonnette',  apparts:['terrasse','maisonnette'] },
+  'grande-roue':{ nom:'Grande Roue',             apparts:['grande-roue'] }
 };
 function caveDe(s){ return Object.keys(CAVES).find(k => CAVES[k].apparts.includes(s)) || null; }
 const caveEtat = {};   // id de cave -> date ISO de la dernière photo
@@ -816,7 +818,7 @@ const data = [
     {id:"machine", t:"Lancer la machine à laver."},
     {id:"fenetres", t:"Ouvrir les fenêtres. Vérifier le placard ménage : produits, lavettes, sacs, linge."},
     {id:"radiateurs", t:"Radiateurs : 12° l'hiver, éteints l'été."},
-    {id:"cave", t:"Photo de la cave réassort : toutes les étagères, de face, bien éclairées (une fois par semaine).", d:"Cette photo sert à prévoir les achats : produits, gâteaux, papier toilette. Reculez pour tout avoir sur la photo et allumez la lumière.", photos:[{id:"cave", label:"Étagères du réassort (cave)"}], only: s => MODE_MODELE ? !!caveDe(s) : (caveDue(s) || !!(S && S.photos && S.photos.cave))},
+    {id:"cave", t:"Photo du local ménage : toutes les étagères, de face, bien éclairées (une fois par semaine).", d:"Cette photo sert à prévoir les achats : produits, gâteaux, papier toilette. Reculez pour tout avoir sur la photo et allumez la lumière.", photos:[{id:"cave", label:"Étagères du local ménage"}], only: s => MODE_MODELE ? !!caveDe(s) : (caveDue(s) || !!(S && S.photos && S.photos.cave))},
   ]],
   ["s2","2. Salle de bain : produits — dans cet ordre",[
     {id:"anticalcaire", t:"① Anti-calcaire sur toute la robinetterie : salle de bain, cuisine, balnéo, buses et commandes balnéo."},
@@ -1156,7 +1158,7 @@ async function loadModeles(s){
         try { const rc = await fetch(SUIVI_API + '?action=modeles&appart=cave-' + c); const jc = await rc.json(); if(jc.ok && jc.modeles && jc.modeles.cave) modeles.cave = jc.modeles.cave; } catch(e){}
       }
       saveModeles(s); render();
-      Object.values(modeles).forEach(id => imgModele(id)); // chargées une seule fois, et gardées pour la cave
+      Object.values(modeles).forEach(id => imgModele(id)); // chargées une seule fois, et gardées pour le hors-réseau
     }
   } catch(e){}
 }
@@ -1466,10 +1468,10 @@ async function shoot(slotId, label, it){
   if(item && itemReady(item)) S.checked[item.id] = true;
   saveS(); render();
   const cave = slotId === 'cave' ? caveDe(S.appart) : null;
-  await qAdd({action:'photo', id:S.id, appart:S.appart, presta:S.presta, etape:slotId, libelle: cave ? 'Cave réassort — ' + CAVES[cave].nom : label, heure, mime:'image/jpeg', file: big.split(',')[1]});
+  await qAdd({action:'photo', id:S.id, appart:S.appart, presta:S.presta, etape:slotId, libelle: cave ? 'Local ménage — ' + CAVES[cave].nom : label, heure, mime:'image/jpeg', file: big.split(',')[1]});
   if(cave){
     caveEtat[cave] = heure; try { localStorage.setItem('cave-' + cave, heure); } catch(e){}
-    await qAdd({action:'routine', appart:'cave-' + cave, task:'photo-cave', label:'Photo cave reassort ' + CAVES[cave].nom, presta:S.presta, heure});
+    await qAdd({action:'routine', appart:'cave-' + cave, task:'photo-cave', label:'Photo local menage ' + CAVES[cave].nom, presta:S.presta, heure});
   }
 }
 function findSlot(id){ for(const [,, items] of data) for(const it of items) for(const p of (it.photos||[])) if(p.id === id) return p; return {}; }
