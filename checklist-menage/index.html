@@ -115,6 +115,10 @@
   .slot .shoot{background:#E89BA3;color:#fff}
   .slot.ok .shoot{background:#e8e8e8;color:#555}
   .slot .nc{background:#f3f3f3;color:#666;font-weight:500}
+  .navwarn{display:none;margin:12px 0;padding:14px;border-radius:14px;background:#fff7ed;border:3px solid #ea580c;color:#7c2d12;font-size:15px;line-height:1.4}
+  .navwarn b{color:#9a3412}
+  .navwarn button,.navwarn a.btn{display:block;width:100%;margin-top:10px;padding:14px;border:0;border-radius:12px;background:#ea580c;color:#fff;font-size:17px;font-weight:700;text-align:center;text-decoration:none;box-sizing:border-box}
+  .navwarn .copy{background:#fff;color:#9a3412;border:2px solid #ea580c}
   .start{margin:12px 0;padding:12px;border-radius:14px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.06);text-align:center;font-size:14px}
   .start button{width:100%;padding:16px;border:none;border-radius:14px;font-size:18px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16a34a,#22c55e);box-shadow:0 4px 12px rgba(22,163,74,.35);cursor:pointer}
   .start.on{background:#f0fdf4;border:2px solid #16a34a;color:#14532d;text-align:left}
@@ -224,6 +228,7 @@
 </div>
 
 <div id="mode-modele" style="display:none" class="modele-banner">📸 <b>MODE PHOTOS MODÈLES</b> — Claudine. Choisissez l'appartement, puis prenez chaque photo telle que vous voulez la voir. Les prestataires la verront à côté de leur bouton photo.</div>
+<div id="nav-warn" class="navwarn"></div>
 <div id="start-box" class="start"></div>
 <div id="sync-bar" class="sync ok"></div>
 
@@ -1292,12 +1297,13 @@ function renderStartBox(){
   if(S){
     box.className = 'start on';
     box.innerHTML = '🟢 Ménage commencé à <b>' + hhmm(S.debut) + '</b> — <b>' + S.presta + '</b> — ' + appartLabel(S.appart) +
-      '<div class="small">Si vous fermez l\'appli, tout est gardé : rouvrez-la, vous reprenez où vous en étiez.</div>';
+      '<div class="small">Tout est gardé dans ce navigateur : pour revenir au tuto, <b>revenez sur cet onglet</b>, ne rescannez pas le QR code.</div>';
     document.getElementById('appart').disabled = true;
     document.getElementById('nom').disabled = true;
   } else {
     box.className = 'start';
-    box.innerHTML = '<button type="button" id="btn-start">▶️ Je commence le ménage</button><div class="small">L\'heure est notée tout de suite, même sans réseau.</div>';
+    box.innerHTML = '<button type="button" id="btn-start">▶️ Je commence le ménage</button><div class="small">L\'heure est notée tout de suite, même sans réseau.</div>' +
+      (sessionPerdue ? '<div class="small" style="margin-top:8px;color:#9a3412"><b>Vous aviez déjà commencé ce ménage ?</b> Ce navigateur ne l\'a plus (appli coupée, QR code rescanné). Les photos déjà envoyées sont chez Claudine. Appuyez sur « Je commence » et reprenez les photos.</div>' : '');
     document.getElementById('btn-start').onclick = demarrer;
     document.getElementById('appart').disabled = false;
     document.getElementById('nom').disabled = false;
@@ -1313,7 +1319,7 @@ async function demarrer(){
   await qAdd({action:'start', id:S.id, appart:S.appart, presta:S.presta, heure:debut});
 }
 async function send(){
-  if(!S){ alert('▶️ Le ménage n\'a pas été commencé : appuyez sur « Je commence le ménage ».'); return; }
+  if(!S){ alert('▶️ Ce navigateur n\'a pas de ménage en cours.' + String.fromCharCode(10,10) + 'Si vous aviez commencé ce ménage puis que l\'appli s\'est coupée ou que vous avez rescanné le QR code, la session a été perdue : les photos déjà envoyées sont chez Claudine. Appuyez sur « Je commence le ménage » en haut, refaites les photos, puis Terminer.'); return; }
   const s = S.appart;
   const items = itemsFor(s).flatMap(x => x[2]);
   const missing = items.flatMap(it => it.photos).filter(p => !slotDone(p)).map(p => '📷 ' + p.label);
@@ -1404,6 +1410,39 @@ function renderModeModele(root, s){
   root.appendChild(box);
 }
 
+// ---------- navigateur intégré (appli de scan, appareil photo, WhatsApp…) ----------
+// Ces mini-navigateurs ont une mémoire à part, souvent vidée à la fermeture : à chaque nouveau scan
+// du QR code, le ménage en cours disparaît (incident Priscillia, Apolove, 22/09/2026).
+let sessionPerdue = false;
+function navigateurIntegre(){
+  const ua = navigator.userAgent || '';
+  if(/FBAN|FBAV|Instagram|Snapchat|Line\//i.test(ua)) return /iPhone|iPad|iPod/i.test(ua) ? 'ios' : 'android';
+  if(/Android/i.test(ua) && (/; wv\)/.test(ua) || /Version\/\d+\.\d+/.test(ua))) return 'android';
+  if(/iPhone|iPad|iPod/i.test(ua) && !/CriOS|FxiOS|EdgiOS/.test(ua) && !/Safari\//.test(ua)) return 'ios';
+  return null;
+}
+function afficherNavWarn(){
+  const type = navigateurIntegre();
+  const box = document.getElementById('nav-warn');
+  if(!type || MODE_MODELE){ box.style.display = 'none'; return; }
+  const url = location.href;
+  const chrome = 'intent://' + url.replace(/^https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
+  const safari = 'x-safari-' + url;
+  const nav = type === 'ios' ? 'Safari' : 'Chrome';
+  box.innerHTML = '⚠️ <b>Le tuto s\'est ouvert dans le mini-navigateur de l\'appli de scan.</b><br>' +
+    'Sa mémoire s\'efface quand on le ferme : si l\'appli se coupe ou si vous rescannez le QR code, votre ménage en cours sera perdu.<br>' +
+    '<b>Ouvrez plutôt ce lien dans ' + nav + '</b> (une seule fois, puis restez-y) :' +
+    '<a class="btn" href="' + (type === 'ios' ? safari : chrome) + '">🌐 Ouvrir dans ' + nav + '</a>' +
+    '<button type="button" class="copy" onclick="copierLien()">📋 Copier le lien (puis le coller dans ' + nav + ')</button>' +
+    '<div class="small" style="margin-top:8px">Ou bien : ne fermez pas cette page tant que le ménage n\'est pas terminé, et ne rescannez pas le QR code.</div>';
+  box.style.display = 'block';
+}
+async function copierLien(){
+  const url = location.href;
+  try { await navigator.clipboard.writeText(url); alert('Lien copié. Ouvrez Chrome ou Safari et collez-le dans la barre d\'adresse.'); }
+  catch(e){ prompt('Copiez ce lien :', url); }
+}
+
 // ---------- démarrage ----------
 (function init(){
   const sel = document.getElementById('nom');
@@ -1427,6 +1466,8 @@ function renderModeModele(root, s){
       renderGallery(S.appart); renderApartWarning(S.appart);
     }
   }
+  if(!S && !MODE_MODELE && PARAMS.get('appart')){ let p = null; try { p = localStorage.getItem('menage-presta'); } catch(e){} sessionPerdue = !p; }
+  afficherNavWarn();
   document.getElementById('appart').addEventListener('change', e => { loadModeles(e.target.value); chargerCave(e.target.value); });
   sel.addEventListener('change', () => { try { localStorage.setItem('menage-presta', sel.value); } catch(e){} });
   if(!sel.value){ try { const p = localStorage.getItem('menage-presta'); if(p) sel.value = p; } catch(e){} }
