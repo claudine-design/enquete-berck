@@ -1,26 +1,10 @@
 [
  {
   "titre": "Exposition Francis Crochet",
-  "start": "2026-09-21",
+  "start": "2026-09-23",
   "date_label": "Jusqu'au 30/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=107874",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Rémi Comptines \"Ma guitare à tiroirs\" - Familia Théâtre",
-  "start": "2026-09-23",
-  "date_label": "Le 23/09/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=124245",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Cinémondes & ABAC – « Annie Ernaux, Écrire la vie »",
-  "start": "2026-09-23",
-  "date_label": "Le 23/09/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130677",
   "source": "Office de Tourisme"
  },
  {
@@ -40,25 +24,23 @@
   "source": "Office de Tourisme"
  },
  {
-  "titre": "SORTIE CALÈCHE",
+  "titre": "Ciné Relax - \"Tombé du ciel\"",
   "start": "2026-09-26",
-  "date_label": "26 septembre",
-  "categories": [
-   "Balades",
-   "Découverte"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=166152",
-  "source": "oukankoi.fr"
+  "date_label": "Le 26/09/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=129672",
+  "source": "Office de Tourisme"
  },
  {
-  "titre": "À LA DÉCOUVERTE DES MOULES DE BOUCHOTS",
-  "start": "2026-09-26",
-  "date_label": "26 septembre",
+  "titre": "BIG DAY FAMILY",
+  "start": "2026-09-27",
+  "date_label": "27 septembre",
   "categories": [
-   "Balades",
-   "Découverte"
+   "Ateliers / Stages",
+   "Découverte",
+   "Loisirs"
   ],
-  "lien": "https://www.oukankoi.fr/?p=165836",
+  "lien": "https://www.oukankoi.fr/?p=166241",
   "source": "oukankoi.fr"
  },
  {
@@ -97,6 +79,39 @@
   "source": "Office de Tourisme"
  },
  {
+  "titre": "SORTIE CALÈCHE",
+  "start": "2026-10-04",
+  "date_label": "4 octobre",
+  "categories": [
+   "Balades",
+   "Découverte"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=166158",
+  "source": "oukankoi.fr"
+ },
+ {
+  "titre": "BROCANTE",
+  "start": "2026-10-04",
+  "date_label": "4 octobre",
+  "categories": [
+   "Brocantes",
+   "Solidarité"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=166280",
+  "source": "oukankoi.fr"
+ },
+ {
+  "titre": "À LA DÉCOUVERTE DES MOULES DE BOUCHOTS",
+  "start": "2026-10-04",
+  "date_label": "4 octobre",
+  "categories": [
+   "Balades",
+   "Découverte"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=165838",
+  "source": "oukankoi.fr"
+ },
+ {
   "titre": "RENCONTRE AVEC LES PHOQUES",
   "start": "2026-10-04",
   "date_label": "4 octobre",
@@ -122,6 +137,22 @@
   "date_label": "Le 04/10/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=100298",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Coup de Coeur Surprise - Cinos",
+  "start": "2026-10-05",
+  "date_label": "Le 05/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=125995",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Première édition Rencontres Musicales Clara Haskil",
+  "start": "2026-10-10",
+  "date_label": "Le 10/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130734",
   "source": "Office de Tourisme"
  },
  {
@@ -157,19 +188,19 @@
   "source": "Office de Tourisme"
  },
  {
-  "titre": "Bal des commerçants",
-  "start": "2026-11-22",
-  "date_label": "Le 22/11/2026",
+  "titre": "Dégustation et vente de biscuits et de cake - Chez Causettes",
+  "start": "2026-10-23",
+  "date_label": "Le 23/10/2026",
   "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=124489",
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=124701",
   "source": "Office de Tourisme"
  },
  {
-  "titre": "Rencontres Internationales de Cerfs-Volants 2027",
-  "start": "2027-04-17",
-  "date_label": "Du 17/04/2027 au 25/04/2027",
+  "titre": "Marche Rose et Animations - Octobre Rose",
+  "start": "2026-10-25",
+  "date_label": "Le 25/10/2026",
   "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=100705",
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=97870",
   "source": "Office de Tourisme"
  }
 ]
