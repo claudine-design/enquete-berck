@@ -183,6 +183,7 @@
     </optgroup>
     <optgroup label="17 rue Maréchal Juin">
       <option value="grande-roue">Grande Roue</option>
+      <option value="escapade">Escapade</option>
     </optgroup>
     <optgroup label="Le 25 rue Maréchal Juin (Clara)">
       <option value="balneo">Balnéo</option>
@@ -282,12 +283,13 @@ const apartPhotos = {
   'cocon-romantique': 16, 'evasion': 18, 'face-mer': 7, 'famille': 62,
   'grand-large': 1, 'grande-love-room': 14, 'hamac': 1,
   'helene': 21, 'jeanne': 16, 'kingston': 2, 'kitesurf': 41,
-  'maisonnette': 13, 'mini-love-room': 9, 'paddle': 5, 'grande-roue': 16,
+  'maisonnette': 13, 'mini-love-room': 9, 'paddle': 5, 'grande-roue': 16, 'escapade': 8,
   'patio': 11, 'reserve': 16, 'rotonde': 0, 'surf': 20, 'terrasse': 1
 };
 
 // Légendes des photos déco qui portent une consigne précise (numéro de photo → texte)
 const apartPhotoNotes = {
+  'escapade': { 1:"Vue d’ensemble : lit rond fait, plaids roulés, table dressée, cuisine dégagée", 2:"Table dressée pour 2 : assiettes, verres, bougies dorées, panier gourmand, cœurs dorés", 3:"Cuisine + mur TV : plan de travail vide, Senseo en place, déco du meuble TV", 4:"Four et lave-vaisselle : propres, ouverts pour la photo", 5:"Mur en pierre : soleil doré, miroir rond, lampe et tabouret bouclette à leur place", 6:"Entrée : miroir doré, étagère noire, bougeoir, tabouret bouclette", 7:"Salle de bain : lave-linge, vasque en pierre, miroir lumineux, douche marbre noir sans trace", 8:"Balnéo 2 places et sauna 2 places : buses propres, feuilles dorées, bandeau LED" },
   'famille': { 61:'Salon : grande fenêtre 4 vantaux — vitres, châssis et rebord sans trace', 62:'Chambre : les 4 petites fenêtres — vitres sans coulures, tablette bois et radiateur propres' },
   'apolove': { 14:'Table à manger : bougies allumées, couverts dressés', 15:'Balnéo : les 5 bougies allumées' },
   'grande-roue': {
@@ -364,7 +366,9 @@ const apartFeatures = {
   'jeanne':           { panier:'classique', capacite:4 },
   'grande-roue':      { panier:'classique', capacite:5, balneo:true, exterieur:true, litConditional:true,
                         note:'🛏️ <b>Lit double (chambre 1) fait</b> avec le linge fourni. <b>2 parures de lit simple déposées sur les étagères de la chambre 2</b> (2 lits 80×190) : les voyageurs à 3 ou 4 font ces lits eux-mêmes, c’est dans le contrat. 🛋️ Canapé convertible : linge déposé, pas installé.' }, // 17 rue Maréchal Juin, 5 pers, balnéo double, mini balcon — 20/09/2026
-  // ───── LOVE ROOMS (8) — 2 paniers : gourmand + petit utilitaire ─────
+  // ───── LOVE ROOMS (9) — 2 paniers : gourmand + petit utilitaire ─────
+  'escapade':         { panier:'loveroom',  capacite:2, balneo:true, sauna:true,
+                        note:'🎥 <b>Vidéoprojecteur + télé</b> : télécommandes à leur place, écran éteint. 🧺 <b>Lave-linge</b> dans la salle de bain : hublot entrouvert en partant.' }, // 17 rue Maréchal Juin 1er étage, love room 2 pers, sauna + balnéo — 23/09/2026, nom provisoire
   'balneo':           { panier:'loveroom',  capacite:6, balneo:true, peignoirs:2, litConditional:true, exterieur:true }, // jardin + brasero
   'cocon-romantique': { panier:'loveroom',  capacite:2, balneo:true, peignoirs:2, sauna:true, tapisExtra:true, litConditional:true, exterieur:true }, // brasero
   'apolove':          { panier:'loveroom',  capacite:2, balneo:true }, // bain à remous — ajouté 05/09/2026, il manquait
@@ -772,7 +776,7 @@ const CLE = (function(){
 const LANCES = ['surf'];
 // Logements SANS canapé-lit (liste Claudine 19/09/2026) : pas de photo « canapé ouvert ».
 // Cocon, Apolove (Suite Romantique Face Mer), Maisonnette, Grande Love Room (Romantique Face Mer), Mini Love Room (Balnéo Face Mer).
-const SANS_CANAPE = ['cocon-romantique','apolove','maisonnette','grande-love-room','mini-love-room'];
+const SANS_CANAPE = ['cocon-romantique','apolove','maisonnette','grande-love-room','mini-love-room','escapade'];
 // Photo HEBDOMADAIRE du local ménage (parfois une cave, parfois un local) : 1 photo par adresse,
 // au premier ménage de la semaine
 // (Claudine 21/09/2026). Elle part vers le robot qui lit les stocks et alerte pour les achats.
@@ -786,7 +790,7 @@ const CAVES = {
   'esplanade':  { nom:'59 Esplanade',            apparts:['mini-love-room','grande-love-room'] },
   'rue-jeanne': { nom:'Rue Jeanne',              apparts:['jeanne','evasion','rotonde','patio'] },
   'terrasse':   { nom:'Terrasse / Maisonnette',  apparts:['terrasse','maisonnette'] },
-  'grande-roue':{ nom:'Grande Roue',             apparts:['grande-roue'] }
+  'grande-roue':{ nom:'17 rue Maréchal Juin',     apparts:['grande-roue','escapade'] }
 };
 function caveDe(s){ return Object.keys(CAVES).find(k => CAVES[k].apparts.includes(s)) || null; }
 const caveEtat = {};   // id de cave -> date ISO de la dernière photo

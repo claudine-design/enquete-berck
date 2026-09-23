@@ -67,7 +67,7 @@ const API = 'https://script.google.com/macros/s/AKfycbwABUZlluUlyKrlL0zyl--vhXu9
 const P = new URLSearchParams(location.search);
 let CLE = P.get('cle') || '';
 try { if(CLE) localStorage.setItem('suivi-cle', CLE); else CLE = localStorage.getItem('suivi-cle') || ''; } catch(e){}
-const NOMS = {'kitesurf':'Kitesurf','hamac':'Hamac','paddle':'Paddle','surf':'Surf','famille':'Famille','balneo':'Balnéo','cocon-romantique':'Cocon Romantique','terrasse':'Terrasse','maisonnette':'Maisonnette','face-mer':'Face Mer','apollo':'Apollo','apolove':'Apolove','kingston':'Kingston','reserve':'La Réserve','albatros':'Albatros','mini-love-room':'Mini Love Room','grande-love-room':'Grande Love Room','jeanne':'Jeanne','evasion':'Évasion','rotonde':'Rotonde','patio':'Patio','grand-large':'Grand Large','helene':'Studio Hélène','grande-roue':'Grande Roue'};
+const NOMS = {'kitesurf':'Kitesurf','hamac':'Hamac','paddle':'Paddle','surf':'Surf','famille':'Famille','balneo':'Balnéo','cocon-romantique':'Cocon Romantique','terrasse':'Terrasse','maisonnette':'Maisonnette','face-mer':'Face Mer','apollo':'Apollo','apolove':'Apolove','kingston':'Kingston','reserve':'La Réserve','albatros':'Albatros','mini-love-room':'Mini Love Room','grande-love-room':'Grande Love Room','jeanne':'Jeanne','evasion':'Évasion','rotonde':'Rotonde','patio':'Patio','grand-large':'Grand Large','helene':'Studio Hélène','grande-roue':'Grande Roue','escapade':'Escapade'};
 let DATA = null;
 
 const img = (id, w) => 'https://lh3.googleusercontent.com/d/' + id + '=w' + (w || 400);
