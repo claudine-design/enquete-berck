@@ -282,13 +282,31 @@ const apartPhotos = {
   'cocon-romantique': 16, 'evasion': 18, 'face-mer': 7, 'famille': 60,
   'grand-large': 1, 'grande-love-room': 14, 'hamac': 1,
   'helene': 21, 'jeanne': 16, 'kingston': 2, 'kitesurf': 41,
-  'maisonnette': 13, 'mini-love-room': 9, 'paddle': 5, 'grande-roue': 0,
+  'maisonnette': 13, 'mini-love-room': 9, 'paddle': 5, 'grande-roue': 16,
   'patio': 11, 'reserve': 16, 'rotonde': 0, 'surf': 20, 'terrasse': 1
 };
 
 // Légendes des photos déco qui portent une consigne précise (numéro de photo → texte)
 const apartPhotoNotes = {
-  'apolove': { 14:'Table à manger : bougies allumées, couverts dressés', 15:'Balnéo : les 5 bougies allumées' }
+  'apolove': { 14:'Table à manger : bougies allumées, couverts dressés', 15:'Balnéo : les 5 bougies allumées' },
+  'grande-roue': {
+    1:'Cuisine : plan de travail dégagé, Senseo en place',
+    2:'Meuble haut n°1 : vaisselle, verres, couverts — rangement à respecter',
+    3:'Meuble haut n°2 : bouilloire, cafetière à filtre, micro-ondes',
+    4:'Frigo + placard à poubelle : propres, sac propre en place',
+    5:'Chambre 1 : lit 160 fait, serviettes roulées',
+    6:'Chambre 2 : les 2 lits simples faits, serviettes roulées',
+    7:'Chambre 2, autre angle',
+    8:'Salon : canapé, coussins et plaid en place',
+    9:'Salle à manger : table ronde, 4 chaises alignées',
+    10:'Mur TV : déco et box à leur place',
+    11:'Entrée : miroir doré et cintres',
+    12:'Mur en pierre : branches et déco',
+    13:'Couloir : mur en pierre, soleil doré',
+    14:'Salle de bain : douche, balnéo, plan vasque',
+    15:'WC + carrelage marbre',
+    16:'Placard ménage : aspirateur et ventilateur rangés'
+  }
 };
 
 function renderGallery(slug){
@@ -816,7 +834,7 @@ const data = [
   ]],
   ["s3","3. Pendant que ça agit",[
     {id:"poubelles", t:"Vider toutes les poubelles et remettre un sac propre partout."},
-    {id:"cuisine", t:"Cuisine : frigo, four, micro-ondes, plaques, cafetière, bouilloire, lave-vaisselle et TOUS les placards propres, rien d'oublié.", photos:[{id:"cuisine", label:"Placards de la cuisine ouverts"},{id:"frigo", label:"Frigo ET congélateur ouverts en même temps"},{id:"four", label:"Four ouvert"}]},
+    {id:"cuisine", t:"Cuisine : frigo, four, micro-ondes, plaques, cafetière, bouilloire, lave-vaisselle et TOUS les placards propres, rien d'oublié.", photos:[{id:"cuisine", label:"Placards de la cuisine ouverts"},{id:"meuble-haut-1", label:"Meuble haut n°1 ouvert — vaisselle, verres, couverts", only: s => s === 'grande-roue'},{id:"meuble-haut-2", label:"Meuble haut n°2 ouvert — bouilloire, cafetière, micro-ondes", only: s => s === 'grande-roue'},{id:"frigo", label:"Frigo ET congélateur ouverts en même temps"},{id:"four", label:"Four ouvert"}]},
     {id:"evier", t:"Liquide vaisselle, éponge, dosettes lave-vaisselle, torchon, essuie-main."},
     {id:"sdb-produits", t:"Salle de bain : savon, gel douche, coton, sèche-cheveux, tapis. Papier toilette : 1 rouleau + 3/4 minimum, pliage en pointe."},
     {id:"surfaces", t:"Surfaces : plan de travail, crédence, table, miroir, plan vasque (sans toucher aux produits qui agissent).", photos:[{id:"plan-travail", label:"Plan de travail de la cuisine"}]},
@@ -828,6 +846,7 @@ const data = [
     {id:"mains", t:"③ Se rincer les mains."},
     {id:"essuyer-anticalcaire", t:"④ Anti-calcaire : on ESSUIE, on ne rince PAS (lavabo, cuisine…). On ne remouille plus.", photos:[{id:"robinet-sdb", label:"Zoom sur la robinetterie de la salle de bain"},{id:"robinet-cuisine", label:"Robinet cuisine"}]},
     {id:"balneo", t:"Balnéo : buses une par une, purge, zéro sable.", only: s => !!(apartFeatures[s] && apartFeatures[s].balneo)},
+    {id:"carrelage-sdb", t:"Carrelage marbre de la salle de bain : à nettoyer en entier — murs de la douche, pourtour de la balnéo, sol.", d:"Le marbre noir garde TOUTES les traces : eau, savon, calcaire. On lave, puis on essuie avec un chiffon sec jusqu'à ce qu'il n'y ait plus une seule trace.", photos:[{id:"carrelage-sdb", label:"Carrelage de la salle de bain, sans trace"}], only: s => s === 'grande-roue'},
     {id:"plan-sdb", t:"Plan de la salle de bain propre, tapis de sol enroulé posé dessus.", photos:[{id:"plan-sdb", label:"Plan de la salle de bain + tapis enroulé"}]},
   ]],
   ["s5","5. Chambre",[
