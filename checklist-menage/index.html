@@ -279,7 +279,7 @@
 // ===== Galerie photos déco par appartement =====
 const apartPhotos = {
   'albatros': 1, 'apollo': 2, 'apolove': 15, 'balneo': 14,
-  'cocon-romantique': 16, 'evasion': 18, 'face-mer': 7, 'famille': 60,
+  'cocon-romantique': 16, 'evasion': 18, 'face-mer': 7, 'famille': 62,
   'grand-large': 1, 'grande-love-room': 14, 'hamac': 1,
   'helene': 21, 'jeanne': 16, 'kingston': 2, 'kitesurf': 41,
   'maisonnette': 13, 'mini-love-room': 9, 'paddle': 5, 'grande-roue': 16,
@@ -288,6 +288,7 @@ const apartPhotos = {
 
 // Légendes des photos déco qui portent une consigne précise (numéro de photo → texte)
 const apartPhotoNotes = {
+  'famille': { 61:'Salon : grande fenêtre 4 vantaux — vitres, châssis et rebord sans trace', 62:'Chambre : les 4 petites fenêtres — vitres sans coulures, tablette bois et radiateur propres' },
   'apolove': { 14:'Table à manger : bougies allumées, couverts dressés', 15:'Balnéo : les 5 bougies allumées' },
   'grande-roue': {
     1:'Cuisine : plan de travail dégagé, Senseo en place',
@@ -859,7 +860,7 @@ const data = [
     {id:"deco-salon", t:"Ranger coussins, plaids, déco.", only: s => SANS_CANAPE.includes(s)},
     {id:"exterieur", t:"Balcon / terrasse / jardin / patio : mégots, déchets, crottes de chien. Sol balayé, mobilier remis en place.", only: s => !!(apartFeatures[s] && apartFeatures[s].exterieur) || PHOTO_BALCON.includes(s) || PHOTO_JARDIN.includes(s),
       photos:[{id:"balcon", label:"Balcon propre, en entier", only: s => PHOTO_BALCON.includes(s)},{id:"jardin", label:"Jardin propre, en entier", only: s => PHOTO_JARDIN.includes(s)}]},
-    {id:"vitres", t:"Faire les vitres et baies vitrées.", photos:[{id:"vitres", label:"Fenêtres"}]},
+    {id:"vitres", t:"Faire les vitres et baies vitrées.", photos:[{id:"vitres", label:"Fenêtres", only: s => s !== 'famille'},{id:"vitres-salon", label:"Salon : la grande fenêtre 4 vantaux, sans trace", only: s => s === 'famille'},{id:"vitres-chambre", label:"Chambre : les 4 petites fenêtres, sans coulure", only: s => s === 'famille'}]},
   ]],
   ["s7","7. Aspirateur puis poussière",[
     {id:"aspi", t:"Aspirer tout le logement, tous les angles : plinthes, recoins, sous le canapé."},
@@ -874,6 +875,7 @@ const data = [
     {id:"video", t:"Vidéo continue de toutes les pièces (45 secondes maximum).", d:"Filmer sans couper : entrée, cuisine, salon, chambre(s), salle de bain. La vidéo part directement chez Claudine depuis l'appli.", video:true},
     {id:"linge", t:"Sortir le linge de la machine et l'étendre. Hublot entrouvert."},
     {id:"reassort", t:"Noter le réassort dans l'appli.", d:"Appli réassort : https://claudine-design.github.io/enquete-berck/reassort/"},
+    {id:"spray-he", t:"Aspergé du spray huiles essentielles.", d:"Dernier geste avant de partir : quelques pulvérisations dans chaque pièce (entrée, salon, chambre(s), salle de bain) pour que le voyageur entre dans un logement qui sent bon."},
     {id:"fermeture", t:"Fenêtres fermées, lumières éteintes, robinets vérifiés, clés en place, code brouillé."},
   ]],
 ];
