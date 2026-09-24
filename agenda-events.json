@@ -1,18 +1,10 @@
 [
  {
   "titre": "Exposition Francis Crochet",
-  "start": "2026-09-23",
+  "start": "2026-09-24",
   "date_label": "Jusqu'au 30/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=107874",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Ciné Spectacle \"Artus Le Show XXL\" - CInos",
-  "start": "2026-09-24",
-  "date_label": "Le 24/09/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=129971",
   "source": "Office de Tourisme"
  },
  {
@@ -164,6 +156,14 @@
   "source": "Office de Tourisme"
  },
  {
+  "titre": "Soirée Pyjama - Projection du film \"Le Roi Lion\"",
+  "start": "2026-10-20",
+  "date_label": "Le 20/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=125867",
+  "source": "Office de Tourisme"
+ },
+ {
   "titre": "Allée des roses – Aidons les passereaux",
   "start": "2026-10-20",
   "date_label": "Le 20/10/2026",
@@ -201,6 +201,14 @@
   "date_label": "Le 25/10/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=97870",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "2ème édition du Beach Bike Berck",
+  "start": "2026-11-08",
+  "date_label": "Le 08/11/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=124067",
   "source": "Office de Tourisme"
  }
 ]
