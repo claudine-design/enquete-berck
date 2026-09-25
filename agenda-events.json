@@ -1,7 +1,7 @@
 [
  {
   "titre": "Exposition Francis Crochet",
-  "start": "2026-09-24",
+  "start": "2026-09-25",
   "date_label": "Jusqu'au 30/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=107874",
@@ -10,7 +10,7 @@
  {
   "titre": "T'In Souvyin Tu ?  - \"ya qu'à Berck qu'on voé cho\"",
   "start": "2026-09-25",
-  "date_label": "Du 25/09/2026 au 27/09/2026",
+  "date_label": "Jusqu'au 27/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=127556",
   "source": "Office de Tourisme"
@@ -68,6 +68,14 @@
   "date_label": "Le 03/10/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130205",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "\"Jouons en Famille\"",
+  "start": "2026-10-03",
+  "date_label": "Le 03/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=101354",
   "source": "Office de Tourisme"
  },
  {
@@ -196,19 +204,19 @@
   "source": "Office de Tourisme"
  },
  {
-  "titre": "Marche Rose et Animations - Octobre Rose",
-  "start": "2026-10-25",
-  "date_label": "Le 25/10/2026",
+  "titre": "Les ateliers de Min'harmonie - Découvrir les 38 fleurs de Bach",
+  "start": "2026-10-24",
+  "date_label": "Le 24/10/2026",
   "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=97870",
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130790",
   "source": "Office de Tourisme"
  },
  {
-  "titre": "2ème édition du Beach Bike Berck",
-  "start": "2026-11-08",
-  "date_label": "Le 08/11/2026",
+  "titre": "Bourse aux jouets par le Centre Social des Dunes",
+  "start": "2026-10-25",
+  "date_label": "Le 25/10/2026",
   "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=124067",
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130784",
   "source": "Office de Tourisme"
  }
 ]
