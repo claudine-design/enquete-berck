@@ -814,8 +814,15 @@ async function chargerCave(s){
 }
 
 // Photo obligatoire de l'extérieur (liste Claudine 21/09/2026)
-const PHOTO_BALCON = ['hamac','paddle','kitesurf'];
-const PHOTO_JARDIN = ['balneo','cocon-romantique','famille','terrasse','maisonnette'];
+const PHOTO_BALCON = ['hamac','paddle','kitesurf','surf','face-mer','grand-large','apollo'];
+const PHOTO_JARDIN = ['balneo','cocon-romantique','famille','maisonnette'];
+const PHOTO_TERRASSE = ['terrasse'];
+const PHOTO_PATIO = ['patio'];
+const PHOTO_EXTERIEUR = ['grande-roue']; // extérieur dont le type n'est pas précisé
+// Nombre de chambres (> 1) : une paire de photos « à côté de la tête de lit » PAR chambre
+const CHAMBRES = { 'famille':3, 'apollo':2, 'grande-roue':2 };
+// Love rooms : photo des bougies allumées (table + près de la balnéo quand il y en a une)
+const BOUGIES = ['apolove','cocon-romantique','mini-love-room','grande-love-room','escapade'];
 const SANS_LINGE = ['hamac','paddle','kitesurf','surf','face-mer','grand-large','albatros','terrasse'];
 
 // Photos : {id, label, multi?:true (plusieurs lits), nonConcerne?:true}
@@ -865,20 +872,20 @@ const data = [
     {id:"canape", t:"Ouvrir le canapé-lit : dedans et dessous, rien d'oublié. Ranger coussins, plaids, déco.", photos:[{id:"canape", label:"Canapé OUVERT (déplié)"}], only: s => !SANS_CANAPE.includes(s)},
     {id:"tv-video", t:"Télé et vidéoprojecteur : écrans sans poussière, télécommandes à leur place, tout éteint.", photos:[{id:"tv-video", label:"Mur TV + vidéoprojecteur, télécommandes rangées"}], only: s => s === 'escapade'},
     {id:"deco-salon", t:"Ranger coussins, plaids, déco.", only: s => SANS_CANAPE.includes(s)},
-    {id:"exterieur", t:"Balcon / terrasse / jardin / patio : mégots, déchets, crottes de chien. Sol balayé, mobilier remis en place.", only: s => !!(apartFeatures[s] && apartFeatures[s].exterieur) || PHOTO_BALCON.includes(s) || PHOTO_JARDIN.includes(s),
-      photos:[{id:"balcon", label:"Balcon propre, en entier", only: s => PHOTO_BALCON.includes(s)},{id:"jardin", label:"Jardin propre, en entier", only: s => PHOTO_JARDIN.includes(s)}]},
+    {id:"exterieur", t:"Balcon / terrasse / jardin / patio : mégots, déchets, crottes de chien. Sol balayé, mobilier remis en place.", only: s => !!(apartFeatures[s] && apartFeatures[s].exterieur) || PHOTO_BALCON.includes(s) || PHOTO_JARDIN.includes(s) || PHOTO_TERRASSE.includes(s) || PHOTO_PATIO.includes(s) || PHOTO_EXTERIEUR.includes(s),
+      photos:[{id:"balcon", label:"Balcon propre, en entier", only: s => PHOTO_BALCON.includes(s)},{id:"jardin", label:"Jardin propre, en entier", only: s => PHOTO_JARDIN.includes(s)},{id:"terrasse", label:"Terrasse propre, en entier", only: s => PHOTO_TERRASSE.includes(s)},{id:"patio", label:"Patio propre, en entier", only: s => PHOTO_PATIO.includes(s)},{id:"exterieur", label:"Extérieur propre, en entier", only: s => PHOTO_EXTERIEUR.includes(s)}]},
     {id:"vitres", t:"Faire les vitres et baies vitrées.", photos:[{id:"vitres", label:"Fenêtres", only: s => s !== 'famille'},{id:"vitres-salon", label:"Salon : la grande fenêtre 4 vantaux, sans trace", only: s => s === 'famille'},{id:"vitres-chambre", label:"Chambre : les 4 petites fenêtres, sans coulure", only: s => s === 'famille'}]},
   ]],
   ["s7","7. Aspirateur puis poussière",[
     {id:"aspi", t:"Aspirer tout le logement, tous les angles : plinthes, recoins, sous le canapé."},
-    {id:"cotes-lit", t:"Insister sur les côtés du lit et dessous.", photos:[{id:"coin-lit-gauche", label:"À côté de la tête de lit — côté gauche"},{id:"coin-lit-droit", label:"À côté de la tête de lit — côté droit"}]},
+    {id:"cotes-lit", t:"Insister sur les côtés du lit et dessous.", photos:[{id:"coin-lit-gauche", label:"À côté de la tête de lit — côté gauche", only: s => !CHAMBRES[s]},{id:"coin-lit-droit", label:"À côté de la tête de lit — côté droit", only: s => !CHAMBRES[s]},{id:"coin-lit-gauche", label:"Chambre 1 : à côté de la tête de lit — côté gauche", only: s => (CHAMBRES[s] || 0) >= 1},{id:"coin-lit-droit", label:"Chambre 1 : à côté de la tête de lit — côté droit", only: s => (CHAMBRES[s] || 0) >= 1},{id:"coin-lit-gauche-2", label:"Chambre 2 : à côté de la tête de lit — côté gauche", only: s => (CHAMBRES[s] || 0) >= 2},{id:"coin-lit-droit-2", label:"Chambre 2 : à côté de la tête de lit — côté droit", only: s => (CHAMBRES[s] || 0) >= 2},{id:"coin-lit-gauche-3", label:"Chambre 3 : à côté de la tête de lit — côté gauche", only: s => (CHAMBRES[s] || 0) >= 3},{id:"coin-lit-droit-3", label:"Chambre 3 : à côté de la tête de lit — côté droit", only: s => (CHAMBRES[s] || 0) >= 3}]},
     {id:"sol", t:"Laver le sol là où il y a des traces."},
     {id:"lavette", t:"Petite lavette : dessus des plinthes, meubles, cadres, TV, étagères, déco."},
   ]],
   ["s8","8. Regard final — vidéo — départ",[
     {id:"regard", t:"Regarder l'appart comme le voyageur qui entre. Casse → photo + signalement."},
     {id:"rincer-receveur", t:"Rincer le receveur (javel)."},
-    {id:"bougies", t:"Allumer les bougies : celles de la table à manger ET les 5 de la balnéo.", d:"Toutes les bougies doivent fonctionner. Une bougie qui ne s’allume plus : changer les piles, ou le signaler.", photos:[{id:"bougies-table", label:"Table à manger, bougies allumées"},{id:"bougies-balneo", label:"Balnéo, les 5 bougies allumées"}], only: s => s === 'apolove'},
+    {id:"bougies", t:"Allumer les bougies : celles de la table à manger ET celles près de la balnéo.", d:"Toutes les bougies doivent fonctionner. Une bougie qui ne s’allume plus : changer les piles, ou le signaler.", photos:[{id:"bougies-table", label:"Table à manger, bougies allumées"},{id:"bougies-balneo", label:"Balnéo, les 5 bougies allumées", only: s => s === 'apolove'},{id:"bougies-balneo", label:"Près de la balnéo, bougies allumées", only: s => s !== 'apolove' && !!(apartFeatures[s] && apartFeatures[s].balneo)}], only: s => BOUGIES.includes(s)},
     {id:"video", t:"Vidéo continue de toutes les pièces (45 secondes maximum).", d:"Filmer sans couper : entrée, cuisine, salon, chambre(s), salle de bain. La vidéo part directement chez Claudine depuis l'appli.", video:true},
     {id:"linge", t:"Sortir le linge de la machine et l'étendre. Hublot entrouvert."},
     {id:"reassort", t:"Noter le réassort dans l'appli.", d:"Appli réassort : https://claudine-design.github.io/enquete-berck/reassort/"},
@@ -1186,7 +1193,7 @@ function renderFin(){
     (videoOk ? '✅ Vidéo enregistrée à ' + hhmm(S.video.heure) + ' — refaire' : '🎥 FILMER LA VIDÉO') + '</button>' +
     '<div class="small-note">Toutes les pièces, sans couper. 45 secondes maximum.</div></div></div>';
   h += '<div class="finp-step"><span class="num' + (pret ? ' ok' : '') + '">3</span><div class="grow"><b>Valider</b>' +
-    '<button type="button" id="finp-send" class="bigbtn ' + (pret ? 'go' : 'wait') + '">' + (pret ? '✓ TERMINER LE MÉNAGE' : '✓ Terminer (il manque des éléments)') + '</button>' +
+    '<button type="button" id="finp-send" class="bigbtn ' + (pret ? 'go' : 'wait') + '">' + (pret ? '✓ TERMINER LE MÉNAGE' : manque.length ? '✓ Terminer (il manque ' + manque.length + ' photo' + (manque.length > 1 ? 's' : '') + ')' : '✓ Terminer (il manque la vidéo)') + '</button>' +
     '</div></div></div>';
   box.innerHTML = h;
   box.querySelectorAll('.finp-go').forEach(b => b.onclick = () => {
@@ -1358,7 +1365,7 @@ async function send(){
   const s = S.appart;
   const items = itemsFor(s).flatMap(x => x[2]);
   const missing = items.flatMap(it => it.photos).filter(p => !slotDone(p)).map(p => '📷 ' + p.label);
-  if(missing.length){ alert('⛔ Il manque des photos :\n\n' + missing.join('\n') + '\n\nPrenez-les pour pouvoir terminer.'); return; }
+  if(missing.length){ alert('⛔ Il manque ' + missing.length + ' photo' + (missing.length > 1 ? 's' : '') + ' :\n\n' + missing.join('\n') + '\n\nPrenez-les pour pouvoir terminer.'); return; }
   if(LANCES.includes(s)){
     const retard = ROUTINES.filter(r => computeStatus(r.intervalDays, (routinesData[r.id] || {}).lastDone).cls === 'due-overdue');
     if(retard.length){ alert('⛔ Entretien en retard à faire AVANT de terminer (avec photo) :' + String.fromCharCode(10,10) + retard.map(r => '🔴 ' + r.label).join(String.fromCharCode(10)) + String.fromCharCode(10,10) + 'Voir l’encadré vert « Entretien périodique ».'); document.getElementById('routines-block').setAttribute('open',''); document.getElementById('routines-block').scrollIntoView({behavior:'smooth'}); return; }
