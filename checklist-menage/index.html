@@ -839,7 +839,7 @@ const data = [
   ]],
   ["s3","3. Pendant que ça agit",[
     {id:"poubelles", t:"Vider toutes les poubelles et remettre un sac propre partout."},
-    {id:"cuisine", t:"Cuisine : frigo, four, micro-ondes, plaques, cafetière, bouilloire, lave-vaisselle et TOUS les placards propres, rien d'oublié.", photos:[{id:"cuisine", label:"Placards de la cuisine ouverts"},{id:"meuble-haut-1", label:"Meuble haut n°1 ouvert — vaisselle, verres, couverts", only: s => s === 'grande-roue'},{id:"meuble-haut-2", label:"Meuble haut n°2 ouvert — bouilloire, cafetière, micro-ondes", only: s => s === 'grande-roue'},{id:"frigo", label:"Frigo ET congélateur ouverts en même temps"},{id:"four", label:"Four ouvert"}]},
+    {id:"cuisine", t:"Cuisine : frigo, four, micro-ondes, plaques, cafetière, bouilloire, lave-vaisselle et TOUS les placards propres, rien d'oublié.", photos:[{id:"cuisine", label:"Placards de la cuisine ouverts"},{id:"meuble-haut-1", label:"Meuble haut n°1 ouvert — vaisselle, verres, couverts", only: s => s === 'grande-roue'},{id:"meuble-haut-2", label:"Meuble haut n°2 ouvert — bouilloire, cafetière, micro-ondes", only: s => s === 'grande-roue'},{id:"frigo", label:"Frigo ET congélateur ouverts en même temps"},{id:"four", label:"Four ouvert"},{id:"micro-ondes", label:"Micro-ondes ouvert, propre dedans", only: s => s === 'escapade'},{id:"lave-vaisselle", label:"Lave-vaisselle ouvert, vide et propre", only: s => s === 'escapade'}]},
     {id:"evier", t:"Liquide vaisselle, éponge, dosettes lave-vaisselle, torchon, essuie-main."},
     {id:"sdb-produits", t:"Salle de bain : savon, gel douche, coton, sèche-cheveux, tapis. Papier toilette : 1 rouleau + 3/4 minimum, pliage en pointe."},
     {id:"surfaces", t:"Surfaces : plan de travail, crédence, table, miroir, plan vasque (sans toucher aux produits qui agissent).", photos:[{id:"plan-travail", label:"Plan de travail de la cuisine"}]},
@@ -850,8 +850,10 @@ const data = [
     {id:"lunette", t:"② Dessus de la lunette au produit fait maison : seul endroit (contact peau).", d:"Spray fait maison : 50 % vinaigre blanc + 25 % alcool ménager + 1 c. à café de liquide vaisselle, compléter avec de l'eau. Jamais avec la javel.", photos:[{id:"wc", label:"Cuvette des toilettes ouverte, lunette relevée"}]},
     {id:"mains", t:"③ Se rincer les mains."},
     {id:"essuyer-anticalcaire", t:"④ Anti-calcaire : on ESSUIE, on ne rince PAS (lavabo, cuisine…). On ne remouille plus.", photos:[{id:"robinet-sdb", label:"Zoom sur la robinetterie de la salle de bain"},{id:"robinet-cuisine", label:"Robinet cuisine"}]},
-    {id:"balneo", t:"Balnéo : buses une par une, purge, zéro sable.", only: s => !!(apartFeatures[s] && apartFeatures[s].balneo)},
-    {id:"carrelage-sdb", t:"Carrelage marbre de la salle de bain : à nettoyer en entier — murs de la douche, pourtour de la balnéo, sol.", d:"Le marbre noir garde TOUTES les traces : eau, savon, calcaire. On lave, puis on essuie avec un chiffon sec jusqu'à ce qu'il n'y ait plus une seule trace.", photos:[{id:"carrelage-sdb", label:"Carrelage de la salle de bain, sans trace"}], only: s => s === 'grande-roue'},
+    {id:"balneo", t:"Balnéo : buses une par une, purge, zéro sable.", only: s => !!(apartFeatures[s] && apartFeatures[s].balneo), photos:[{id:"balneo", label:"Balnéo double : cuve et buses sans trace", only: s => s === 'escapade'}]},
+    {id:"sauna", t:"Sauna : bancs essuyés, sol aspiré, 2 grandes serviettes déposées.", photos:[{id:"sauna", label:"Sauna propre, 2 serviettes en place"}], only: s => s === 'escapade'},
+    {id:"douche-lave-linge", t:"Douche et lave-linge : parois sans trace, hublot du lave-linge entrouvert.", photos:[{id:"douche", label:"Douche : parois et marbre sans trace"},{id:"lave-linge", label:"Lave-linge vide, hublot entrouvert"}], only: s => s === 'escapade'},
+    {id:"carrelage-sdb", t:"Carrelage marbre de la salle de bain : à nettoyer en entier — murs de la douche, pourtour de la balnéo, sol.", d:"Le marbre noir garde TOUTES les traces : eau, savon, calcaire. On lave, puis on essuie avec un chiffon sec jusqu'à ce qu'il n'y ait plus une seule trace.", photos:[{id:"carrelage-sdb", label:"Carrelage de la salle de bain, sans trace"}], only: s => s === 'grande-roue' || s === 'escapade'},
     {id:"plan-sdb", t:"Plan de la salle de bain propre, tapis de sol enroulé posé dessus.", photos:[{id:"plan-sdb", label:"Plan de la salle de bain + tapis enroulé"}]},
   ]],
   ["s5","5. Chambre",[
@@ -861,6 +863,7 @@ const data = [
   ]],
   ["s6","6. Salon — extérieur — vitres",[
     {id:"canape", t:"Ouvrir le canapé-lit : dedans et dessous, rien d'oublié. Ranger coussins, plaids, déco.", photos:[{id:"canape", label:"Canapé OUVERT (déplié)"}], only: s => !SANS_CANAPE.includes(s)},
+    {id:"tv-video", t:"Télé et vidéoprojecteur : écrans sans poussière, télécommandes à leur place, tout éteint.", photos:[{id:"tv-video", label:"Mur TV + vidéoprojecteur, télécommandes rangées"}], only: s => s === 'escapade'},
     {id:"deco-salon", t:"Ranger coussins, plaids, déco.", only: s => SANS_CANAPE.includes(s)},
     {id:"exterieur", t:"Balcon / terrasse / jardin / patio : mégots, déchets, crottes de chien. Sol balayé, mobilier remis en place.", only: s => !!(apartFeatures[s] && apartFeatures[s].exterieur) || PHOTO_BALCON.includes(s) || PHOTO_JARDIN.includes(s),
       photos:[{id:"balcon", label:"Balcon propre, en entier", only: s => PHOTO_BALCON.includes(s)},{id:"jardin", label:"Jardin propre, en entier", only: s => PHOTO_JARDIN.includes(s)}]},
