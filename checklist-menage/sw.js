@@ -2,7 +2,7 @@
 // et d'envoyer les photos/heures gardées dans le téléphone dès que le réseau revient.
 // Page : réseau d'abord (pour avoir la dernière version), sinon la copie gardée.
 // Images (photos déco + photos modèles) : copie gardée d'abord.
-const CACHE = 'tuto-menage-v1';
+const CACHE = 'tuto-menage-v2';
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./'])).then(() => self.skipWaiting()));
@@ -62,12 +62,19 @@ async function flush(){
       const c = ev.target.result; if(c){ out.push({key:c.key, val:c.value}); c.continue(); } else res(out);
     };
   });
+  // Un envoi raté ne bloque plus les suivants ; les tâches d'entretien (autre serveur) sont laissées à la page.
+  let echec = false;
   for(const {key, val} of items){
-    const r = await fetch(api, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(val)});
-    const j = await r.json();
-    if(!j.ok && j.error !== 'cle') throw new Error('refus');
-    await new Promise(res => { const tx = db.transaction('q','readwrite'); tx.objectStore('q').delete(key); tx.oncomplete = res; });
+    if(val.action === 'routine') continue;
+    try {
+      const video = val.mime && val.mime.indexOf('video') === 0;
+      const r = await withTimeout(fetch(api, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(val)}), video ? 300000 : 90000);
+      const j = await r.json();
+      if(!j.ok && j.error !== 'cle'){ echec = true; continue; }
+      await new Promise(res => { const tx = db.transaction('q','readwrite'); tx.objectStore('q').delete(key); tx.oncomplete = res; });
+    } catch(e){ echec = true; }
   }
+  if(echec) throw new Error('a reessayer');
 }
 // L'adresse du serveur est lue dans la page gardée (une seule source de vérité).
 async function apiUrl(){

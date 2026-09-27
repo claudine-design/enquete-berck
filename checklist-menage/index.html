@@ -228,6 +228,7 @@
     <option>Aimance</option>
     <option>Maëlys</option>
     <option>Priscillia</option>
+    <option>Karl</option>
     <option>Claudine</option>
   </select>
 </div>
@@ -467,7 +468,7 @@ document.getElementById('appart').addEventListener('change', e => {
   const params = new URLSearchParams(location.search);
   const presta = (params.get('presta') || '').trim();
   if(!presta) return;
-  const map = { 'remi': 'Rémi', 'maylis': 'Maëlys', 'mailys': 'Maëlys', 'priscilia': 'Priscillia', 'christelle': 'Christelle', 'claire': 'Claire et Sébastien', 'stephanie': 'Stéphanie', 'aimance': 'Aimance' };
+  const map = { 'remi': 'Rémi', 'maylis': 'Maëlys', 'mailys': 'Maëlys', 'priscilia': 'Priscillia', 'christelle': 'Christelle', 'claire': 'Claire et Sébastien', 'stephanie': 'Stéphanie', 'aimance': 'Aimance', 'karl': 'Karl' };
   const nice = map[presta.toLowerCase()] || (presta.charAt(0).toUpperCase() + presta.slice(1));
   const nomInput = document.getElementById('nom');
   if(nomInput && !nomInput.value) nomInput.value = nice;
@@ -934,30 +935,45 @@ async function qDel(key){
   await new Promise(res => { const tx = db.transaction('q','readwrite'); tx.objectStore('q').delete(key); tx.oncomplete = res; });
 }
 let flushing = false, flushRetry = null;
+// fetch avec délai maximum : un envoi « pendu » ne bloque plus la file.
+function fetchTimeout(url, opts, ms){
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), ms);
+  return fetch(url, Object.assign({}, opts || {}, {signal: ctl.signal})).finally(() => clearTimeout(t));
+}
+// Un envoi raté (vidéo trop longue à partir, entretien refusé…) ne bloque plus les suivants :
+// on passe au suivant et on réessaie le raté plus tard (incident Priscillia, Apolove, 26/09/2026).
+// Ordre : début et fin d'abord, puis photos, puis vidéos.
 async function flush(){
   if(flushing || SUIVI_API.indexOf('http') !== 0) return;
   flushing = true;
+  let echec = false;
   try {
-    const items = await qAll();
+    const rang = v => v.action === 'start' ? 0 : v.action === 'fin' ? 1 : (v.mime && v.mime.indexOf('video') === 0) ? 3 : 2;
+    const items = (await qAll()).sort((a, b) => rang(a.val) - rang(b.val));
     for(const {key, val} of items){
       let ok = false;
       try {
         let j;
         if(val.action === 'routine'){
-          const r = await fetch(ROUTINES_API_URL + '?' + new URLSearchParams({action:'markRoutineDone', appart:val.appart, task:val.task, label:val.label, presta:val.presta}).toString());
+          const r = await fetchTimeout(ROUTINES_API_URL + '?' + new URLSearchParams({action:'markRoutineDone', appart:val.appart, task:val.task, label:val.label, presta:val.presta}).toString(), {}, 30000);
           j = await r.json(); j.ok = !!j.success;
         } else {
-          const r = await fetch(SUIVI_API, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(val)});
+          const video = val.mime && val.mime.indexOf('video') === 0;
+          const r = await fetchTimeout(SUIVI_API, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(val)}, video ? 300000 : 90000);
           j = await r.json();
         }
         ok = !!j.ok || j.error === 'cle';
         if(ok && val.action === 'modele' && j.fileId && (slug() === val.appart || val.appart === 'cave-' + caveDe(slug()))){ modeles[val.etape] = j.fileId; saveModeles(slug()); render(); }
       } catch(e){ ok = false; }
-      if(!ok){ clearTimeout(flushRetry); flushRetry = setTimeout(flush, 30000); break; }
+      if(!ok){ echec = true; continue; }
       await qDel(key);
       updateSyncBar();
     }
-  } finally { flushing = false; updateSyncBar(); }
+  } finally {
+    flushing = false; updateSyncBar();
+    if(echec){ clearTimeout(flushRetry); flushRetry = setTimeout(flush, 30000); }
+  }
 }
 async function updateSyncBar(){
   const bar = document.getElementById('sync-bar');
