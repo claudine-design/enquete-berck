@@ -1117,7 +1117,9 @@ function imgModele(id){
   modeleImgs[id] = im;
   return im;
 }
-function modeleUrl(id){ return 'https://lh3.googleusercontent.com/d/' + id + '=w500'; }
+// Photos modèles communes à TOUS les logements (priment sur le modèle du logement) — choix Claudine 27/09/2026.
+const MODELES_FIXES = { canape: 'modele-canape.jpg' };
+function modeleUrl(id){ return /\.jpg$/.test(id) ? id : 'https://lh3.googleusercontent.com/d/' + id + '=w500'; }
 function saveModeles(s){ try { localStorage.setItem('modeles-' + s, JSON.stringify(modeles)); } catch(e){} }
 async function loadModeles(s){
   try { modeles = JSON.parse(localStorage.getItem('modeles-' + s) || '{}'); } catch(e){ modeles = {}; }
@@ -1239,7 +1241,7 @@ function renderItem(it){
   it.photos.forEach(p => {
     const list = (S && S.photos[p.id]) || [];
     const nc = S && S.nc[p.id];
-    const m = modeles[p.id];
+    const m = MODELES_FIXES[p.id] || modeles[p.id];
     photosHtml += '<div class="slot' + (list.length || nc ? ' ok' : '') + '">' +
       '<div class="slot-title">📷 ' + p.label + (list.length ? ' ✓' : '') + (nc ? ' — non concerné' : '') + '</div>' +
       '<div class="slot-row">' +
