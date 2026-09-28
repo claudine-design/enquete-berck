@@ -109,6 +109,19 @@
   .slot-row{display:flex;gap:6px;overflow-x:auto}
   .slot figure{margin:0;flex:0 0 auto;text-align:center}
   .slot figure img{width:96px;height:96px;object-fit:cover;border-radius:8px;display:block;border:1px solid #ddd}
+  .slot figure.mfig img{width:140px;height:140px;border:3px solid #c0606c}
+  /* Modèle en PLEIN ÉCRAN avant la photo, puis comparaison modèle / photo prise (Claudine 28/09/2026) */
+  .plein{position:fixed;inset:0;z-index:10000;background:#111;display:flex;flex-direction:column;color:#fff}
+  .plein-t{padding:12px 14px 8px;font-size:17px;font-weight:700;line-height:1.3;text-align:center}
+  .plein-t small{display:block;font-size:13px;font-weight:500;color:#f2c6cb;margin-top:3px}
+  .plein-img{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px;padding:0 8px}
+  .plein-img div{flex:1;min-height:0;position:relative}
+  .plein-img img{width:100%;height:100%;object-fit:contain;display:block}
+  .plein-img span{position:absolute;top:6px;left:6px;background:rgba(0,0,0,.65);padding:3px 9px;border-radius:8px;font-size:13px;font-weight:700}
+  .plein-b{padding:10px 12px calc(12px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px}
+  .plein-b button{width:100%;padding:17px;border:0;border-radius:14px;font-size:19px;font-weight:700;color:#fff;background:#E89BA3}
+  .plein-b button.ok{background:#16a34a}
+  .plein-b button.alt{background:#333;font-size:15px;padding:12px;font-weight:600}
   .slot figure figcaption{font-size:11px;color:#777;margin-top:2px}
   .slot figure.nomodel div{width:96px;height:96px;border-radius:8px;background:#f3f3f3;color:#999;font-size:11px;display:flex;align-items:center;justify-content:center;text-align:center;padding:6px}
   .slot button{margin-top:8px;margin-right:6px;padding:10px 12px;border-radius:10px;border:none;font-size:14px;font-weight:600;cursor:pointer}
@@ -890,7 +903,7 @@ const data = [
     {id:"video", t:"Vidéo continue de toutes les pièces (45 secondes maximum).", d:"Filmer sans couper : entrée, cuisine, salon, chambre(s), salle de bain. La vidéo part directement chez Claudine depuis l'appli.", video:true},
     {id:"linge", t:"Sortir le linge de la machine et l'étendre. Hublot entrouvert."},
     {id:"reassort", t:"Noter le réassort dans l'appli.", d:"Appli réassort : https://claudine-design.github.io/enquete-berck/reassort/"},
-    {id:"spray-he", t:"Aspergé du spray huiles essentielles.", d:"Dernier geste avant de partir : quelques pulvérisations dans chaque pièce (entrée, salon, chambre(s), salle de bain) pour que le voyageur entre dans un logement qui sent bon."},
+    {id:"spray-he", t:"Asperger le spray huiles essentielles dans chaque pièce.", d:"Dernier geste avant de partir : quelques pulvérisations dans chaque pièce (entrée, salon, chambre(s), salle de bain) pour que le voyageur entre dans un logement qui sent bon."},
     {id:"fermeture", t:"Fenêtres fermées, lumières éteintes, robinets vérifiés, clés en place, code brouillé."},
   ]],
 ];
@@ -1306,9 +1319,39 @@ async function filmer(it){
   await qAdd({action:'photo', id:S.id, appart:S.appart, presta:S.presta, etape:'video', libelle:'Vidéo de fin de ménage', heure, mime:f.type || 'video/mp4', file:b64});
 }
 
+// Écran plein : le modèle en grand → bouton appareil photo → modèle et photo l'un sous l'autre → Valider / Reprendre.
+// L'appareil photo est ouvert DIRECTEMENT dans le clic du bouton (sinon l'iPhone le bloque).
+function photoAvecModele(label, m){
+  return new Promise(res => {
+    const ov = document.createElement('div');
+    ov.className = 'plein';
+    document.body.appendChild(ov);
+    const fin = f => { ov.remove(); res(f); };
+    const imgHtml = () => '<img alt="" src="' + (/\.jpg$/.test(m) ? m : 'https://lh3.googleusercontent.com/d/' + m + '=w1600') + '" onerror="this.onerror=null;this.src=\'' + modeleUrl(m) + '\'">';
+    const camera = () => prendrePhoto().then(f => { if(f) valider(f); });
+    const voir = () => {
+      ov.innerHTML = '<div class="plein-t">📷 ' + label + '<small>Voici le modèle : faites la même photo</small></div>' +
+        '<div class="plein-img"><div>' + imgHtml() + '</div></div>' +
+        '<div class="plein-b"><button type="button" data-a="cam">📷 PRENDRE LA PHOTO</button><button type="button" class="alt" data-a="non">✕ Retour</button></div>';
+      ov.querySelector('[data-a=cam]').onclick = camera;
+      ov.querySelector('[data-a=non]').onclick = () => fin(null);
+    };
+    const valider = f => {
+      const url = URL.createObjectURL(f);
+      ov.innerHTML = '<div class="plein-t">Votre photo ressemble au modèle ?</div>' +
+        '<div class="plein-img"><div>' + imgHtml() + '<span>Modèle</span></div><div><img alt="" src="' + url + '"><span>Votre photo</span></div></div>' +
+        '<div class="plein-b"><button type="button" class="ok" data-a="ok">✅ VALIDER</button><button type="button" class="alt" data-a="re">🔁 Reprendre la photo</button></div>';
+      ov.querySelector('[data-a=ok]').onclick = () => { URL.revokeObjectURL(url); fin(f); };
+      ov.querySelector('[data-a=re]').onclick = () => { URL.revokeObjectURL(url); camera(); };
+    };
+    voir();
+  });
+}
+
 async function shoot(slotId, label, it){
   if(!S){ alert('▶️ Appuyez d\'abord sur « Je commence le ménage » (en haut).'); return; }
-  const f = await prendrePhoto();
+  const m = MODELES_FIXES[slotId] || modeles[slotId];
+  const f = m ? await photoAvecModele(label, m) : await prendrePhoto();
   if(!f) return;
   const heure = new Date().toISOString(); // heure de la photo, prise par le téléphone
   let big, thumb;
