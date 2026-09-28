@@ -1,33 +1,5 @@
 [
  {
-  "titre": "BIG DAY FAMILY",
-  "start": "2026-09-27",
-  "date_label": "27 septembre",
-  "categories": [
-   "Ateliers / Stages",
-   "Découverte",
-   "Loisirs"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=166241",
-  "source": "oukankoi.fr"
- },
- {
-  "titre": "Exposition Francis Crochet",
-  "start": "2026-09-27",
-  "date_label": "Jusqu'au 30/09/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=107874",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "T'In Souvyin Tu ?  - \"ya qu'à Berck qu'on voé cho\"",
-  "start": "2026-09-27",
-  "date_label": "Jusqu'au 27/09/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=127556",
-  "source": "Office de Tourisme"
- },
- {
   "titre": "ATELIER SCRAPBOOKING",
   "start": "2026-09-28",
   "date_label": "28 septembre",
@@ -37,6 +9,14 @@
   ],
   "lien": "https://www.oukankoi.fr/?p=165883",
   "source": "oukankoi.fr"
+ },
+ {
+  "titre": "Exposition Francis Crochet",
+  "start": "2026-09-28",
+  "date_label": "Jusqu'au 30/09/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=107874",
+  "source": "Office de Tourisme"
  },
  {
   "titre": "Ciné Rencontre - \"Le Triangle d'Or\"",
@@ -209,6 +189,22 @@
   "date_label": "Le 25/10/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=97870",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Atelier Diamond Painting - Chez Causettes",
+  "start": "2026-10-28",
+  "date_label": "Le 28/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=104642",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Atelier Origami - Chez Causettes",
+  "start": "2026-10-30",
+  "date_label": "Le 30/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=119409",
   "source": "Office de Tourisme"
  }
 ]
