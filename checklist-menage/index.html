@@ -837,6 +837,14 @@ const PHOTO_EXTERIEUR = ['grande-roue']; // extérieur dont le type n'est pas pr
 const CHAMBRES = { 'famille':3, 'apollo':2, 'grande-roue':2 };
 // Love rooms : photo des bougies allumées (table + près de la balnéo quand il y en a une)
 const BOUGIES = ['apolove','cocon-romantique','mini-love-room','grande-love-room','escapade'];
+// Lessive (Claudine 29/09/2026) : où s'étend le linge. Absent = consigne générale.
+// cave | local | auto (la machine tourne seule, on ne s'en occupe pas) | aucune (linge de lit + serviettes → blanchisserie)
+const LESSIVE = {
+  'albatros':'cave', 'face-mer':'cave', 'grand-large':'cave',
+  'kitesurf':'local', 'hamac':'local', 'paddle':'local', 'surf':'local', 'famille':'local',
+  'balneo':'auto', 'cocon-romantique':'auto',
+  'kingston':'aucune', 'rotonde':'aucune', 'patio':'aucune', 'evasion':'aucune'
+};
 const SANS_LINGE = ['hamac','paddle','kitesurf','surf','face-mer','grand-large','albatros','terrasse'];
 
 // Photos : {id, label, multi?:true (plusieurs lits), nonConcerne?:true}
@@ -845,7 +853,11 @@ const data = [
   ["s1","1. Arrivée",[
     {id:"questionnaire", t:"Photo du questionnaire d'arrivée + lire les annotations."},
     {id:"premier-tour", t:"Premier tour : casse, manque, panne, saleté anormale → photo + signalement AVANT de commencer."},
-    {id:"machine", t:"Lancer la machine à laver."},
+    {id:"machine", t:"Lancer la machine à laver.", only: s => !LESSIVE[s]},
+    {id:"machine", t:"Lancer la machine à laver.", d:"En fin de ménage, le linge s'étend à la CAVE (voir étape 8).", only: s => LESSIVE[s] === 'cave'},
+    {id:"machine", t:"Lancer la machine à laver.", d:"En fin de ménage, le linge s'étend au LOCAL ménage (voir étape 8).", only: s => LESSIVE[s] === 'local'},
+    {id:"machine", t:"Lancer la machine à laver : elle tourne toute seule, on ne s'en occupe pas.", only: s => LESSIVE[s] === 'auto'},
+    {id:"sac-blanchisserie", t:"Pas de lessive ici. Linge de lit (draps, draps-housses, taies d'oreiller) + serviettes → dans le sac blanc et noir, pour la blanchisserie.", d:"Torchons, lavettes, tapis de bain : ils ne partent PAS à la blanchisserie. On les redescend au local ménage, ils sont lavés sur place.", only: s => LESSIVE[s] === 'aucune'},
     {id:"fenetres", t:"Ouvrir les fenêtres. Vérifier le placard ménage : produits, lavettes, sacs, linge."},
     {id:"radiateurs", t:"Radiateurs : 12° l'hiver, éteints l'été."},
     {id:"cave", t:"Photo du local ménage : toutes les étagères, de face, bien éclairées (une fois par semaine).", d:"Cette photo sert à prévoir les achats : produits, gâteaux, papier toilette. Reculez pour tout avoir sur la photo et allumez la lumière.", photos:[{id:"cave", label:"Étagères du local ménage"}], only: s => MODE_MODELE ? !!caveDe(s) : (caveDue(s) || !!(S && S.photos && S.photos.cave))},
@@ -901,7 +913,10 @@ const data = [
     {id:"rincer-receveur", t:"Rincer le receveur (javel)."},
     {id:"bougies", t:"Allumer les bougies : celles de la table à manger ET celles près de la balnéo.", d:"Toutes les bougies doivent fonctionner. Une bougie qui ne s’allume plus : changer les piles, ou le signaler.", photos:[{id:"bougies-table", label:"Table à manger, bougies allumées"},{id:"bougies-balneo", label:"Balnéo, les 5 bougies allumées", only: s => s === 'apolove'},{id:"bougies-balneo", label:"Près de la balnéo, bougies allumées", only: s => s !== 'apolove' && !!(apartFeatures[s] && apartFeatures[s].balneo)}], only: s => BOUGIES.includes(s)},
     {id:"video", t:"Vidéo continue de toutes les pièces (45 secondes maximum).", d:"Filmer sans couper : entrée, cuisine, salon, chambre(s), salle de bain. La vidéo part directement chez Claudine depuis l'appli.", video:true},
-    {id:"linge", t:"Sortir le linge de la machine et l'étendre. Hublot entrouvert."},
+    {id:"linge", t:"Sortir le linge de la machine et l'étendre. Hublot entrouvert.", only: s => !LESSIVE[s]},
+    {id:"linge", t:"Reprendre le linge dans la machine et aller l'étendre dans la CAVE. Hublot entrouvert.", only: s => LESSIVE[s] === 'cave'},
+    {id:"linge", t:"Reprendre le linge dans la machine et aller l'étendre dans le LOCAL ménage. Hublot entrouvert.", only: s => LESSIVE[s] === 'local'},
+    {id:"petit-linge", t:"Mettre à part dans le sac et redescendre au local ménage : lavettes, torchons, tapis de bain.", only: s => LESSIVE[s] === 'auto' || LESSIVE[s] === 'aucune'},
     {id:"reassort", t:"Noter le réassort dans l'appli.", d:"Appli réassort : https://claudine-design.github.io/enquete-berck/reassort/"},
     {id:"spray-he", t:"Asperger le spray huiles essentielles dans chaque pièce.", d:"Dernier geste avant de partir : quelques pulvérisations dans chaque pièce (entrée, salon, chambre(s), salle de bain) pour que le voyageur entre dans un logement qui sent bon."},
     {id:"fermeture", t:"Fenêtres fermées, lumières éteintes, robinets vérifiés, clés en place, code brouillé."},
