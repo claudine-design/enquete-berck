@@ -92,9 +92,9 @@
   .gallery .grid img{width:100%;height:auto;border-radius:8px;cursor:pointer;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.1);transition:transform .15s}
   .gallery .grid img:active{transform:scale(.95)}
   .gallery .empty{color:#999;font-size:17px;font-style:italic;text-align:center;padding:20px}
-  .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;z-index:9999;align-items:center;justify-content:center;padding:20px}
+  .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.95);display:none;z-index:9999;align-items:center;justify-content:center;padding:0}
   .lightbox.open{display:flex}
-  .lightbox img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px}
+  .lightbox img{width:100%;height:100%;object-fit:contain}
   .lightbox .close{position:absolute;top:15px;right:20px;color:#fff;font-size:32px;background:none;border:none;cursor:pointer;line-height:1}
   .actions{display:flex;gap:10px;margin:18px 0 30px}
   .actions button{flex:1;padding:14px;border:none;border-radius:14px;font-size:19.5px;font-weight:600;cursor:pointer}
@@ -104,6 +104,7 @@
   .s2 h2,.s4 h2{background:#c0606c}
   .item .col{min-width:0}
   .slot{margin:8px 0 2px;padding:8px;border-radius:10px;background:#fff;border:2px dashed #E89BA3}
+  .item .slot{margin-left:-36px}
   .slot.ok{border:2px solid #86C28A;background:#f4fbf1}
   .slot-title{font-size:17px;font-weight:700;color:#7a3b46;margin-bottom:6px}
   .slot.ok .slot-title{color:#2e5a30}
@@ -838,6 +839,8 @@ const PHOTO_EXTERIEUR = ['grande-roue']; // extérieur dont le type n'est pas pr
 // Nombre de chambres (> 1) : une paire de photos « à côté de la tête de lit » PAR chambre
 const CHAMBRES = { 'famille':3, 'apollo':2, 'grande-roue':2 };
 // Love rooms : photo des bougies allumées (table + près de la balnéo quand il y en a une)
+// Pas de pare-douche (Claudine 29/09/2026) : pas d'item « pare-douche »
+const SANS_PAREDOUCHE = ['surf','kingston','cocon-romantique','terrasse','maisonnette'];
 const BOUGIES = ['apolove','cocon-romantique','mini-love-room','grande-love-room','escapade'];
 // Lessive (Claudine 29/09/2026) : où s'étend le linge. Absent = consigne générale.
 // cave | local | auto (la machine tourne seule, on ne s'en occupe pas) | aucune (linge de lit + serviettes → blanchisserie)
@@ -861,13 +864,13 @@ const data = [
     {id:"machine", t:"Lancer la machine à laver.", d:"En fin de ménage, le linge s'étend au LOCAL ménage (voir étape 8).", only: s => LESSIVE[s] === 'local'},
     {id:"machine", t:"Lancer la machine à laver : elle tourne toute seule, on ne s'en occupe pas.", only: s => LESSIVE[s] === 'auto'},
     {id:"sac-blanchisserie", t:"Pas de lessive ici. Linge de lit (draps, draps-housses, taies d'oreiller) + serviettes → dans le sac blanc et noir, pour la blanchisserie.", d:"Torchons, lavettes, tapis de bain : ils ne partent PAS à la blanchisserie. On les redescend au local ménage, ils sont lavés sur place.", only: s => LESSIVE[s] === 'aucune'},
-    {id:"fenetres", t:"Ouvrir les fenêtres. Vérifier le placard ménage : produits, lavettes, sacs, linge."},
+    {id:"fenetres", t:"Ouvrir les fenêtres."},
     {id:"radiateurs", t:"Radiateurs : 12° l'hiver, éteints l'été."},
   ]],
   ["s2","2. Salle de bain : produits — dans cet ordre",[
     {id:"anticalcaire", t:"① Anti-calcaire sur toute la robinetterie : salle de bain, cuisine, balnéo, buses et commandes balnéo."},
     {id:"robinet-douche", t:"② Tout de suite, à l'anti-calcaire : nettoyer la robinetterie de la douche."},
-    {id:"pare-douche", t:"③ Faire le pare-douche."},
+    {id:"pare-douche", t:"③ Faire le pare-douche à l'anti-calcaire.", only: s => !SANS_PAREDOUCHE.includes(s)},
     {id:"siphon", t:"④ Faire le siphon : zéro cheveu.", photos:[{id:"siphon", label:"Siphon propre"}]},
     {id:"javel-receveur", t:"⑤ Enchaîner : spray javel sur tout le receveur + le carrelage au-dessus, sur les joints.", d:"Pour que les joints ne deviennent pas marron. Le receveur sera rincé à la toute fin (étape 8)."},
     {id:"javel-wc", t:"⑥ Javel sur tout le WC, SAUF le dessus de la lunette. Puis on laisse agir ⏳ et on passe à l'étape 3.", d:"Le dessus de la lunette touche la peau : même essuyée, la javel colle à la peau."},
@@ -893,7 +896,7 @@ const data = [
   ]],
   ["s5","5. Chambre",[
     {id:"aleses", t:"Check des alèses : tache, odeur, humidité → on change.", photos:[{id:"alese", label:"Alèse, lit défait", only: s => SANS_LINGE.includes(s)}]},
-    {id:"lits", t:"Draps propres si besoin, sinon lit refait. Déco du lit selon les photos de référence.", photos:[{id:"lit", label:"Chaque lit refait", multi:true}]},
+    {id:"lits", t:"Faire le lit selon la déco.", photos:[{id:"lit", label:"Chaque lit refait", multi:true}]},
     {id:"sous-lit", t:"Sous le lit et tables de chevet : rien d'oublié."},
   ]],
   ["s6","6. Salon — extérieur — vitres",[
@@ -913,7 +916,7 @@ const data = [
   ["s8","8. Regard final — vidéo — départ",[
     {id:"regard", t:"Regarder l'appart comme le voyageur qui entre. Casse → photo + signalement."},
     {id:"rincer-receveur", t:"Rincer le receveur (javel)."},
-    {id:"bougies", t:"Allumer les bougies : celles de la table à manger ET celles près de la balnéo.", d:"Toutes les bougies doivent fonctionner. Une bougie qui ne s’allume plus : changer les piles, ou le signaler.", photos:[{id:"bougies-table", label:"Table à manger, bougies allumées"},{id:"bougies-balneo", label:"Balnéo, les 5 bougies allumées", only: s => s === 'apolove'},{id:"bougies-balneo", label:"Près de la balnéo, bougies allumées", only: s => s !== 'apolove' && !!(apartFeatures[s] && apartFeatures[s].balneo)}], only: s => BOUGIES.includes(s)},
+    {id:"bougies", t:"Photo avec les bougies allumées (n'oubliez pas de les éteindre après).", d:"Toutes les bougies doivent fonctionner. Une bougie qui ne s’allume plus : changer les piles, ou le signaler.", photos:[{id:"bougies-table", label:"Table à manger, bougies allumées"},{id:"bougies-balneo", label:"Balnéo, les 5 bougies allumées", only: s => s === 'apolove'},{id:"bougies-balneo", label:"Près de la balnéo, bougies allumées", only: s => s !== 'apolove' && !!(apartFeatures[s] && apartFeatures[s].balneo)}], only: s => BOUGIES.includes(s)},
     {id:"video", t:"Vidéo continue de toutes les pièces (45 secondes maximum).", d:"Filmer sans couper : entrée, cuisine, salon, chambre(s), salle de bain. La vidéo part directement chez Claudine depuis l'appli.", video:true},
     {id:"linge", t:"Sortir le linge de la machine et l'étendre. Hublot entrouvert.", only: s => !LESSIVE[s]},
     {id:"linge", t:"Reprendre le linge dans la machine et aller l'étendre dans la CAVE. Hublot entrouvert.", only: s => LESSIVE[s] === 'cave'},
