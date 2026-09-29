@@ -915,7 +915,8 @@ const data = [
   ]],
   ["s8","8. Regard final — vidéo — départ",[
     {id:"regard", t:"Regarder l'appart comme le voyageur qui entre. Casse → photo + signalement."},
-    {id:"rincer-receveur", t:"Rincer le receveur (javel)."},
+    {id:"rincer-receveur", t:"Rincer le receveur et le carrelage aspergés de javel."},
+    {id:"recoins-receveur", t:"Inspecter et nettoyer les petits recoins, notamment en bas du receveur : il y a souvent des saletés dans ce coin-là."},
     {id:"bougies", t:"Photo avec les bougies allumées (n'oubliez pas de les éteindre après).", d:"Toutes les bougies doivent fonctionner. Une bougie qui ne s’allume plus : changer les piles, ou le signaler.", photos:[{id:"bougies-table", label:"Table à manger, bougies allumées"},{id:"bougies-balneo", label:"Balnéo, les 5 bougies allumées", only: s => s === 'apolove'},{id:"bougies-balneo", label:"Près de la balnéo, bougies allumées", only: s => s !== 'apolove' && !!(apartFeatures[s] && apartFeatures[s].balneo)}], only: s => BOUGIES.includes(s)},
     {id:"video", t:"Vidéo continue de toutes les pièces (45 secondes maximum).", d:"Filmer sans couper : entrée, cuisine, salon, chambre(s), salle de bain. La vidéo part directement chez Claudine depuis l'appli.", video:true},
     {id:"linge", t:"Sortir le linge de la machine et l'étendre. Hublot entrouvert.", only: s => !LESSIVE[s]},
