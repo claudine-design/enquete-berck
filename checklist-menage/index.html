@@ -88,8 +88,8 @@
   .gallery{margin:14px 0;display:none}
   .gallery.has-photos{display:block;background:#fff;border-radius:16px;padding:12px;box-shadow:0 3px 10px rgba(0,0,0,.06)}
   .gallery h3{margin:0 0 10px;font-size:18px;color:#5A2A33;display:flex;align-items:center;gap:8px}
-  .gallery .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:6px}
-  .gallery .grid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.1);transition:transform .15s}
+  .gallery .grid{display:grid;grid-template-columns:1fr;gap:10px}
+  .gallery .grid img{width:100%;height:auto;border-radius:8px;cursor:pointer;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.1);transition:transform .15s}
   .gallery .grid img:active{transform:scale(.95)}
   .gallery .empty{color:#999;font-size:17px;font-style:italic;text-align:center;padding:20px}
   .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;z-index:9999;align-items:center;justify-content:center;padding:20px}
@@ -107,10 +107,11 @@
   .slot.ok{border:2px solid #86C28A;background:#f4fbf1}
   .slot-title{font-size:17px;font-weight:700;color:#7a3b46;margin-bottom:6px}
   .slot.ok .slot-title{color:#2e5a30}
-  .slot-row{display:flex;gap:6px;overflow-x:auto}
+  .slot-row{display:flex;gap:6px;flex-wrap:wrap}
   .slot figure{margin:0;flex:0 0 auto;text-align:center}
   .slot figure img{width:96px;height:96px;object-fit:cover;border-radius:8px;display:block;border:1px solid #ddd}
-  .slot figure.mfig img{width:140px;height:140px;border:3px solid #c0606c}
+  .slot figure.mfig{flex:0 0 100%}
+  .slot figure.mfig img{width:100%;height:auto;max-height:420px;object-fit:contain;background:#fff;border:3px solid #c0606c}
   /* Modèle en PLEIN ÉCRAN avant la photo, puis comparaison modèle / photo prise (Claudine 28/09/2026) */
   .plein{position:fixed;inset:0;z-index:10000;background:#111;display:flex;flex-direction:column;color:#fff}
   .plein-t{padding:12px 14px 8px;font-size:22px;font-weight:700;line-height:1.3;text-align:center}
@@ -852,6 +853,7 @@ const SANS_LINGE = ['hamac','paddle','kitesurf','surf','face-mer','grand-large',
 // Items : {id, t, d?, photos?:[...], only?:fn(slug)->bool}
 const data = [
   ["s1","1. Arrivée",[
+    {id:"cave", t:"EN PREMIER, au local ménage, en prenant le sac : photo de toutes les étagères, de face, bien éclairées (une fois par semaine).", d:"Cette photo sert à prévoir les achats : produits, gâteaux, papier toilette. Reculez pour tout avoir sur la photo et allumez la lumière.", photos:[{id:"cave", label:"Étagères du local ménage"}], only: s => MODE_MODELE ? !!caveDe(s) : (caveDue(s) || !!(S && S.photos && S.photos.cave))},
     {id:"questionnaire", t:"Photo du questionnaire d'arrivée + lire les annotations."},
     {id:"premier-tour", t:"Premier tour : casse, manque, panne, saleté anormale → photo + signalement AVANT de commencer."},
     {id:"machine", t:"Lancer la machine à laver.", only: s => !LESSIVE[s]},
@@ -861,7 +863,6 @@ const data = [
     {id:"sac-blanchisserie", t:"Pas de lessive ici. Linge de lit (draps, draps-housses, taies d'oreiller) + serviettes → dans le sac blanc et noir, pour la blanchisserie.", d:"Torchons, lavettes, tapis de bain : ils ne partent PAS à la blanchisserie. On les redescend au local ménage, ils sont lavés sur place.", only: s => LESSIVE[s] === 'aucune'},
     {id:"fenetres", t:"Ouvrir les fenêtres. Vérifier le placard ménage : produits, lavettes, sacs, linge."},
     {id:"radiateurs", t:"Radiateurs : 12° l'hiver, éteints l'été."},
-    {id:"cave", t:"Photo du local ménage : toutes les étagères, de face, bien éclairées (une fois par semaine).", d:"Cette photo sert à prévoir les achats : produits, gâteaux, papier toilette. Reculez pour tout avoir sur la photo et allumez la lumière.", photos:[{id:"cave", label:"Étagères du local ménage"}], only: s => MODE_MODELE ? !!caveDe(s) : (caveDue(s) || !!(S && S.photos && S.photos.cave))},
   ]],
   ["s2","2. Salle de bain : produits — dans cet ordre",[
     {id:"anticalcaire", t:"① Anti-calcaire sur toute la robinetterie : salle de bain, cuisine, balnéo, buses et commandes balnéo."},
@@ -1148,7 +1149,7 @@ function imgModele(id){
 }
 // Photos modèles communes à TOUS les logements (priment sur le modèle du logement) — choix Claudine 27/09/2026.
 const MODELES_FIXES = { canape: 'modele-canape.jpg' };
-function modeleUrl(id){ return /\.jpg$/.test(id) ? id : 'https://lh3.googleusercontent.com/d/' + id + '=w500'; }
+function modeleUrl(id){ return /\.jpg$/.test(id) ? id : 'https://lh3.googleusercontent.com/d/' + id + '=w1000'; }
 function saveModeles(s){ try { localStorage.setItem('modeles-' + s, JSON.stringify(modeles)); } catch(e){} }
 async function loadModeles(s){
   try { modeles = JSON.parse(localStorage.getItem('modeles-' + s) || '{}'); } catch(e){ modeles = {}; }
