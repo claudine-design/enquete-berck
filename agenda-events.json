@@ -1,18 +1,7 @@
 [
  {
-  "titre": "ATELIER SCRAPBOOKING",
-  "start": "2026-09-28",
-  "date_label": "28 septembre",
-  "categories": [
-   "Ateliers / Stages",
-   "Loisirs"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=165883",
-  "source": "oukankoi.fr"
- },
- {
   "titre": "Exposition Francis Crochet",
-  "start": "2026-09-28",
+  "start": "2026-09-30",
   "date_label": "Jusqu'au 30/09/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=107874",
@@ -112,6 +101,30 @@
   "source": "Office de Tourisme"
  },
  {
+  "titre": "Soirée ABAC \" Romeria\" - CINOS",
+  "start": "2026-10-07",
+  "date_label": "Le 07/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=113790",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Atelier broderie avec \" fibre en jeu\" - Chez Causettes",
+  "start": "2026-10-10",
+  "date_label": "Du 10/10/2026 au 21/11/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=108571",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Exposition \"Ecrite par la lumière\"",
+  "start": "2026-10-10",
+  "date_label": "Du 10/10/2026 au 14/03/2027",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=114145",
+  "source": "Office de Tourisme"
+ },
+ {
   "titre": "Première édition Rencontres Musicales Clara Haskil",
   "start": "2026-10-10",
   "date_label": "Le 10/10/2026",
@@ -181,30 +194,6 @@
   "date_label": "Le 25/10/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130784",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Marche Rose et Animations - Octobre Rose",
-  "start": "2026-10-25",
-  "date_label": "Le 25/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=97870",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Atelier Diamond Painting - Chez Causettes",
-  "start": "2026-10-28",
-  "date_label": "Le 28/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=104642",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Atelier Origami - Chez Causettes",
-  "start": "2026-10-30",
-  "date_label": "Le 30/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=119409",
   "source": "Office de Tourisme"
  }
 ]
