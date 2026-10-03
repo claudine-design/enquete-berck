@@ -1,21 +1,5 @@
 [
  {
-  "titre": "XX Elles - Familia Théâtre",
-  "start": "2026-10-03",
-  "date_label": "Le 03/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130205",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "\"Jouons en Famille\"",
-  "start": "2026-10-03",
-  "date_label": "Le 03/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=101354",
-  "source": "Office de Tourisme"
- },
- {
   "titre": "SORTIE CALÈCHE",
   "start": "2026-10-04",
   "date_label": "4 octobre",
@@ -114,6 +98,14 @@
   "date_label": "Le 10/10/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130734",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Portes Ouvertes de la Maison du Patrimoine",
+  "start": "2026-10-11",
+  "date_label": "Du 11/10/2026 au 25/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=104053",
   "source": "Office de Tourisme"
  },
  {
