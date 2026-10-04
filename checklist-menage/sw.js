@@ -2,7 +2,7 @@
 // et d'envoyer les photos/heures gardées dans le téléphone dès que le réseau revient.
 // Page : réseau d'abord (pour avoir la dernière version), sinon la copie gardée.
 // Images (photos déco + photos modèles) : copie gardée d'abord.
-const CACHE = 'tuto-menage-v2';
+const CACHE = 'tuto-menage-v3';
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./'])).then(() => self.skipWaiting()));

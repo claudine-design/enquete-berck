@@ -34,7 +34,7 @@
   section h2 .count.done{background:rgba(255,255,255,.6);color:#2e5a30}
   section h2 .title-wrap{flex:1;display:flex;align-items:center;gap:8px;min-width:0}
   section .body{padding:0 10px;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .25s ease}
-  section.open .body{max-height:3000px;padding:6px 10px 12px}
+  section.open .body{max-height:none;padding:6px 10px 12px}
   .item .info-btn{margin-left:auto;flex-shrink:0;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.07);color:#5a3b46;border:none;font-size:17px;font-weight:600;cursor:pointer;font-style:italic;font-family:Georgia,serif}
   .item .info-btn:active{background:rgba(0,0,0,.15)}
   .item .detail{display:none;background:rgba(255,255,255,.85);border-left:3px solid #E89BA3;padding:8px 10px;margin:6px 0 4px 30px;border-radius:6px;font-size:17px;line-height:1.45;color:#5a3b46}
@@ -897,7 +897,7 @@ const data = [
   ]],
   ["s5","5. Chambre",[
     {id:"aleses", t:"Check des alèses : tache, odeur, humidité → on change.", photos:[{id:"alese", label:"Alèse, lit défait", only: s => SANS_LINGE.includes(s)}]},
-    {id:"lits", t:"Faire le lit selon la déco.", photos:[{id:"lit", label:"Chaque lit refait", multi:true}]},
+    {id:"lits", t:"Faire le lit selon la déco.", photos:[{id:"lit", label:"Chaque lit refait", multi:true, only: s => s !== "apollo"},{id:"lit", label:"Photo du lit chambre 1", only: s => s === "apollo"},{id:"lit-2", label:"Photo du lit chambre 2", only: s => s === "apollo"}]},
     {id:"sous-lit", t:"Sous le lit et tables de chevet : rien d'oublié."},
   ]],
   ["s6","6. Salon — extérieur — vitres",[
