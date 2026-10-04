@@ -114,6 +114,22 @@
   .slot figure.mfig{flex:0 0 100%}
   .slot figure.mfig img{width:100%;height:auto;max-height:420px;object-fit:contain;background:#fff;border:3px solid #c0606c}
   /* Modèle en PLEIN ÉCRAN avant la photo, puis comparaison modèle / photo prise (Claudine 28/09/2026) */
+  .cam{position:fixed;inset:0;background:#000;z-index:10000;display:flex;flex-direction:column;color:#fff}
+  .cam video{flex:1;min-height:0;width:100%;object-fit:cover;background:#000}
+  .cam-top{position:absolute;top:0;left:0;right:0;padding:14px 12px;text-align:center;background:linear-gradient(rgba(0,0,0,.75),rgba(0,0,0,0))}
+  .cam-warn{display:inline-block;background:#dc2626;color:#fff;font-weight:800;font-size:22px;line-height:1.25;padding:10px 14px;border-radius:12px}
+  .cam-time{font-size:46px;font-weight:800;font-variant-numeric:tabular-nums;text-shadow:0 2px 6px #000;margin-top:6px}
+  .cam-time.fin-proche{color:#fca5a5}
+  .cam-time small{font-size:20px;font-weight:600;opacity:.85}
+  .cam-prog{height:10px;background:rgba(255,255,255,.3);border-radius:10px;overflow:hidden;margin:6px 20px 0}
+  .cam-prog > div{height:100%;width:0;background:#22c55e}
+  .cam-prog.fin-proche > div{background:#ef4444}
+  .cam-bottom{padding:14px 16px calc(18px + env(safe-area-inset-bottom));background:#111;text-align:center}
+  .cam-bottom .hint2{font-size:18px;margin-bottom:10px;color:#e5e7eb}
+  .cam-btn{width:100%;padding:18px;border:none;border-radius:14px;font-size:22px;font-weight:800;color:#fff;background:#dc2626}
+  .cam-btn.stop{background:#fff;color:#dc2626}
+  .cam-btn[disabled]{opacity:.5}
+  .cam-cancel{margin-top:10px;background:none;border:none;color:#d1d5db;font-size:19px;text-decoration:underline;padding:8px}
   .plein{position:fixed;inset:0;z-index:10000;background:#111;display:flex;flex-direction:column;color:#fff}
   .plein-t{padding:12px 14px 8px;font-size:22px;font-weight:700;line-height:1.3;text-align:center}
   .plein-t small{display:block;font-size:17px;font-weight:500;color:#f2c6cb;margin-top:3px}
@@ -1246,7 +1262,7 @@ function renderFin(){
   h += '<div class="finp-step"><span class="num' + (videoOk ? ' ok' : '') + '">2</span><div class="grow"><b>La vidéo de fin</b>' +
     '<button type="button" id="finp-video" class="bigbtn ' + (videoOk ? 'done' : 'video') + '">' +
     (videoOk ? '✅ Vidéo enregistrée à ' + hhmm(S.video.heure) + ' — refaire' : '🎥 FILMER LA VIDÉO') + '</button>' +
-    '<div class="small-note">Toutes les pièces, sans couper. 45 secondes maximum.</div></div></div>';
+    '<div class="small-note">Toutes les pièces, sans couper. Entre ' + VIDEO_MIN_S + ' et ' + VIDEO_MAX_S + ' secondes.</div></div></div>';
   h += '<div class="finp-step"><span class="num' + (pret ? ' ok' : '') + '">3</span><div class="grow"><b>Valider</b>' +
     '<button type="button" id="finp-send" class="bigbtn ' + (pret ? 'go' : 'wait') + '">' + (pret ? '✓ TERMINER LE MÉNAGE' : manque.length ? '✓ Terminer (il manque ' + manque.length + ' photo' + (manque.length > 1 ? 's' : '') + ')' : '✓ Terminer (il manque la vidéo)') + '</button>' +
     '</div></div></div>';
@@ -1273,7 +1289,7 @@ function renderItem(it){
     photosHtml += '<div class="slot' + (v ? ' ok' : '') + '">' +
       '<div class="slot-title">🎥 Vidéo de fin' + (v ? ' ✓ ' + hhmm(v.heure) : '') + '</div>' +
       '<button type="button" class="shoot" data-video="1">' + (v ? '🔁 Refaire la vidéo' : '🎥 Filmer maintenant') + '</button>' +
-      '<div class="small-note">Toutes les pièces, sans couper. 45 secondes maximum, sinon la vidéo est trop lourde pour partir.</div></div>';
+      '<div class="small-note">Toutes les pièces, sans couper. Un compteur s’affiche pendant que vous filmez, et l’appli s’arrête toute seule à 45 secondes.</div></div>';
   }
   it.photos.forEach(p => {
     const list = (S && S.photos[p.id]) || [];
@@ -1317,6 +1333,90 @@ function renderItem(it){
   return div;
 }
 
+// ---------- VIDÉO DE FIN ----------
+// La vidéo est filmée DANS l'appli (caméra arrière, qualité allégée) : compteur bien visible,
+// arrêt automatique à 45 s, et un fichier léger (~8 Mo) qui part même avec peu de réseau.
+// Avant (20-21/09/2026) on passait par la caméra du téléphone : en Full HD, 10 secondes pèsent
+// déjà plus de 20 Mo → vidéo refusée « trop lourde » (échec de Maëlys au Kingston).
+const VIDEO_MAX_S = 45;      // durée maximum (arrêt automatique)
+const VIDEO_MIN_S = 10;      // en dessous, on n'a pas pu filmer toutes les pièces
+const VIDEO_MAX_MO = 22;     // limite du serveur (secours « caméra du téléphone » uniquement)
+function typeVideo(){
+  if(!window.MediaRecorder) return null;
+  const types = ['video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
+  for(const t of types){ try { if(MediaRecorder.isTypeSupported(t)) return t; } catch(e){} }
+  return '';
+}
+function mmss(s){ return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(Math.floor(s % 60)).padStart(2, '0'); }
+
+// Ouvre la caméra plein écran. Rend {blob, duree} ; null si annulé ; 'secours' si la caméra de l'appli est indisponible.
+function filmerDansAppli(){
+  return new Promise(async res => {
+    const type = typeVideo();
+    if(type === null || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ res('secours'); return; }
+    let stream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}, width:{ideal:1280}, height:{ideal:720}, frameRate:{ideal:24}}, audio:false});
+    } catch(e){ res('secours'); return; }
+    const box = document.createElement('div');
+    box.className = 'cam';
+    box.innerHTML =
+      '<video playsinline muted autoplay></video>' +
+      '<div class="cam-top">' +
+        '<div class="cam-warn">⚠️ ATTENTION : VIDÉO ' + VIDEO_MAX_S + ' SECONDES MAXIMUM</div>' +
+        '<div class="cam-time" style="display:none"></div>' +
+        '<div class="cam-prog" style="display:none"><div></div></div>' +
+      '</div>' +
+      '<div class="cam-bottom">' +
+        '<div class="hint2">Toutes les pièces, <b>sans couper</b>, en marchant sans vous arrêter.<br>Entre ' + VIDEO_MIN_S + ' et ' + VIDEO_MAX_S + ' secondes. L’appli s’arrête toute seule à ' + VIDEO_MAX_S + ' s.</div>' +
+        '<button type="button" class="cam-btn">🔴 DÉMARRER LA VIDÉO</button>' +
+        '<button type="button" class="cam-cancel">Annuler</button>' +
+      '</div>';
+    document.body.appendChild(box);
+    const vid = box.querySelector('video'), btn = box.querySelector('.cam-btn'), cancel = box.querySelector('.cam-cancel');
+    const time = box.querySelector('.cam-time'), prog = box.querySelector('.cam-prog'), warn = box.querySelector('.cam-warn'), hint = box.querySelector('.hint2');
+    vid.srcObject = stream;
+    let rec = null, chunks = [], t0 = 0, tick = null, fini = false;
+    const fermer = out => {
+      if(fini) return; fini = true;
+      clearInterval(tick);
+      document.removeEventListener('visibilitychange', surCache);
+      try { stream.getTracks().forEach(t => t.stop()); } catch(e){}
+      box.remove();
+      res(out);
+    };
+    const arreter = () => { if(rec && rec.state !== 'inactive'){ btn.disabled = true; btn.textContent = '⏳ Enregistrement…'; rec.stop(); } };
+    const surCache = () => { if(document.visibilityState !== 'visible') arreter(); };
+    document.addEventListener('visibilitychange', surCache);
+    cancel.onclick = () => { if(rec && rec.state !== 'inactive'){ rec.onstop = null; try { rec.stop(); } catch(e){} } fermer(null); };
+    btn.onclick = () => {
+      if(rec){ arreter(); return; }
+      try { rec = new MediaRecorder(stream, Object.assign({videoBitsPerSecond: 1400000}, type ? {mimeType: type} : {})); }
+      catch(e){ try { rec = new MediaRecorder(stream); } catch(e2){ fermer('secours'); return; } }
+      rec.ondataavailable = e => { if(e.data && e.data.size) chunks.push(e.data); };
+      rec.onerror = () => fermer('secours');
+      rec.onstop = () => {
+        const duree = (Date.now() - t0) / 1000;
+        fermer({blob: new Blob(chunks, {type: (rec.mimeType || type || 'video/mp4').split(';')[0]}), duree});
+      };
+      rec.start(1000);
+      t0 = Date.now();
+      warn.style.display = 'none'; time.style.display = 'block'; prog.style.display = 'block';
+      hint.innerHTML = 'Filmez toutes les pièces sans couper. Arrêt automatique à ' + VIDEO_MAX_S + ' s.';
+      btn.className = 'cam-btn stop'; btn.textContent = '⏹ ARRÊTER LA VIDÉO';
+      const maj = () => {
+        const s = (Date.now() - t0) / 1000;
+        time.innerHTML = '🔴 ' + mmss(s) + ' <small>/ ' + mmss(VIDEO_MAX_S) + '</small>';
+        prog.firstChild.style.width = Math.min(100, s / VIDEO_MAX_S * 100) + '%';
+        const proche = s >= VIDEO_MAX_S - 10;
+        time.classList.toggle('fin-proche', proche); prog.classList.toggle('fin-proche', proche);
+        if(s >= VIDEO_MAX_S) arreter();
+      };
+      maj(); tick = setInterval(maj, 250);
+    };
+  });
+}
+// Secours : caméra du téléphone (si l'appli n'a pas le droit d'utiliser la caméra).
 function prendreVideo(){
   return new Promise(res => {
     const fi = document.createElement('input');
@@ -1325,22 +1425,53 @@ function prendreVideo(){
     fi.click();
   });
 }
-const VIDEO_MAX_MO = 22;
+function dureeFichier(f){
+  return new Promise(res => {
+    const v = document.createElement('video'); v.preload = 'metadata';
+    const fin = d => { try { URL.revokeObjectURL(v.src); } catch(e){} res(d); };
+    v.onloadedmetadata = () => fin(isFinite(v.duration) ? v.duration : 0);
+    v.onerror = () => fin(0);
+    setTimeout(() => fin(0), 4000);
+    v.src = URL.createObjectURL(f);
+  });
+}
+const NL2 = String.fromCharCode(10,10);
+let camAppliKO = false;
 async function filmer(it){
   if(!S){ alert('Appuyez d’abord sur « Je commence le ménage » (en haut).'); return; }
-  const f = await prendreVideo();
-  if(!f) return;
+  // si la caméra de l'appli a déjà rendu une vidéo vide sur ce téléphone, on passe par la caméra du téléphone
+  let f = camAppliKO ? 'secours' : await filmerDansAppli(), duree = 0, dansAppli = true;
+  if(f === null) return;
+  if(f === 'secours'){
+    dansAppli = false;
+    alert('⚠️ ATTENTION : VIDÉO TRÈS COURTE' + NL2 +
+      'La caméra de votre téléphone va s’ouvrir. Avec elle, la vidéo est lourde : filmez très court (10 à 15 secondes), en marchant sans vous arrêter.' + NL2 +
+      'Astuce : si on vous demande d’autoriser la caméra pour cette appli, répondez OUI — la vidéo sera plus légère et partira plus vite.');
+    f = await prendreVideo();
+    if(!f) return;
+    duree = await dureeFichier(f);
+  } else { duree = f.duree; f = f.blob; }
+  if(dansAppli && duree && duree < VIDEO_MIN_S){
+    alert('⛔ Vidéo trop courte : ' + Math.round(duree) + ' secondes.' + NL2 + 'Il faut filmer TOUTES les pièces sans couper : au moins ' + VIDEO_MIN_S + ' secondes, ' + VIDEO_MAX_S + ' secondes maximum.' + NL2 + 'Appuyez sur « Filmer maintenant » pour la refaire.');
+    return;
+  }
+  if(!f.size){ if(dansAppli) camAppliKO = true; alert('⛔ La vidéo n’a pas été enregistrée. Réessayez : appuyez sur « Filmer maintenant ».'); return; }
   const mo = f.size / 1048576;
   if(mo > VIDEO_MAX_MO){
-    alert('⛔ Vidéo trop longue (' + Math.round(mo) + ' Mo).' + String.fromCharCode(10,10) + 'Refaites-en une plus courte : 45 secondes maximum, en marchant sans vous arrêter.');
+    alert('⛔ Vidéo trop lourde pour partir (' + Math.round(mo) + ' Mo' + (duree ? ', ' + Math.round(duree) + ' secondes' : '') + ').' + NL2 +
+      'Refaites-la plus courte (' + VIDEO_MAX_S + ' secondes MAXIMUM). Si ça recommence : dans la caméra du téléphone, choisissez la qualité vidéo la plus basse (HD 720p), ou autorisez la caméra pour cette appli.');
     return;
   }
   const heure = new Date().toISOString();
-  const b64 = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result.split(',')[1]); r.onerror = rej; r.readAsDataURL(f); });
-  S.video = { heure, mo: Math.round(mo) };
+  let b64;
+  try { b64 = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result.split(',')[1]); r.onerror = rej; r.readAsDataURL(f); }); }
+  catch(e){ alert('⛔ La vidéo n’a pas pu être lue. Réessayez.'); return; }
+  try {
+    await qAdd({action:'photo', id:S.id, appart:S.appart, presta:S.presta, etape:'video', libelle:'Vidéo de fin de ménage' + (duree ? ' (' + Math.round(duree) + ' s)' : ''), heure, mime:f.type || 'video/mp4', file:b64});
+  } catch(e){ alert('⛔ Le téléphone n’a pas pu garder la vidéo (mémoire pleine ?). Libérez un peu de place et réessayez.'); return; }
+  S.video = { heure, mo: Math.round(mo), duree: Math.round(duree) };
   if(it) S.checked[it.id] = true;
   saveS(); render();
-  await qAdd({action:'photo', id:S.id, appart:S.appart, presta:S.presta, etape:'video', libelle:'Vidéo de fin de ménage', heure, mime:f.type || 'video/mp4', file:b64});
 }
 
 // Écran plein : le modèle en grand → bouton appareil photo → modèle et photo l'un sous l'autre → Valider / Reprendre.
