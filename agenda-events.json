@@ -1,58 +1,5 @@
 [
  {
-  "titre": "SORTIE CALÈCHE",
-  "start": "2026-10-04",
-  "date_label": "4 octobre",
-  "categories": [
-   "Balades",
-   "Découverte"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=166158",
-  "source": "oukankoi.fr"
- },
- {
-  "titre": "BROCANTE",
-  "start": "2026-10-04",
-  "date_label": "4 octobre",
-  "categories": [
-   "Brocantes",
-   "Solidarité"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=166280",
-  "source": "oukankoi.fr"
- },
- {
-  "titre": "À LA DÉCOUVERTE DES MOULES DE BOUCHOTS",
-  "start": "2026-10-04",
-  "date_label": "4 octobre",
-  "categories": [
-   "Balades",
-   "Découverte"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=165838",
-  "source": "oukankoi.fr"
- },
- {
-  "titre": "RENCONTRE AVEC LES PHOQUES",
-  "start": "2026-10-04",
-  "date_label": "4 octobre",
-  "categories": [
-   "Balades",
-   "Découverte",
-   "Loisirs"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=165768",
-  "source": "oukankoi.fr"
- },
- {
-  "titre": "Coup de Coeur Surprise - Cinos",
-  "start": "2026-10-05",
-  "date_label": "Le 05/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=125995",
-  "source": "Office de Tourisme"
- },
- {
   "titre": "Soirée ABAC \" Romeria\" - CINOS",
   "start": "2026-10-07",
   "date_label": "Le 07/10/2026",
@@ -178,6 +125,22 @@
   "date_label": "Le 28/10/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=104642",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Atelier Origami - Chez Causettes",
+  "start": "2026-10-30",
+  "date_label": "Le 30/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=119409",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "2ème édition du Beach Bike Berck",
+  "start": "2026-11-08",
+  "date_label": "Le 08/11/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=124067",
   "source": "Office de Tourisme"
  }
 ]
