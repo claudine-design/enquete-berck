@@ -1,5 +1,13 @@
 [
  {
+  "titre": "Semaine Bleue à Berck-sur-Mer",
+  "start": "2026-10-09",
+  "date_label": "Jusqu'au 09/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131093",
+  "source": "Office de Tourisme"
+ },
+ {
   "titre": "Atelier broderie avec \" fibre en jeu\" - Chez Causettes",
   "start": "2026-10-10",
   "date_label": "Du 10/10/2026 au 21/11/2026",
@@ -13,6 +21,14 @@
   "date_label": "Du 10/10/2026 au 14/03/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=114145",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Concert Clara Haskil",
+  "start": "2026-10-10",
+  "date_label": "Le 10/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131129",
   "source": "Office de Tourisme"
  },
  {
@@ -32,6 +48,22 @@
   "source": "Office de Tourisme"
  },
  {
+  "titre": "Journée Mondiale des Amis de Musées",
+  "start": "2026-10-11",
+  "date_label": "Le 11/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131086",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Cinémondes - Festival International du Film Indépendant",
+  "start": "2026-10-14",
+  "date_label": "Du 14/10/2026 au 16/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=98375",
+  "source": "Office de Tourisme"
+ },
+ {
   "titre": "Beach Cross",
   "start": "2026-10-17",
   "date_label": "Du 17/10/2026 au 18/10/2026",
@@ -48,6 +80,70 @@
   "source": "Office de Tourisme"
  },
  {
+  "titre": "Mon Village Vacances - Laser Game",
+  "start": "2026-10-19",
+  "date_label": "Du 19/10/2026 au 28/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=122803",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Mon Village Vacances - Atelier de Construction de Cerf-Volant",
+  "start": "2026-10-19",
+  "date_label": "Du 19/10/2026 au 26/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=77813",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Mon Village Vacances - Renforcement musculaire",
+  "start": "2026-10-19",
+  "date_label": "Le 19/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=97226",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Mon Village Vacances - Voyage Sonore",
+  "start": "2026-10-19",
+  "date_label": "Le 19/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=115919",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Mon Village Vacances - Rencontre avec les Phoques",
+  "start": "2026-10-20",
+  "date_label": "Du 20/10/2026 au 30/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=89597",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Mon Village Vacances - Marche Active Douce",
+  "start": "2026-10-20",
+  "date_label": "Du 20/10/2026 au 27/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=89593",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Mon Village Vacances - Ateliers origami et bracelet de l'amitié",
+  "start": "2026-10-20",
+  "date_label": "Du 20/10/2026 au 27/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=115883",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Visite du soir - Musée Opale sud",
+  "start": "2026-10-20",
+  "date_label": "Du 20/10/2026 au 28/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131115",
+  "source": "Office de Tourisme"
+ },
+ {
   "titre": "Soirée Pyjama - Projection du film \"Le Roi Lion\"",
   "start": "2026-10-20",
   "date_label": "Le 20/10/2026",
@@ -56,91 +152,27 @@
   "source": "Office de Tourisme"
  },
  {
-  "titre": "Allée des roses – Aidons les passereaux",
-  "start": "2026-10-20",
-  "date_label": "Le 20/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128529",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "« De Gaulle est de retour » - Familia Théâtre",
-  "start": "2026-10-21",
-  "date_label": "Le 21/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130325",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "\"Peter Pan à la rescousse des fées\"- Familia théâtre",
-  "start": "2026-10-21",
-  "date_label": "Le 21/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=117700",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Dégustation et vente de biscuits et de cake - Chez Causettes",
-  "start": "2026-10-23",
-  "date_label": "Le 23/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=124701",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Les ateliers de Min'harmonie - Découvrir les 38 fleurs de Bach",
-  "start": "2026-10-24",
-  "date_label": "Le 24/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130790",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Bourse aux jouets par le Centre Social des Dunes",
-  "start": "2026-10-25",
-  "date_label": "Le 25/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130784",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Marche Rose et Animations - Octobre Rose",
-  "start": "2026-10-25",
-  "date_label": "Le 25/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=97870",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Atelier Diamond Painting - Chez Causettes",
-  "start": "2026-10-28",
-  "date_label": "Le 28/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=104642",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Atelier Origami - Chez Causettes",
+  "titre": "SORTIE CALÈCHE",
   "start": "2026-10-30",
-  "date_label": "Le 30/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=119409",
-  "source": "Office de Tourisme"
+  "date_label": "30 octobre",
+  "categories": [
+   "Balades",
+   "Découverte",
+   "Patrimoine"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=166463",
+  "source": "oukankoi.fr"
  },
  {
-  "titre": "2ème édition du Beach Bike Berck",
-  "start": "2026-11-08",
-  "date_label": "Le 08/11/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=124067",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Troc Livres",
-  "start": "2026-11-18",
-  "date_label": "Le 18/11/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=93601",
-  "source": "Office de Tourisme"
+  "titre": "BALADE DANS LES JARDINS DE LA MANCHE",
+  "start": "2026-10-30",
+  "date_label": "30 octobre",
+  "categories": [
+   "Balades",
+   "Découverte",
+   "Patrimoine"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=166504",
+  "source": "oukankoi.fr"
  }
 ]
