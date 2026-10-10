@@ -1,16 +1,8 @@
 [
  {
-  "titre": "Semaine Bleue à Berck-sur-Mer",
-  "start": "2026-10-09",
-  "date_label": "Jusqu'au 09/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131093",
-  "source": "Office de Tourisme"
- },
- {
   "titre": "Atelier broderie avec \" fibre en jeu\" - Chez Causettes",
   "start": "2026-10-10",
-  "date_label": "Du 10/10/2026 au 21/11/2026",
+  "date_label": "Jusqu'au 21/11/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=108571",
   "source": "Office de Tourisme"
@@ -18,25 +10,9 @@
  {
   "titre": "Exposition \"Ecrite par la lumière\"",
   "start": "2026-10-10",
-  "date_label": "Du 10/10/2026 au 14/03/2027",
+  "date_label": "Jusqu'au 14/03/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=114145",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Concert Clara Haskil",
-  "start": "2026-10-10",
-  "date_label": "Le 10/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131129",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Première édition Rencontres Musicales Clara Haskil",
-  "start": "2026-10-10",
-  "date_label": "Le 10/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130734",
   "source": "Office de Tourisme"
  },
  {
@@ -150,6 +126,26 @@
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=125867",
   "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Bric-à-brac des photaumnales",
+  "start": "2026-10-20",
+  "date_label": "Le 20/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130956",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "RENCONTRE AVEC LES PHOQUES",
+  "start": "2026-10-27",
+  "date_label": "27 octobre",
+  "categories": [
+   "Balades",
+   "Découverte",
+   "Visites"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=166615",
+  "source": "oukankoi.fr"
  },
  {
   "titre": "SORTIE CALÈCHE",
