@@ -201,7 +201,7 @@
       <option value="grande-roue">Grande Roue</option>
       <option value="escapade">Escapade</option>
     </optgroup>
-    <optgroup label="Le 25 rue Maréchal Juin (Clara)">
+    <optgroup label="Le 25 rue Maréchal Juin">
       <option value="balneo">Balnéo</option>
       <option value="cocon-romantique">Cocon Romantique</option>
     </optgroup>
@@ -210,7 +210,7 @@
       <option value="maisonnette">Maisonnette</option>
       <option value="face-mer">Face Mer</option>
     </optgroup>
-    <optgroup label="Apollo · Albatros (Clara)">
+    <optgroup label="Apollo · Albatros">
       <option value="apollo">Apollo</option>
       <option value="apolove">Apolove</option>
       <option value="kingston">Kingston</option>
@@ -246,6 +246,8 @@
     <option>Priscillia</option>
     <option>Karl</option>
     <option>Sabrina</option>
+    <option>Alicia</option>
+    <option>Hélène</option>
     <option>Claudine</option>
   </select>
 </div>
@@ -460,12 +462,12 @@ document.getElementById('appart').addEventListener('change', e => {
   renderApartWarning(e.target.value);
 });
 
-// ===== Pré-remplissage du nom prestataire depuis ?presta=remi/clara/christelle =====
+// ===== Pré-remplissage du nom prestataire depuis ?presta=remi/christelle/… =====
 (function preFillPresta(){
   const params = new URLSearchParams(location.search);
   const presta = (params.get('presta') || '').trim();
   if(!presta) return;
-  const map = { 'remi': 'Rémi', 'maylis': 'Maëlys', 'mailys': 'Maëlys', 'priscilia': 'Priscillia', 'christelle': 'Christelle', 'claire': 'Claire et Sébastien', 'stephanie': 'Stéphanie', 'aimance': 'Aimance', 'karl': 'Karl', 'sabrina': 'Sabrina' };
+  const map = { 'remi': 'Rémi', 'maylis': 'Maëlys', 'mailys': 'Maëlys', 'priscilia': 'Priscillia', 'christelle': 'Christelle', 'claire': 'Claire et Sébastien', 'stephanie': 'Stéphanie', 'aimance': 'Aimance', 'karl': 'Karl', 'sabrina': 'Sabrina', 'alicia': 'Alicia', 'alexis': 'Alicia', 'helene': 'Hélène', 'malvina': 'Hélène' };
   const nice = map[presta.toLowerCase()] || (presta.charAt(0).toUpperCase() + presta.slice(1));
   const nomInput = document.getElementById('nom');
   if(nomInput && !nomInput.value) nomInput.value = nice;
