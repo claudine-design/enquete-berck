@@ -390,26 +390,26 @@ const apartFeatures = {
   'surf':             { panier:'classique', capacite:4, exterieur:true }, // balcon
   'famille':          { panier:'classique', capacite:6 },
   'terrasse':         { panier:'classique', capacite:8, exterieur:true }, // grande terrasse
-  'maisonnette':      { panier:'classique', capacite:4, exterieur:true }, // petit extérieur arrière
+  'maisonnette':      { panier:'loveroom',  capacite:4, exterieur:true }, // petit extérieur arrière
   'face-mer':         { panier:'classique', capacite:4, exterieur:true }, // balcon
   'grand-large':      { panier:'classique', capacite:4, exterieur:true }, // balcon
-  'apollo':           { panier:'classique', capacite:6, litConditional:true, exterieur:true }, // T3, lit 1ère chambre installé, balcon
-  'kingston':         { panier:'classique', capacite:4 },
+  'apollo':           { panier:'loveroom',  capacite:6, litConditional:true, exterieur:true }, // T3, lit 1ère chambre installé, balcon
+  'kingston':         { panier:'classique', capacite:4, litConditional:true },
   'reserve':          { panier:'classique', capacite:4 }, // capacité à confirmer
   'albatros':         { panier:'classique', capacite:4 },
   'jeanne':           { panier:'classique', capacite:4 },
-  'grande-roue':      { panier:'classique', capacite:5, balneo:true, exterieur:true, litConditional:true,
+  'grande-roue':      { panier:'loveroom',  capacite:6, balneo:true, peignoirs:2, litConditional:true,
                         note:'🛏️ <b>Lit double (chambre 1) fait</b> avec le linge fourni. <b>2 parures de lit simple déposées sur les étagères de la chambre 2</b> (2 lits 80×190) : les voyageurs à 3 ou 4 font ces lits eux-mêmes, c’est dans le contrat. 🛋️ Canapé convertible : linge déposé, pas installé.' }, // 17 rue Maréchal Juin, 5 pers, balnéo double, mini balcon — 20/09/2026
   // ───── LOVE ROOMS (9) — 2 paniers : gourmand + petit utilitaire ─────
-  'escapade':         { panier:'loveroom',  capacite:2, balneo:true, sauna:true,
+  'escapade':         { panier:'loveroom',  capacite:2, balneo:true, peignoirs:2, sauna:true,
                         note:'🎥 <b>Vidéoprojecteur + télé</b> : télécommandes à leur place, écran éteint. 🧺 <b>Lave-linge</b> dans la salle de bain : hublot entrouvert en partant.' }, // 17 rue Maréchal Juin 1er étage, love room 2 pers, sauna + balnéo — 23/09/2026, nom provisoire
   'balneo':           { panier:'loveroom',  capacite:6, balneo:true, peignoirs:2, litConditional:true, exterieur:true }, // jardin + brasero
-  'cocon-romantique': { panier:'loveroom',  capacite:2, balneo:true, peignoirs:2, sauna:true, tapisExtra:true, litConditional:true, exterieur:true }, // brasero
-  'apolove':          { panier:'loveroom',  capacite:2, balneo:true }, // bain à remous — ajouté 05/09/2026, il manquait
+  'cocon-romantique': { panier:'loveroom',  capacite:2, balneo:true, peignoirs:2, sauna:true, tapisExtra:true, exterieur:true }, // brasero
+  'apolove':          { panier:'loveroom',  capacite:2, balneo:true, peignoirs:2, exterieur:true }, // bain à remous — ajouté 05/09/2026, il manquait
   'mini-love-room':   { panier:'loveroom',  capacite:2, balneo:true, peignoirs:2, tapisExtra:true },
-  'grande-love-room': { panier:'loveroom',  capacite:2 },
+  'grande-love-room': { panier:'loveroom',  capacite:2, peignoirs:2 },
   'evasion':          { panier:'loveroom',  capacite:4, balneo:true, peignoirs:2, sauna:true, tapisExtra:true, litConditional:true },
-  'rotonde':          { panier:'loveroom',  capacite:5, balneo:true, peignoirs:2, litConditional:true },
+  'rotonde':          { panier:'loveroom',  capacite:5, balneo:true, peignoirs:2, sauna:true, litConditional:true },
   'patio':            { panier:'loveroom',  capacite:6, balneo:true, peignoirs:2, tapisExtra:true, litConditional:true, exterieur:true } // patio
 };
 
@@ -810,7 +810,8 @@ const CLE = (function(){
 const LANCES = ['surf'];
 // Logements SANS canapé-lit (liste Claudine 19/09/2026) : pas de photo « canapé ouvert ».
 // Cocon, Apolove (Suite Romantique Face Mer), Maisonnette, Grande Love Room (Romantique Face Mer), Mini Love Room (Balnéo Face Mer).
-const SANS_CANAPE = ['cocon-romantique','apolove','maisonnette','grande-love-room','mini-love-room','escapade','paddle','surf','kitesurf'];
+// 11/10/2026 (tableau Claudine) : Kitesurf, Paddle, Surf ONT un canapé-lit.
+const SANS_CANAPE = ['cocon-romantique','apolove','maisonnette','grande-love-room','mini-love-room','escapade'];
 // Photo HEBDOMADAIRE du local ménage (parfois une cave, parfois un local) : 1 photo par adresse,
 // au premier ménage de la semaine
 // (Claudine 21/09/2026). Elle part vers le robot qui lit les stocks et alerte pour les achats.
@@ -848,26 +849,26 @@ async function chargerCave(s){
 }
 
 // Photo obligatoire de l'extérieur (liste Claudine 21/09/2026)
-const PHOTO_BALCON = ['hamac','paddle','kitesurf','surf','face-mer','grand-large','apollo'];
-const PHOTO_JARDIN = ['balneo','cocon-romantique','famille','maisonnette'];
+const PHOTO_BALCON = ['hamac','paddle','surf','face-mer','grand-large','apollo','apolove']; // 11/10/2026 : Kitesurf sans balcon, Apolove avec
+const PHOTO_JARDIN = ['balneo','cocon-romantique','famille','maisonnette','patio']; // 11/10/2026 : Patio = jardin
 const PHOTO_TERRASSE = ['terrasse'];
-const PHOTO_PATIO = ['patio'];
-const PHOTO_EXTERIEUR = ['grande-roue']; // extérieur dont le type n'est pas précisé
+const PHOTO_PATIO = [];
+const PHOTO_EXTERIEUR = []; // extérieur dont le type n'est pas précisé (Grande Roue retirée 11/10/2026)
 // Nombre de chambres (> 1) : une paire de photos « à côté de la tête de lit » PAR chambre
-const CHAMBRES = { 'famille':3, 'apollo':2, 'grande-roue':2 };
+const CHAMBRES = { 'famille':3, 'apollo':2, 'grande-roue':2, 'balneo':2, 'terrasse':2, 'patio':2, 'rotonde':2 };
 // Love rooms : photo des bougies allumées (table + près de la balnéo quand il y en a une)
 // Pas de pare-douche (Claudine 29/09/2026) : pas d'item « pare-douche »
-const SANS_PAREDOUCHE = ['surf','kingston','cocon-romantique','terrasse','maisonnette'];
+const SANS_PAREDOUCHE = ['surf','kingston','cocon-romantique','terrasse','maisonnette','famille','kitesurf','apolove','reserve','grande-love-room']; // + 11/10/2026
 const BOUGIES = ['apolove','cocon-romantique','mini-love-room','grande-love-room','escapade'];
 // Lessive (Claudine 29/09/2026) : où s'étend le linge. Absent = consigne générale.
 // cave | local | auto (la machine tourne seule, on ne s'en occupe pas) | aucune (linge de lit + serviettes → blanchisserie)
 const LESSIVE = {
-  'albatros':'cave', 'face-mer':'cave', 'grand-large':'cave',
-  'kitesurf':'local', 'hamac':'local', 'paddle':'local', 'surf':'local', 'famille':'local',
-  'balneo':'auto', 'cocon-romantique':'auto', 'apolove':'auto',
-  'kingston':'aucune', 'rotonde':'aucune', 'patio':'aucune', 'evasion':'aucune'
+  'albatros':'cave', 'face-mer':'cave', 'grand-large':'cave', 'apollo':'cave', 'reserve':'cave', 'kingston':'cave',
+  'kitesurf':'local', 'hamac':'local', 'paddle':'local', 'surf':'local', 'famille':'local', 'grande-roue':'local', 'escapade':'local',
+  'balneo':'auto', 'cocon-romantique':'auto', 'apolove':'auto', 'mini-love-room':'auto', 'grande-love-room':'auto',
+  'rotonde':'aucune', 'patio':'aucune', 'evasion':'aucune', 'jeanne':'aucune'
 };
-const SANS_LINGE = ['hamac','paddle','kitesurf','surf','face-mer','grand-large','albatros','terrasse'];
+const SANS_LINGE = ['hamac','paddle','kitesurf','surf','face-mer','grand-large','albatros','terrasse','famille']; // + Famille 11/10/2026
 
 // Photos : {id, label, multi?:true (plusieurs lits), nonConcerne?:true}
 // Items : {id, t, d?, photos?:[...], only?:fn(slug)->bool}
@@ -879,7 +880,7 @@ const data = [
     {id:"machine", t:"Lancer la machine à laver.", only: s => !LESSIVE[s]},
     {id:"machine", t:"Lancer la machine à laver.", d:"En fin de ménage, le linge s'étend à la CAVE (voir étape 8).", only: s => LESSIVE[s] === 'cave'},
     {id:"machine", t:"Lancer la machine à laver.", d:"En fin de ménage, le linge s'étend au LOCAL ménage (voir étape 8).", only: s => LESSIVE[s] === 'local'},
-    {id:"machine", t:"Lancer la machine à laver avec : lavettes, essuie-mains, tapis de bain ET peignoirs. Elle tourne toute seule, on ne s'en occupe pas.", only: s => LESSIVE[s] === 'auto'},
+    {id:"machine", t:"Lancer la machine à laver avec : lavettes, essuie-mains, tapis de bain ET peignoirs. Lavante-séchante : elle lave et sèche toute seule, on ne s'en occupe pas.", only: s => LESSIVE[s] === 'auto'},
     {id:"sac-blanchisserie", t:"Pas de lessive ici. Draps, draps-housses, taies d'oreiller et serviettes → dans un sac BLANC ET NOIR, déposé dans la cave (pour la blanchisserie).", d:"Torchons, lavettes, tapis de bain ne vont PAS dans ce sac : voir étape 8 (sac Lidl).", only: s => LESSIVE[s] === 'aucune'},
     {id:"fenetres", t:"Ouvrir les fenêtres."},
     {id:"radiateurs", t:"Radiateurs : 12° l'hiver, éteints l'été."},
@@ -906,7 +907,7 @@ const data = [
     {id:"mains", t:"③ Se rincer les mains."},
     {id:"essuyer-anticalcaire", t:"④ Anti-calcaire : on ESSUIE, on ne rince PAS (lavabo, cuisine…). On ne remouille plus.", photos:[{id:"robinet-sdb", label:"Zoom sur la robinetterie de la salle de bain"},{id:"robinet-cuisine", label:"Robinet cuisine"}]},
     {id:"balneo", t:"Balnéo : buses une par une, purge, zéro sable.", only: s => !!(apartFeatures[s] && apartFeatures[s].balneo), photos:[{id:"balneo", label:"Balnéo double : cuve et buses sans trace", only: s => s === 'escapade'}]},
-    {id:"sauna", t:"Sauna : bancs essuyés, sol aspiré, 2 grandes serviettes déposées.", photos:[{id:"sauna", label:"Sauna propre, 2 serviettes en place"}], only: s => s === 'escapade'},
+    {id:"sauna", t:"Sauna : bancs essuyés, sol aspiré, 2 grandes serviettes déposées.", photos:[{id:"sauna", label:"Sauna propre, 2 serviettes en place"}], only: s => !!(apartFeatures[s] && apartFeatures[s].sauna)},
     {id:"douche-lave-linge", t:"Douche et lave-linge : parois sans trace, hublot du lave-linge entrouvert.", photos:[{id:"douche", label:"Douche : parois et marbre sans trace"},{id:"lave-linge", label:"Lave-linge vide, hublot entrouvert"}], only: s => s === 'escapade'},
     {id:"carrelage-sdb", t:"Carrelage marbre de la salle de bain : à nettoyer en entier — murs de la douche, pourtour de la balnéo, sol.", d:"Le marbre noir garde TOUTES les traces : eau, savon, calcaire. On lave, puis on essuie avec un chiffon sec jusqu'à ce qu'il n'y ait plus une seule trace.", photos:[{id:"carrelage-sdb", label:"Carrelage de la salle de bain, sans trace"}], only: s => s === 'grande-roue' || s === 'escapade'},
     {id:"plan-sdb", t:"Plan de la salle de bain propre, tapis de sol enroulé posé dessus.", photos:[{id:"plan-sdb", label:"Plan de la salle de bain + tapis enroulé"}]},
