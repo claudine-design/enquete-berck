@@ -1,7 +1,7 @@
 [
  {
   "titre": "Atelier broderie avec \" fibre en jeu\" - Chez Causettes",
-  "start": "2026-10-12",
+  "start": "2026-10-13",
   "date_label": "Jusqu'au 21/11/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=108571",
@@ -9,7 +9,7 @@
  },
  {
   "titre": "Exposition \"Ecrite par la lumière\"",
-  "start": "2026-10-12",
+  "start": "2026-10-13",
   "date_label": "Jusqu'au 14/03/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=114145",
@@ -17,7 +17,7 @@
  },
  {
   "titre": "Portes Ouvertes de la Maison du Patrimoine",
-  "start": "2026-10-12",
+  "start": "2026-10-13",
   "date_label": "Jusqu'au 25/10/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=104053",
@@ -152,15 +152,15 @@
   "source": "Office de Tourisme"
  },
  {
-  "titre": "RENCONTRE AVEC LES PHOQUES",
-  "start": "2026-10-27",
-  "date_label": "27 octobre",
+  "titre": "VENEZ FÊTER HALLOWEEN AU TOUQUET PARIS PLAGE",
+  "start": "2026-10-28",
+  "date_label": "28 octobre",
   "categories": [
-   "Balades",
-   "Découverte",
-   "Visites"
+   "Ateliers / Stages",
+   "festivals",
+   "Loisirs"
   ],
-  "lien": "https://www.oukankoi.fr/?p=166615",
+  "lien": "https://www.oukankoi.fr/?p=166815",
   "source": "oukankoi.fr"
  },
  {
@@ -185,6 +185,30 @@
    "Patrimoine"
   ],
   "lien": "https://www.oukankoi.fr/?p=166504",
+  "source": "oukankoi.fr"
+ },
+ {
+  "titre": "RENCONTRE AVEC LES PHOQUES",
+  "start": "2026-11-01",
+  "date_label": "1 novembre",
+  "categories": [
+   "Balades",
+   "Découverte",
+   "Visites"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=166617",
+  "source": "oukankoi.fr"
+ },
+ {
+  "titre": "BALADE EN FORÊT DU TOUQUET PARIS PLAGE",
+  "start": "2026-11-01",
+  "date_label": "1 novembre",
+  "categories": [
+   "Balades",
+   "Découverte",
+   "Visites"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=166694",
   "source": "oukankoi.fr"
  }
 ]
