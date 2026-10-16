@@ -1,7 +1,7 @@
 [
  {
   "titre": "Atelier broderie avec \" fibre en jeu\" - Chez Causettes",
-  "start": "2026-10-13",
+  "start": "2026-10-16",
   "date_label": "Jusqu'au 21/11/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=108571",
@@ -9,7 +9,7 @@
  },
  {
   "titre": "Exposition \"Ecrite par la lumière\"",
-  "start": "2026-10-13",
+  "start": "2026-10-16",
   "date_label": "Jusqu'au 14/03/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=114145",
@@ -17,7 +17,7 @@
  },
  {
   "titre": "Portes Ouvertes de la Maison du Patrimoine",
-  "start": "2026-10-13",
+  "start": "2026-10-16",
   "date_label": "Jusqu'au 25/10/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=104053",
@@ -25,8 +25,8 @@
  },
  {
   "titre": "Cinémondes - Festival International du Film Indépendant",
-  "start": "2026-10-14",
-  "date_label": "Du 14/10/2026 au 16/10/2026",
+  "start": "2026-10-16",
+  "date_label": "Jusqu'au 16/10/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=98375",
   "source": "Office de Tourisme"
@@ -77,6 +77,22 @@
   "date_label": "Le 19/10/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=115919",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Mon Village Vacances  - Vacances d'Automne",
+  "start": "2026-10-19",
+  "date_label": "Du 19/10/2026 au 31/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=101004",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Exposition \"Symphonie de roses\" -  Les Amis d'Hom'Arts",
+  "start": "2026-10-19",
+  "date_label": "Du 19/10/2026 au 25/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=121333",
   "source": "Office de Tourisme"
  },
  {
@@ -136,31 +152,15 @@
   "source": "Office de Tourisme"
  },
  {
-  "titre": "Allée des roses – Aidons les passereaux",
-  "start": "2026-10-20",
-  "date_label": "Le 20/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128529",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Eddy Buzy - Spectacle de Magie",
-  "start": "2026-10-20",
-  "date_label": "Le 20/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131095",
-  "source": "Office de Tourisme"
- },
- {
   "titre": "VENEZ FÊTER HALLOWEEN AU TOUQUET PARIS PLAGE",
-  "start": "2026-10-28",
-  "date_label": "28 octobre",
+  "start": "2026-10-30",
+  "date_label": "30 octobre",
   "categories": [
    "Ateliers / Stages",
    "festivals",
    "Loisirs"
   ],
-  "lien": "https://www.oukankoi.fr/?p=166815",
+  "lien": "https://www.oukankoi.fr/?p=166819",
   "source": "oukankoi.fr"
  },
  {
@@ -176,15 +176,38 @@
   "source": "oukankoi.fr"
  },
  {
-  "titre": "BALADE DANS LES JARDINS DE LA MANCHE",
+  "titre": "LES SEMAINES DE LA MIGRATION",
   "start": "2026-10-30",
   "date_label": "30 octobre",
   "categories": [
    "Balades",
    "Découverte",
-   "Patrimoine"
+   "Visites"
   ],
-  "lien": "https://www.oukankoi.fr/?p=166504",
+  "lien": "https://www.oukankoi.fr/?p=166927",
+  "source": "oukankoi.fr"
+ },
+ {
+  "titre": "HALLOWEEN REVIENT À BAGATELLE !",
+  "start": "2026-10-31",
+  "date_label": "31 octobre",
+  "categories": [
+   "Loisirs",
+   "Spectacles"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=166878",
+  "source": "oukankoi.fr"
+ },
+ {
+  "titre": "LE SECRET DES FANTÔMES",
+  "start": "2026-10-31",
+  "date_label": "31 octobre",
+  "categories": [
+   "Ateliers / Stages",
+   "Expos",
+   "Expositions en cours"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=167018",
   "source": "oukankoi.fr"
  },
  {
