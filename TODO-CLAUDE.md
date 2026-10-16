@@ -12,24 +12,33 @@
 voyageuse Booking de l'appartement **Paddle**, check-out **vendredi 17/07/2026**.
 
 **Identité :** prénom **Christine** selon Claudine. Le nom exact n'a pas pu être
-vérifié — il est dans **Beds24** (résa Paddle, départ 17/07). Dans les messages
-Booking récents, les seules voyageuses Paddle trouvées sont :
-- Sandra Paquis (messages le 10/07 — probablement le séjour terminé le 17/07)
-- Magali Deresteau (départ 26/06, Airbnb — pas elle)
+vérifié — il est dans **Beds24** (résa Paddle, départ 17/07/2026). Dans les
+messages Booking de juillet, la seule candidate trouvée : Sandra Paquis.
 
-**Bloqué par :**
-1. Connecteur **Notion** non autorisé sur claude.ai → à activer dans
-   Paramètres → Connecteurs, puis relancer Claude.
-2. Nom exact à confirmer dans **Beds24** (résa Paddle départ 17/07) avant de
-   bannir — pour ne pas viser la mauvaise personne.
+**État au 16/10/2026 :** enregistrée provisoirement dans le Google Sheet
+« CRM Voyageurs — BANNIS (en attente Notion) » du Drive. Reste à : confirmer
+le nom dans Beds24, puis reporter dans Notion une fois le connecteur autorisé.
 
-**Étapes pour Claude au retour :**
-1. Vérifier avec Claudine le nom exact de la voyageuse (Beds24 ouvert).
-2. Créer/mettre à jour la fiche dans Notion CRM Berck : statut « À BANNIR »,
-   motif à compléter par Claudine, séjour Paddle → 17/07/2026, source Booking.
-3. Penser à l'écarter de la prochaine relance « ⭐ Machine à avis » (répondre
-   « OK sauf … » à l'email du robot) pour ne pas lui demander d'avis.
+### 2. Bannir le voyageur de l'Escapade dans le CRM Notion — demandé le 16/10/2026
+
+**Quoi :** fiche « à bannir » pour le voyageur de l'**Escapade**, parti
+**aujourd'hui 16/10/2026**.
+
+**Identité :** nom introuvable dans Gmail/calendriers — à lire dans **Beds24**
+(résa Escapade, départ 16/10/2026).
+
+**État au 16/10/2026 :** enregistré provisoirement dans le Google Sheet
+« CRM Voyageurs — BANNIS (en attente Notion) » du Drive. Reste à : confirmer
+le nom + le motif, puis reporter dans Notion une fois le connecteur autorisé.
+
+**Bloquant commun aux deux :** le connecteur **Notion** n'est toujours pas
+autorisé sur claude.ai (Paramètres → Connecteurs). Tant qu'il ne l'est pas,
+le CRM Notion est inaccessible pour Claude.
+
+**Penser aussi à** écarter ces deux voyageurs des relances « ⭐ Machine à avis »
+(répondre « OK sauf … » aux emails du robot).
 
 ## Fait
 
-*(rien pour l'instant)*
+*(rien pour l'instant — les deux bannissements sont consignés dans le Sheet
+« CRM Voyageurs — BANNIS (en attente Notion) », en attendant Notion)*
