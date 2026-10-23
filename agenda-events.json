@@ -1,7 +1,7 @@
 [
  {
   "titre": "Atelier broderie avec \" fibre en jeu\" - Chez Causettes",
-  "start": "2026-10-22",
+  "start": "2026-10-23",
   "date_label": "Jusqu'au 21/11/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=108571",
@@ -9,7 +9,7 @@
  },
  {
   "titre": "Exposition \"Ecrite par la lumière\"",
-  "start": "2026-10-22",
+  "start": "2026-10-23",
   "date_label": "Jusqu'au 14/03/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=114145",
@@ -17,7 +17,7 @@
  },
  {
   "titre": "Mon Village Vacances - Laser Game",
-  "start": "2026-10-22",
+  "start": "2026-10-23",
   "date_label": "Jusqu'au 28/10/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=122803",
@@ -25,7 +25,7 @@
  },
  {
   "titre": "Mon Village Vacances - Atelier de Construction de Cerf-Volant",
-  "start": "2026-10-22",
+  "start": "2026-10-23",
   "date_label": "Jusqu'au 26/10/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=77813",
@@ -33,7 +33,7 @@
  },
  {
   "titre": "Mon Village Vacances  - Vacances d'Automne",
-  "start": "2026-10-22",
+  "start": "2026-10-23",
   "date_label": "Jusqu'au 31/10/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=101004",
@@ -41,7 +41,7 @@
  },
  {
   "titre": "Exposition \"Symphonie de roses\" -  Les Amis d'Hom'Arts",
-  "start": "2026-10-22",
+  "start": "2026-10-23",
   "date_label": "Jusqu'au 25/10/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=121333",
@@ -49,7 +49,7 @@
  },
  {
   "titre": "ANNULE - Visite du soir - Musée Opale sud",
-  "start": "2026-10-22",
+  "start": "2026-10-23",
   "date_label": "Jusqu'au 28/10/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131115",
@@ -57,7 +57,7 @@
  },
  {
   "titre": "Mon Village Vacances - Rencontre avec les Phoques",
-  "start": "2026-10-22",
+  "start": "2026-10-23",
   "date_label": "Jusqu'au 30/10/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=89597",
@@ -66,33 +66,9 @@
  {
   "titre": "Visite guidée - collections permanentes et expositions temporaires - ANNULE",
   "start": "2026-10-23",
-  "date_label": "Du 23/10/2026 au 24/10/2026",
+  "date_label": "Jusqu'au 24/10/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131123",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "ANNULÉ Mon village vacance- Ecolo'magie",
-  "start": "2026-10-23",
-  "date_label": "Le 23/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130958",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Peinturlure ton pêcheur - ANNULE",
-  "start": "2026-10-23",
-  "date_label": "Le 23/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130962",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Dégustation et vente de biscuits et de cake - Chez Causettes",
-  "start": "2026-10-23",
-  "date_label": "Le 23/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=124701",
   "source": "Office de Tourisme"
  },
  {
@@ -128,74 +104,179 @@
   "source": "Office de Tourisme"
  },
  {
-  "titre": "VENEZ FÊTER HALLOWEEN AU TOUQUET PARIS PLAGE",
-  "start": "2026-10-30",
-  "date_label": "30 octobre",
-  "categories": [
-   "Ateliers / Stages",
-   "festivals",
-   "Loisirs"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=166819",
-  "source": "oukankoi.fr"
+  "titre": "Marche Rose et Animations - Octobre Rose",
+  "start": "2026-10-25",
+  "date_label": "Le 25/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=97870",
+  "source": "Office de Tourisme"
  },
  {
-  "titre": "BAPTÊME DE CHAR À VOILE",
+  "titre": "Octobre Rose au Cinos",
+  "start": "2026-10-25",
+  "date_label": "Le 25/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131299",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Mon Village Vacances - Sporti'plage",
+  "start": "2026-10-26",
+  "date_label": "Du 26/10/2026 au 28/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=115889",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "BAL COUNTRY HALLOWEEN",
   "start": "2026-10-31",
   "date_label": "31 octobre",
   "categories": [
+   "Danse",
    "Loisirs",
-   "Solidarité",
-   "Sport"
+   "Soirées à thème"
   ],
-  "lien": "https://www.oukankoi.fr/?p=167233",
+  "lien": "https://www.oukankoi.fr/?p=167386",
   "source": "oukankoi.fr"
  },
  {
-  "titre": "SORTIE CALÈCHE",
+  "titre": "BAL COSTUMÉ",
   "start": "2026-10-31",
   "date_label": "31 octobre",
   "categories": [
-   "Balades",
-   "Découverte",
-   "Patrimoine"
+   "Danse",
+   "Loisirs",
+   "Soirées à thème"
   ],
-  "lien": "https://www.oukankoi.fr/?p=166465",
+  "lien": "https://www.oukankoi.fr/?p=167384",
   "source": "oukankoi.fr"
  },
  {
-  "titre": "LES SEMAINES DE LA MIGRATION",
+  "titre": "NOCTURNE AU PARC BAGATELLE",
   "start": "2026-10-31",
   "date_label": "31 octobre",
   "categories": [
-   "Balades",
-   "Découverte",
-   "Visites"
+   "festivals",
+   "Loisirs",
+   "Soirées à thème"
   ],
-  "lien": "https://www.oukankoi.fr/?p=166929",
+  "lien": "https://www.oukankoi.fr/?p=167380",
   "source": "oukankoi.fr"
  },
  {
-  "titre": "HALLOWEEN REVIENT À BAGATELLE !",
+  "titre": "BARBE NOIRE",
+  "start": "2026-10-31",
+  "date_label": "31 octobre",
+  "categories": [
+   "Arts",
+   "Spectacles"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=167377",
+  "source": "oukankoi.fr"
+ },
+ {
+  "titre": "P’TITE MARÉE D’HUMOUR D’AUTOMNE",
   "start": "2026-10-31",
   "date_label": "31 octobre",
   "categories": [
    "Loisirs",
    "Spectacles"
   ],
-  "lien": "https://www.oukankoi.fr/?p=166878",
+  "lien": "https://www.oukankoi.fr/?p=167372",
   "source": "oukankoi.fr"
  },
  {
-  "titre": "LE SECRET DES FANTÔMES",
+  "titre": "ANIMATIONS HALLOWEEN",
+  "start": "2026-10-31",
+  "date_label": "31 octobre",
+  "categories": [
+   "festivals",
+   "Loisirs",
+   "Soirées à thème"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=167370",
+  "source": "oukankoi.fr"
+ },
+ {
+  "titre": "GRANDE PARADE D’HALLOWEEN & FEU D’ARTIFICE",
+  "start": "2026-10-31",
+  "date_label": "31 octobre",
+  "categories": [
+   "Loisirs",
+   "Soirées à thème",
+   "Spectacles"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=167367",
+  "source": "oukankoi.fr"
+ },
+ {
+  "titre": "ATELIER MAQUILLAGE D’HALLOWEEN",
   "start": "2026-10-31",
   "date_label": "31 octobre",
   "categories": [
    "Ateliers / Stages",
-   "Expos",
-   "Expositions en cours"
+   "Loisirs"
   ],
-  "lien": "https://www.oukankoi.fr/?p=167018",
+  "lien": "https://www.oukankoi.fr/?p=167364",
+  "source": "oukankoi.fr"
+ },
+ {
+  "titre": "MARÉIS FÊTE HALLOWEEN",
+  "start": "2026-10-31",
+  "date_label": "31 octobre",
+  "categories": [
+   "Découverte",
+   "Loisirs",
+   "Visites"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=167361",
+  "source": "oukankoi.fr"
+ },
+ {
+  "titre": "LE TOUQUET INTERNATIONAL ART FAIR",
+  "start": "2026-11-01",
+  "date_label": "1 novembre",
+  "categories": [
+   "Arts",
+   "expo ponctuelle",
+   "Expos"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=167339",
+  "source": "oukankoi.fr"
+ },
+ {
+  "titre": "SORTIE CALÈCHE",
+  "start": "2026-11-01",
+  "date_label": "1 novembre",
+  "categories": [
+   "Balades",
+   "Découverte",
+   "Patrimoine"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=166467",
+  "source": "oukankoi.fr"
+ },
+ {
+  "titre": "LES SEMAINES DE LA MIGRATION",
+  "start": "2026-11-01",
+  "date_label": "1 novembre",
+  "categories": [
+   "Balades",
+   "Découverte",
+   "Visites"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=166931",
+  "source": "oukankoi.fr"
+ },
+ {
+  "titre": "HALLOWEEN REVIENT À BAGATELLE !",
+  "start": "2026-11-01",
+  "date_label": "1 novembre",
+  "categories": [
+   "Loisirs",
+   "Spectacles"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=166880",
   "source": "oukankoi.fr"
  },
  {
@@ -220,6 +301,18 @@
    "Visites"
   ],
   "lien": "https://www.oukankoi.fr/?p=166694",
+  "source": "oukankoi.fr"
+ },
+ {
+  "titre": "LE SECRET DES FANTÔMES",
+  "start": "2026-11-01",
+  "date_label": "1 novembre",
+  "categories": [
+   "Ateliers / Stages",
+   "Expos",
+   "Expositions en cours"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=167020",
   "source": "oukankoi.fr"
  }
 ]
