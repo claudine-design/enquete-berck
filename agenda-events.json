@@ -1,7 +1,7 @@
 [
  {
   "titre": "Atelier broderie avec \" fibre en jeu\" - Chez Causettes",
-  "start": "2026-10-29",
+  "start": "2026-10-30",
   "date_label": "Jusqu'au 21/11/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=108571",
@@ -9,7 +9,7 @@
  },
  {
   "titre": "Exposition \"Ecrite par la lumière\"",
-  "start": "2026-10-29",
+  "start": "2026-10-30",
   "date_label": "Jusqu'au 14/03/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=114145",
@@ -17,7 +17,7 @@
  },
  {
   "titre": "Mon Village Vacances  - Vacances d'Automne",
-  "start": "2026-10-29",
+  "start": "2026-10-30",
   "date_label": "Jusqu'au 31/10/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=101004",
@@ -25,74 +25,18 @@
  },
  {
   "titre": "Mon Village Vacances - Pilates",
-  "start": "2026-10-29",
+  "start": "2026-10-30",
   "date_label": "Jusqu'au 30/10/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=85749",
   "source": "Office de Tourisme"
  },
  {
-  "titre": "Ciné matin : projection du film « Wallace & Gromit, le mystère du lapin garou » - CINOS",
-  "start": "2026-10-30",
-  "date_label": "Le 30/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131083",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Mon Village Vacances - Baby-gym",
-  "start": "2026-10-30",
-  "date_label": "Le 30/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=128994",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Mon Village Vacances - Atelier Créatif 8-12 ans",
-  "start": "2026-10-30",
-  "date_label": "Le 30/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=122797",
-  "source": "Office de Tourisme"
- },
- {
   "titre": "Les Arts en Mouvement",
   "start": "2026-10-30",
-  "date_label": "Du 30/10/2026 au 01/11/2026",
+  "date_label": "Jusqu'au 01/11/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=87478",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Projection du film « Scream » - CINOS",
-  "start": "2026-10-30",
-  "date_label": "Le 30/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131080",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Mon Village Vacances - Rencontre avec les Phoques",
-  "start": "2026-10-30",
-  "date_label": "Le 30/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=89597",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Atelier Origami - Chez Causettes",
-  "start": "2026-10-30",
-  "date_label": "Le 30/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=119409",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Journée d'Halloween au Sunset Kids",
-  "start": "2026-10-30",
-  "date_label": "Le 30/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131415",
   "source": "Office de Tourisme"
  },
  {
@@ -201,6 +145,30 @@
   "source": "oukankoi.fr"
  },
  {
+  "titre": "Lectures Philosophiques à partager - Musée Opale Sud",
+  "start": "2026-10-31",
+  "date_label": "Du 31/10/2026 au 23/12/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131128",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Halloween à l'Office de Tourisme - Les défis d’Halloween",
+  "start": "2026-10-31",
+  "date_label": "Le 31/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=125179",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Halloween au Jardin",
+  "start": "2026-10-31",
+  "date_label": "Le 31/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=125212",
+  "source": "Office de Tourisme"
+ },
+ {
   "titre": "LE TOUQUET INTERNATIONAL ART FAIR",
   "start": "2026-11-01",
   "date_label": "1 novembre",
@@ -282,5 +250,37 @@
   ],
   "lien": "https://www.oukankoi.fr/?p=167020",
   "source": "oukankoi.fr"
+ },
+ {
+  "titre": "Brocante - Ambassade Bonchat",
+  "start": "2026-11-01",
+  "date_label": "Du 01/11/2026 au 10/01/2027",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=113893",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Coup de Coeur Surprise - Cinos",
+  "start": "2026-11-02",
+  "date_label": "Le 02/11/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=125995",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Bon app' ! Par la compagnie Racines Carrées",
+  "start": "2026-11-03",
+  "date_label": "Le 03/11/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131333",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Ciné Soupe - CINOS",
+  "start": "2026-11-05",
+  "date_label": "Le 05/11/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=125433",
+  "source": "Office de Tourisme"
  }
 ]
