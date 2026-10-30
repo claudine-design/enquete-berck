@@ -384,6 +384,8 @@ function openLightbox(src){
 // tapisExtra: balnéo loin de la douche → tapis de douche supplémentaire à côté de la balnéo
 // litConditional: lit 1ère chambre installé, autres linges juste déposés (sauf si signalé sur calendrier)
 // exterieur: a jardin/terrasse/balcon/patio → vérifier mégots, déchets, mobilier remis en place
+// Linge de lit NON installé : on regarde l'agenda Google. Linge indiqué sur l'événement du jour → pack(s) déposé(s) sur les lits, draps pas mis. (Claudine 30/10/2026)
+const LINGE_SUR_AGENDA = ['kitesurf','hamac','paddle','surf','famille','grand-large','face-mer','terrasse'];
 const apartFeatures = {
   // ───── CLASSIQUES (14) — 1 panier + accessoires évier ─────
   'kitesurf':         { panier:'classique', capacite:4 },
@@ -444,6 +446,9 @@ function renderApartWarning(slug){
         '<div style="margin-top:6px">🧺 <b>Petit panier à côté</b> : <b>1 torchon</b> + <b>1 essuie-main</b>, <b>liquide vaisselle</b>, <b>1 éponge</b>, <b>1 dosette lave-vaisselle</b>.</div>'
       );
     }
+  }
+  if(LINGE_SUR_AGENDA.includes(slug)){
+    bullets.push("🛏️ <b>Linge de lit : on n'installe PAS les draps.</b> Regarder l'<b>agenda Google</b> : si du <b>linge est indiqué sur l'événement du jour</b>, <b>déposer le pack (ou les packs) sur les lits</b>, sans faire les lits. Rien d'indiqué → aucun linge à prévoir.");
   }
   if(f.balneo){
     bullets.push(
@@ -916,7 +921,8 @@ const data = [
   ]],
   ["s5","5. Chambre",[
     {id:"aleses", t:"Check des alèses : tache, odeur, humidité → on change.", photos:[{id:"alese", label:"Alèse, lit défait", only: s => SANS_LINGE.includes(s)}]},
-    {id:"lits", t:"Faire le lit selon la déco.", photos:[{id:"lit", label:"Chaque lit refait", multi:true, only: s => s !== "apollo"},{id:"lit", label:"Photo du lit chambre 1", only: s => s === "apollo"},{id:"lit-2", label:"Photo du lit chambre 2", only: s => s === "apollo"}]},
+    {id:"lits", t:"Faire le lit selon la déco.", only: s => !LINGE_SUR_AGENDA.includes(s), photos:[{id:"lit", label:"Chaque lit refait", multi:true, only: s => s !== "apollo"},{id:"lit", label:"Photo du lit chambre 1", only: s => s === "apollo"},{id:"lit-2", label:"Photo du lit chambre 2", only: s => s === "apollo"}]},
+    {id:"lits", t:"Lit refait SANS draps, selon la déco. Regarder l'agenda Google : si du linge est indiqué sur l'événement du jour, déposer le pack (ou les packs) sur les lits — ne pas installer les draps.", d:"Dans ces appartements le linge n'est pas fourni d'office. Le voyageur qui a réservé un pack linge le trouve posé sur le lit et fait son lit lui-même.", only: s => LINGE_SUR_AGENDA.includes(s), photos:[{id:"lit", label:"Chaque lit refait (pack déposé dessus si linge prévu)", multi:true}]},
     {id:"sous-lit", t:"Sous le lit et tables de chevet : rien d'oublié."},
   ]],
   ["s6","6. Salon — extérieur — vitres",[
