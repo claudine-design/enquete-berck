@@ -925,6 +925,7 @@ const data = [
     {id:"lits", t:"Faire le lit selon la déco.", only: s => !LINGE_SUR_AGENDA.includes(s), photos:[{id:"lit", label:"Chaque lit refait", multi:true, only: s => s !== "apollo"},{id:"lit", label:"Photo du lit chambre 1", only: s => s === "apollo"},{id:"lit-2", label:"Photo du lit chambre 2", only: s => s === "apollo"}]},
     {id:"lits", t:"Lit refait SANS draps, selon la déco. Regarder l'agenda Google : si du linge est indiqué sur l'événement du jour, déposer le pack (ou les packs) sur les lits — ne pas installer les draps.", d:"Dans ces appartements le linge n'est pas fourni d'office. Le voyageur qui a réservé un pack linge le trouve posé sur le lit et fait son lit lui-même.", only: s => LINGE_SUR_AGENDA.includes(s), photos:[{id:"lit", label:"Chaque lit refait (pack déposé dessus si linge prévu)", multi:true}]},
     {id:"sous-lit", t:"Sous le lit et tables de chevet : rien d'oublié."},
+    {id:"etagere-linge", t:"Chambre 2 (enfants) : déposer sur l'étagère derrière le rideau 2 packs simples + 1 pack double pour le canapé. Le pack double = 1 grande + 1 petite serviette seulement.", d:"Les voyageurs font ces lits eux-mêmes. Comparez avec la photo modèle : rien ne doit manquer sur l'étagère.", photos:[{id:"etagere-linge", label:"Étagère chambre 2 avec les 3 packs déposés"}], only: s => s === 'grande-roue'},
   ]],
   ["s6","6. Salon — extérieur — vitres",[
     {id:"canape", t:"Ouvrir le canapé-lit : dedans et dessous, rien d'oublié. Ranger coussins, plaids, déco.", photos:[{id:"canape", label:"Canapé OUVERT (déplié)"}], only: s => !SANS_CANAPE.includes(s)},
@@ -1181,7 +1182,7 @@ function imgModele(id){
   return im;
 }
 // Photos modèles communes à TOUS les logements (priment sur le modèle du logement) — choix Claudine 27/09/2026.
-const MODELES_FIXES = { canape: 'modele-canape.jpg' };
+const MODELES_FIXES = { canape: 'modele-canape.jpg', 'etagere-linge': 'modele-etagere-grande-roue.jpg' };
 function modeleUrl(id){ return /\.jpg$/.test(id) ? id : 'https://lh3.googleusercontent.com/d/' + id + '=w1000'; }
 function saveModeles(s){ try { localStorage.setItem('modeles-' + s, JSON.stringify(modeles)); } catch(e){} }
 async function loadModeles(s){
