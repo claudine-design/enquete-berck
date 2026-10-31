@@ -1,45 +1,5 @@
 [
  {
-  "titre": "Atelier broderie avec \" fibre en jeu\" - Chez Causettes",
-  "start": "2026-10-30",
-  "date_label": "Jusqu'au 21/11/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=108571",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Exposition \"Ecrite par la lumière\"",
-  "start": "2026-10-30",
-  "date_label": "Jusqu'au 14/03/2027",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=114145",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Mon Village Vacances  - Vacances d'Automne",
-  "start": "2026-10-30",
-  "date_label": "Jusqu'au 31/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=101004",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Mon Village Vacances - Pilates",
-  "start": "2026-10-30",
-  "date_label": "Jusqu'au 30/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=85749",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Les Arts en Mouvement",
-  "start": "2026-10-30",
-  "date_label": "Jusqu'au 01/11/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=87478",
-  "source": "Office de Tourisme"
- },
- {
   "titre": "BAL COUNTRY HALLOWEEN",
   "start": "2026-10-31",
   "date_label": "31 octobre",
@@ -145,27 +105,43 @@
   "source": "oukankoi.fr"
  },
  {
+  "titre": "Atelier broderie avec \" fibre en jeu\" - Chez Causettes",
+  "start": "2026-10-31",
+  "date_label": "Jusqu'au 21/11/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=108571",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Exposition \"Ecrite par la lumière\"",
+  "start": "2026-10-31",
+  "date_label": "Jusqu'au 14/03/2027",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=114145",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Mon Village Vacances  - Vacances d'Automne",
+  "start": "2026-10-31",
+  "date_label": "Jusqu'au 31/10/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=101004",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Les Arts en Mouvement",
+  "start": "2026-10-31",
+  "date_label": "Jusqu'au 01/11/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=87478",
+  "source": "Office de Tourisme"
+ },
+ {
   "titre": "Lectures Philosophiques à partager - Musée Opale Sud",
   "start": "2026-10-31",
-  "date_label": "Du 31/10/2026 au 23/12/2026",
+  "date_label": "Jusqu'au 23/12/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131128",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Halloween à l'Office de Tourisme - Les défis d’Halloween",
-  "start": "2026-10-31",
-  "date_label": "Le 31/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=125179",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Halloween au Jardin",
-  "start": "2026-10-31",
-  "date_label": "Le 31/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=125212",
   "source": "Office de Tourisme"
  },
  {
@@ -281,6 +257,70 @@
   "date_label": "Le 05/11/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=125433",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Fête du Hareng Côtier - Club Nautique",
+  "start": "2026-11-07",
+  "date_label": "Du 07/11/2026 au 08/11/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=101351",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Bal des commerçants",
+  "start": "2026-11-08",
+  "date_label": "Du 08/11/2026 au 28/11/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=124489",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "2ème édition du Beach Bike Berck",
+  "start": "2026-11-08",
+  "date_label": "Le 08/11/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=124067",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Ciné Rencontre - \"Gabin\"",
+  "start": "2026-11-13",
+  "date_label": "Le 13/11/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=122433",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Concert Au fil des mots par Suzanne Grimm",
+  "start": "2026-11-13",
+  "date_label": "Le 13/11/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131099",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Loto de l'Amicale territoriale de Berck-sur-Mer",
+  "start": "2026-11-15",
+  "date_label": "Le 15/11/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=125014",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Troc Livres",
+  "start": "2026-11-18",
+  "date_label": "Le 18/11/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=93601",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Soirée A.B.A.C - \"Nous, l'orchestre\"",
+  "start": "2026-11-18",
+  "date_label": "Le 18/11/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=124094",
   "source": "Office de Tourisme"
  }
 ]
