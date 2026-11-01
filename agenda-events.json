@@ -1,150 +1,5 @@
 [
  {
-  "titre": "BAL COUNTRY HALLOWEEN",
-  "start": "2026-10-31",
-  "date_label": "31 octobre",
-  "categories": [
-   "Danse",
-   "Loisirs",
-   "Soirées à thème"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=167386",
-  "source": "oukankoi.fr"
- },
- {
-  "titre": "BAL COSTUMÉ",
-  "start": "2026-10-31",
-  "date_label": "31 octobre",
-  "categories": [
-   "Danse",
-   "Loisirs",
-   "Soirées à thème"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=167384",
-  "source": "oukankoi.fr"
- },
- {
-  "titre": "NOCTURNE AU PARC BAGATELLE",
-  "start": "2026-10-31",
-  "date_label": "31 octobre",
-  "categories": [
-   "festivals",
-   "Loisirs",
-   "Soirées à thème"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=167380",
-  "source": "oukankoi.fr"
- },
- {
-  "titre": "BARBE NOIRE",
-  "start": "2026-10-31",
-  "date_label": "31 octobre",
-  "categories": [
-   "Arts",
-   "Spectacles"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=167377",
-  "source": "oukankoi.fr"
- },
- {
-  "titre": "P’TITE MARÉE D’HUMOUR D’AUTOMNE",
-  "start": "2026-10-31",
-  "date_label": "31 octobre",
-  "categories": [
-   "Loisirs",
-   "Spectacles"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=167372",
-  "source": "oukankoi.fr"
- },
- {
-  "titre": "ANIMATIONS HALLOWEEN",
-  "start": "2026-10-31",
-  "date_label": "31 octobre",
-  "categories": [
-   "festivals",
-   "Loisirs",
-   "Soirées à thème"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=167370",
-  "source": "oukankoi.fr"
- },
- {
-  "titre": "GRANDE PARADE D’HALLOWEEN & FEU D’ARTIFICE",
-  "start": "2026-10-31",
-  "date_label": "31 octobre",
-  "categories": [
-   "Loisirs",
-   "Soirées à thème",
-   "Spectacles"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=167367",
-  "source": "oukankoi.fr"
- },
- {
-  "titre": "ATELIER MAQUILLAGE D’HALLOWEEN",
-  "start": "2026-10-31",
-  "date_label": "31 octobre",
-  "categories": [
-   "Ateliers / Stages",
-   "Loisirs"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=167364",
-  "source": "oukankoi.fr"
- },
- {
-  "titre": "MARÉIS FÊTE HALLOWEEN",
-  "start": "2026-10-31",
-  "date_label": "31 octobre",
-  "categories": [
-   "Découverte",
-   "Loisirs",
-   "Visites"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=167361",
-  "source": "oukankoi.fr"
- },
- {
-  "titre": "Atelier broderie avec \" fibre en jeu\" - Chez Causettes",
-  "start": "2026-10-31",
-  "date_label": "Jusqu'au 21/11/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=108571",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Exposition \"Ecrite par la lumière\"",
-  "start": "2026-10-31",
-  "date_label": "Jusqu'au 14/03/2027",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=114145",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Mon Village Vacances  - Vacances d'Automne",
-  "start": "2026-10-31",
-  "date_label": "Jusqu'au 31/10/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=101004",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Les Arts en Mouvement",
-  "start": "2026-10-31",
-  "date_label": "Jusqu'au 01/11/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=87478",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Lectures Philosophiques à partager - Musée Opale Sud",
-  "start": "2026-10-31",
-  "date_label": "Jusqu'au 23/12/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131128",
-  "source": "Office de Tourisme"
- },
- {
   "titre": "LE TOUQUET INTERNATIONAL ART FAIR",
   "start": "2026-11-01",
   "date_label": "1 novembre",
@@ -228,9 +83,41 @@
   "source": "oukankoi.fr"
  },
  {
+  "titre": "Atelier broderie avec \" fibre en jeu\" - Chez Causettes",
+  "start": "2026-11-01",
+  "date_label": "Jusqu'au 21/11/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=108571",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Exposition \"Ecrite par la lumière\"",
+  "start": "2026-11-01",
+  "date_label": "Jusqu'au 14/03/2027",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=114145",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Les Arts en Mouvement",
+  "start": "2026-11-01",
+  "date_label": "Jusqu'au 01/11/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=87478",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Lectures Philosophiques à partager - Musée Opale Sud",
+  "start": "2026-11-01",
+  "date_label": "Jusqu'au 23/12/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131128",
+  "source": "Office de Tourisme"
+ },
+ {
   "titre": "Brocante - Ambassade Bonchat",
   "start": "2026-11-01",
-  "date_label": "Du 01/11/2026 au 10/01/2027",
+  "date_label": "Jusqu'au 10/01/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=113893",
   "source": "Office de Tourisme"
@@ -321,6 +208,30 @@
   "date_label": "Le 18/11/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=124094",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "6h de Berck - 61ème édition",
+  "start": "2026-11-21",
+  "date_label": "Du 21/11/2026 au 22/11/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=70584",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Christophe Alévêque - Familia théâtre",
+  "start": "2026-11-27",
+  "date_label": "Le 27/11/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=124248",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Atelier collage \"Des images et des mots\" - Causettes avec Charlotte His",
+  "start": "2026-11-28",
+  "date_label": "Le 28/11/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131161",
   "source": "Office de Tourisme"
  }
 ]
