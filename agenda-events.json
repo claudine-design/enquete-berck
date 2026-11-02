@@ -1,90 +1,7 @@
 [
  {
-  "titre": "LE TOUQUET INTERNATIONAL ART FAIR",
-  "start": "2026-11-01",
-  "date_label": "1 novembre",
-  "categories": [
-   "Arts",
-   "expo ponctuelle",
-   "Expos"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=167339",
-  "source": "oukankoi.fr"
- },
- {
-  "titre": "SORTIE CALÈCHE",
-  "start": "2026-11-01",
-  "date_label": "1 novembre",
-  "categories": [
-   "Balades",
-   "Découverte",
-   "Patrimoine"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=166467",
-  "source": "oukankoi.fr"
- },
- {
-  "titre": "LES SEMAINES DE LA MIGRATION",
-  "start": "2026-11-01",
-  "date_label": "1 novembre",
-  "categories": [
-   "Balades",
-   "Découverte",
-   "Visites"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=166931",
-  "source": "oukankoi.fr"
- },
- {
-  "titre": "HALLOWEEN REVIENT À BAGATELLE !",
-  "start": "2026-11-01",
-  "date_label": "1 novembre",
-  "categories": [
-   "Loisirs",
-   "Spectacles"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=166880",
-  "source": "oukankoi.fr"
- },
- {
-  "titre": "RENCONTRE AVEC LES PHOQUES",
-  "start": "2026-11-01",
-  "date_label": "1 novembre",
-  "categories": [
-   "Balades",
-   "Découverte",
-   "Visites"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=166617",
-  "source": "oukankoi.fr"
- },
- {
-  "titre": "BALADE EN FORÊT DU TOUQUET PARIS PLAGE",
-  "start": "2026-11-01",
-  "date_label": "1 novembre",
-  "categories": [
-   "Balades",
-   "Découverte",
-   "Visites"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=166694",
-  "source": "oukankoi.fr"
- },
- {
-  "titre": "LE SECRET DES FANTÔMES",
-  "start": "2026-11-01",
-  "date_label": "1 novembre",
-  "categories": [
-   "Ateliers / Stages",
-   "Expos",
-   "Expositions en cours"
-  ],
-  "lien": "https://www.oukankoi.fr/?p=167020",
-  "source": "oukankoi.fr"
- },
- {
   "titre": "Atelier broderie avec \" fibre en jeu\" - Chez Causettes",
-  "start": "2026-11-01",
+  "start": "2026-11-02",
   "date_label": "Jusqu'au 21/11/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=108571",
@@ -92,23 +9,15 @@
  },
  {
   "titre": "Exposition \"Ecrite par la lumière\"",
-  "start": "2026-11-01",
+  "start": "2026-11-02",
   "date_label": "Jusqu'au 14/03/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=114145",
   "source": "Office de Tourisme"
  },
  {
-  "titre": "Les Arts en Mouvement",
-  "start": "2026-11-01",
-  "date_label": "Jusqu'au 01/11/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=87478",
-  "source": "Office de Tourisme"
- },
- {
   "titre": "Lectures Philosophiques à partager - Musée Opale Sud",
-  "start": "2026-11-01",
+  "start": "2026-11-02",
   "date_label": "Jusqu'au 23/12/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131128",
@@ -116,18 +25,10 @@
  },
  {
   "titre": "Brocante - Ambassade Bonchat",
-  "start": "2026-11-01",
+  "start": "2026-11-02",
   "date_label": "Jusqu'au 10/01/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=113893",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Coup de Coeur Surprise - Cinos",
-  "start": "2026-11-02",
-  "date_label": "Le 02/11/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=125995",
   "source": "Office de Tourisme"
  },
  {
@@ -232,6 +133,14 @@
   "date_label": "Le 28/11/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131161",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Confrérie du hareng côtier \"Chapitre du Hareng côtier\"",
+  "start": "2026-11-28",
+  "date_label": "Le 28/11/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=93540",
   "source": "Office de Tourisme"
  }
 ]
