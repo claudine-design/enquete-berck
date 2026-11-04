@@ -1261,8 +1261,14 @@ function renderFin(){
   if(!S || MODE_MODELE){ box.innerHTML = ''; return; }
   const manque = manquants();
   const videoOk = !!S.video;
-  const pret = videoOk && !manque.length;
+  const itemsTous = itemsFor(S.appart).flatMap(x => x[2]);
+  const nonCochees = itemsTous.filter(it => !S.checked[it.id]);
+  const pret = videoOk && !manque.length && !nonCochees.length;
   let h = '<div class="finp"><div class="finp-t">🏁 Fin du ménage</div>';
+  h += '<div class="finp-step"><span class="num' + (nonCochees.length ? '' : ' ok') + '">✓</span><div class="grow"><b>Les tâches cochées</b>' +
+    (nonCochees.length
+      ? '<div class="finp-miss">Il reste ' + nonCochees.length + ' tâche' + (nonCochees.length > 1 ? 's' : '') + ' à cocher sur ' + itemsTous.length + '. Chaque tâche se coche quand elle est faite.</div>'
+      : '<div class="finp-ok">✅ Les ' + itemsTous.length + ' tâches sont cochées</div>') + '</div></div>';
   h += '<div class="finp-step"><span class="num' + (manque.length ? '' : ' ok') + '">1</span><div class="grow"><b>Les photos</b>' +
     (manque.length > 5
       ? '<div class="finp-miss">Il en reste ' + manque.length + ' à prendre. Elles se prennent au fur et à mesure du ménage.</div>'
@@ -1275,7 +1281,7 @@ function renderFin(){
     (videoOk ? '✅ Vidéo enregistrée à ' + hhmm(S.video.heure) + ' — refaire' : '🎥 FILMER LA VIDÉO') + '</button>' +
     '<div class="small-note">Toutes les pièces, sans couper. Entre ' + VIDEO_MIN_S + ' et ' + VIDEO_MAX_S + ' secondes.</div></div></div>';
   h += '<div class="finp-step"><span class="num' + (pret ? ' ok' : '') + '">3</span><div class="grow"><b>Valider</b>' +
-    '<button type="button" id="finp-send" class="bigbtn ' + (pret ? 'go' : 'wait') + '">' + (pret ? '✓ TERMINER LE MÉNAGE' : manque.length ? '✓ Terminer (il manque ' + manque.length + ' photo' + (manque.length > 1 ? 's' : '') + ')' : '✓ Terminer (il manque la vidéo)') + '</button>' +
+    '<button type="button" id="finp-send" class="bigbtn ' + (pret ? 'go' : 'wait') + '">' + (pret ? '✓ TERMINER LE MÉNAGE' : manque.length ? '✓ Terminer (il manque ' + manque.length + ' photo' + (manque.length > 1 ? 's' : '') + ')' : !videoOk ? '✓ Terminer (il manque la vidéo)' : '✓ Terminer (' + nonCochees.length + ' tâche' + (nonCochees.length > 1 ? 's' : '') + ' à cocher)') + '</button>' +
     '</div></div></div>';
   box.innerHTML = h;
   box.querySelectorAll('.finp-go').forEach(b => b.onclick = () => {
@@ -1578,14 +1584,57 @@ function renderStartBox(){
     document.getElementById('nom').disabled = false;
   }
 }
+// État des lieux à l'arrivée (demande Claudine 04/11/2026) : AVANT de commencer, deux questions
+// OUI / NON obligatoires — dégâts ? quelque chose qui manque (vol) ? Les prestataires arrivaient,
+// faisaient le ménage tout de suite et zappaient le premier tour. Un OUI part aussitôt chez Claudine.
+function etatDesLieux(){
+  return new Promise(resolve => {
+    const box = document.createElement('div');
+    box.className = 'fin';
+    const Q = [
+      {id:'degats', t:'L’appartement a-t-il subi des dégâts ?', s:'Casse, tache, trou, panne, meuble abîmé… Regardez partout AVANT de commencer.'},
+      {id:'vol',    t:'Manque-t-il quelque chose dans l’appartement ?', s:'Objet, déco, linge, télécommande, vaisselle… disparu ou volé.'}
+    ];
+    const rep = {};
+    let i = 0;
+    const dessine = () => {
+      const q = Q[i];
+      box.innerHTML = '<div class="fin-card" style="text-align:left">' +
+        '<div class="fin-t" style="font-size:22px">👀 Premier tour — question ' + (i + 1) + ' / ' + Q.length + '</div>' +
+        '<div style="font-size:21px;font-weight:700;margin:10px 0 4px">' + q.t + '</div>' +
+        '<div class="small" style="font-size:16.5px;color:#555">' + q.s + '</div>' +
+        '<div style="display:flex;gap:10px;margin-top:14px">' +
+          '<button type="button" id="edl-non" style="margin:0;background:linear-gradient(135deg,#16a34a,#22c55e)">✅ NON</button>' +
+          '<button type="button" id="edl-oui" style="margin:0;background:linear-gradient(135deg,#dc2626,#ef4444)">⚠️ OUI</button>' +
+        '</div>' +
+        '<div id="edl-detail" style="display:none;margin-top:12px">' +
+          '<div style="font-size:17px;font-weight:600">Dites-nous quoi (et prenez une photo avec votre téléphone) :</div>' +
+          '<textarea id="edl-txt" rows="3" style="width:100%;font-size:18px;padding:10px;border-radius:10px;border:2px solid #dc2626;margin-top:6px"></textarea>' +
+          '<button type="button" id="edl-ok" style="margin-top:10px">Envoyer à Claudine et continuer</button>' +
+        '</div></div>';
+      box.querySelector('#edl-non').onclick = () => { rep[q.id] = 'non'; suivant(); };
+      box.querySelector('#edl-oui').onclick = () => { box.querySelector('#edl-detail').style.display = 'block'; box.querySelector('#edl-txt').focus(); };
+      box.querySelector('#edl-ok').onclick = () => {
+        const t = box.querySelector('#edl-txt').value.trim();
+        if(!t){ alert('Écrivez au moins un mot : Claudine doit savoir quoi.'); return; }
+        rep[q.id] = 'oui'; rep[q.id + 'Detail'] = t; suivant();
+      };
+    };
+    const suivant = () => { i++; if(i < Q.length) dessine(); else { box.remove(); resolve(rep); } };
+    document.body.appendChild(box);
+    dessine();
+  });
+}
 async function demarrer(){
   if(!slug()){ alert('Choisissez d\'abord l\'appartement.'); return; }
   if(!presta()){ alert('Choisissez d\'abord votre prénom dans la liste « Prestataire ».'); document.getElementById('nom').focus(); return; }
+  const etat = await etatDesLieux();
   const debut = new Date().toISOString();
-  S = { id: 'M' + debut.replace(/\D/g,'').slice(0,14) + Math.random().toString(36).slice(2,6), appart: slug(), presta: presta(), debut, checked:{}, photos:{}, nc:{} };
+  S = { id: 'M' + debut.replace(/\D/g,'').slice(0,14) + Math.random().toString(36).slice(2,6), appart: slug(), presta: presta(), debut, checked:{}, photos:{}, nc:{}, etat };
+  if(etat.degats === 'non' && etat.vol === 'non') S.checked['premier-tour'] = true;
   saveS(); render();
   window.scrollTo({top: document.getElementById('sections').offsetTop - 10, behavior:'smooth'});
-  await qAdd({action:'start', id:S.id, appart:S.appart, presta:S.presta, heure:debut});
+  await qAdd({action:'start', id:S.id, appart:S.appart, presta:S.presta, heure:debut, degats:etat.degats, degatsDetail:etat.degatsDetail || '', vol:etat.vol, volDetail:etat.volDetail || ''});
 }
 async function send(){
   if(!S){ alert('▶️ Ce navigateur n\'a pas de ménage en cours.' + String.fromCharCode(10,10) + 'Si vous aviez commencé ce ménage puis que l\'appli s\'est coupée ou que vous avez rescanné le QR code, la session a été perdue : les photos déjà envoyées sont chez Claudine. Appuyez sur « Je commence le ménage » en haut, refaites les photos, puis Terminer.'); return; }
@@ -1599,11 +1648,16 @@ async function send(){
   }
   if(!S.video){ alert('⛔ Il manque la vidéo de fin.' + String.fromCharCode(10,10) + 'Appuyez sur le gros bouton bleu « 🎥 FILMER LA VIDÉO », en bas de la page.'); document.getElementById('fin-panel').scrollIntoView({behavior:'smooth'}); return; }
   const done = items.filter(it => S.checked[it.id]).length;
-  let remarque = '';
-  if(done < items.length){
-    if(!confirm('Il reste ' + (items.length - done) + ' tâche(s) non cochée(s). Terminer quand même ?')) return;
-    remarque = (items.length - done) + ' tâche(s) non cochée(s) : ' + items.filter(it => !S.checked[it.id]).map(it => it.id).join(', ');
+  // Toutes les tâches doivent être cochées (Claudine 04/11/2026 : « ce n'est pas normal qu'ils zappent tout »).
+  const nonCochees = items.filter(it => !S.checked[it.id]);
+  if(nonCochees.length){
+    alert('⛔ Il reste ' + nonCochees.length + ' tâche' + (nonCochees.length > 1 ? 's' : '') + ' à cocher avant de terminer :' + String.fromCharCode(10,10) + nonCochees.slice(0, 8).map(it => '☐ ' + it.t.replace(/<[^>]+>/g, '').slice(0, 60)).join(String.fromCharCode(10)) + (nonCochees.length > 8 ? String.fromCharCode(10) + '…' : '') + String.fromCharCode(10,10) + 'Cochez chaque tâche au fur et à mesure que vous la faites.');
+    const si = itemsFor(s).findIndex(x => x[2].some(it => it.id === nonCochees[0].id));
+    allerA(nonCochees[0].id, si);
+    return;
   }
+  let remarque = '';
+  if(S.etat && (S.etat.degats === 'oui' || S.etat.vol === 'oui')) remarque = (S.etat.degats === 'oui' ? 'DÉGÂTS : ' + S.etat.degatsDetail + '. ' : '') + (S.etat.vol === 'oui' ? 'MANQUE/VOL : ' + S.etat.volDetail : '');
   const fin = new Date().toISOString();
   const minutes = Math.round((new Date(fin) - new Date(S.debut)) / 60000);
   await qAdd({action:'fin', id:S.id, appart:S.appart, presta:S.presta, heure:fin, taches:done, total:items.length, remarque});
