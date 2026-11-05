@@ -1,7 +1,7 @@
 [
  {
   "titre": "Atelier broderie avec \" fibre en jeu\" - Chez Causettes",
-  "start": "2026-11-04",
+  "start": "2026-11-05",
   "date_label": "Jusqu'au 21/11/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=108571",
@@ -9,7 +9,7 @@
  },
  {
   "titre": "Exposition \"Ecrite par la lumière\"",
-  "start": "2026-11-04",
+  "start": "2026-11-05",
   "date_label": "Jusqu'au 14/03/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=114145",
@@ -17,7 +17,7 @@
  },
  {
   "titre": "Lectures Philosophiques à partager - Musée Opale Sud",
-  "start": "2026-11-04",
+  "start": "2026-11-05",
   "date_label": "Jusqu'au 23/12/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131128",
@@ -25,18 +25,10 @@
  },
  {
   "titre": "Brocante - Ambassade Bonchat",
-  "start": "2026-11-04",
+  "start": "2026-11-05",
   "date_label": "Jusqu'au 10/01/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=113893",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Ciné Soupe - CINOS",
-  "start": "2026-11-05",
-  "date_label": "Le 05/11/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=125433",
   "source": "Office de Tourisme"
  },
  {
@@ -80,11 +72,27 @@
   "source": "Office de Tourisme"
  },
  {
+  "titre": "L’Harengoise, la fête Berckoise du hareng grillé",
+  "start": "2026-11-14",
+  "date_label": "Le 14/11/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=74355",
+  "source": "Office de Tourisme"
+ },
+ {
   "titre": "Loto de l'Amicale territoriale de Berck-sur-Mer",
   "start": "2026-11-15",
   "date_label": "Le 15/11/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=125014",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Exposition Chalotte HIS - Causettes",
+  "start": "2026-11-17",
+  "date_label": "Du 17/11/2026 au 02/12/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131532",
   "source": "Office de Tourisme"
  },
  {
@@ -133,22 +141,6 @@
   "date_label": "Le 28/11/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=93540",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Tu t'laisses aller- Familia Théâtre",
-  "start": "2026-11-29",
-  "date_label": "Le 29/11/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=124305",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "ANTEK - Familia Théâtre",
-  "start": "2026-12-03",
-  "date_label": "Le 03/12/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130791",
   "source": "Office de Tourisme"
  }
 ]
