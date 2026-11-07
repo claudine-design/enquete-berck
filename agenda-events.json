@@ -1,7 +1,7 @@
 [
  {
   "titre": "Atelier broderie avec \" fibre en jeu\" - Chez Causettes",
-  "start": "2026-11-06",
+  "start": "2026-11-07",
   "date_label": "Jusqu'au 21/11/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=108571",
@@ -9,7 +9,7 @@
  },
  {
   "titre": "Exposition \"Ecrite par la lumière\"",
-  "start": "2026-11-06",
+  "start": "2026-11-07",
   "date_label": "Jusqu'au 14/03/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=114145",
@@ -17,7 +17,7 @@
  },
  {
   "titre": "Lectures Philosophiques à partager - Musée Opale Sud",
-  "start": "2026-11-06",
+  "start": "2026-11-07",
   "date_label": "Jusqu'au 23/12/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131128",
@@ -25,7 +25,7 @@
  },
  {
   "titre": "Brocante - Ambassade Bonchat",
-  "start": "2026-11-06",
+  "start": "2026-11-07",
   "date_label": "Jusqu'au 10/01/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=113893",
@@ -34,7 +34,7 @@
  {
   "titre": "Fête du Hareng Côtier - Club Nautique",
   "start": "2026-11-07",
-  "date_label": "Du 07/11/2026 au 08/11/2026",
+  "date_label": "Jusqu'au 08/11/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=101351",
   "source": "Office de Tourisme"
@@ -150,5 +150,29 @@
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=93540",
   "source": "Office de Tourisme"
+ },
+ {
+  "titre": "BALADE EN FORÊT DU TOUQUET PARIS PLAGE",
+  "start": "2026-11-29",
+  "date_label": "29 novembre",
+  "categories": [
+   "Balades",
+   "Découverte",
+   "Visites"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=168203",
+  "source": "oukankoi.fr"
+ },
+ {
+  "titre": "RENCONTRE AVEC LES PHOQUES",
+  "start": "2026-11-29",
+  "date_label": "29 novembre",
+  "categories": [
+   "Balades",
+   "Découverte",
+   "Visites"
+  ],
+  "lien": "https://www.oukankoi.fr/?p=168174",
+  "source": "oukankoi.fr"
  }
 ]
