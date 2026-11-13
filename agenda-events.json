@@ -1,7 +1,7 @@
 [
  {
   "titre": "Atelier broderie avec \" fibre en jeu\" - Chez Causettes",
-  "start": "2026-11-12",
+  "start": "2026-11-13",
   "date_label": "Jusqu'au 21/11/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=108571",
@@ -9,7 +9,7 @@
  },
  {
   "titre": "Exposition \"Ecrite par la lumière\"",
-  "start": "2026-11-12",
+  "start": "2026-11-13",
   "date_label": "Jusqu'au 14/03/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=114145",
@@ -17,7 +17,7 @@
  },
  {
   "titre": "Lectures Philosophiques à partager - Musée Opale Sud",
-  "start": "2026-11-12",
+  "start": "2026-11-13",
   "date_label": "Jusqu'au 23/12/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131128",
@@ -25,26 +25,10 @@
  },
  {
   "titre": "Brocante - Ambassade Bonchat",
-  "start": "2026-11-12",
+  "start": "2026-11-13",
   "date_label": "Jusqu'au 10/01/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=113893",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Ciné Rencontre - \"Gabin\"",
-  "start": "2026-11-13",
-  "date_label": "Le 13/11/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=122433",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Concert Au fil des mots par Suzanne Grimm",
-  "start": "2026-11-13",
-  "date_label": "Le 13/11/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131099",
   "source": "Office de Tourisme"
  },
  {
@@ -120,6 +104,14 @@
   "source": "Office de Tourisme"
  },
  {
+  "titre": "Ciné conférence - \"la règle du jeu°\"",
+  "start": "2026-11-28",
+  "date_label": "Le 28/11/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=125595",
+  "source": "Office de Tourisme"
+ },
+ {
   "titre": "Atelier collage \"Des images et des mots\" - Causettes avec Charlotte His",
   "start": "2026-11-28",
   "date_label": "Le 28/11/2026",
@@ -165,14 +157,6 @@
   "date_label": "Le 29/11/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=124305",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "ANTEK - Familia Théâtre - ANNULE",
-  "start": "2026-12-03",
-  "date_label": "Le 03/12/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130791",
   "source": "Office de Tourisme"
  }
 ]
