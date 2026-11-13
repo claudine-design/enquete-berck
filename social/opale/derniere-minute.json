@@ -1,0 +1,46 @@
+{
+ "genere": "2026-11-14T00:50:08+01:00",
+ "vendredi": "2026-11-20",
+ "libres": [
+  {
+   "beds24": "Paddle",
+   "nom": "Paddle (vue mer, 4 pers.)",
+   "lien": "https://appart-hotel-berck.com/appartements/paddle-vue-mer-berck.html"
+  },
+  {
+   "beds24": "Albatros",
+   "nom": "Hamac Chic Vue Mer (4 pers.)",
+   "lien": "https://appart-hotel-berck.com/appartements/hamac-chic-vue-mer-berck.html"
+  },
+  {
+   "beds24": "Famille",
+   "nom": "3 Chambres (7 pers., jardin)",
+   "lien": "https://appart-hotel-berck.com/appartements/3-chambres-100m-plage-berck.html"
+  },
+  {
+   "beds24": "Surf",
+   "nom": "Surf (vue mer, 4 pers.)",
+   "lien": "https://appart-hotel-berck.com/appartements/surf-berck-sur-mer.html"
+  },
+  {
+   "beds24": "Kingston",
+   "nom": "Face Mer Exceptionnel (plain-pied, parking)",
+   "lien": "https://appart-hotel-berck.com/appartements/face-mer-exceptionnel-berck.html"
+  },
+  {
+   "beds24": "Terrasse",
+   "nom": "La Terrasse (8 pers.)",
+   "lien": "https://appart-hotel-berck.com/appartements/terrasse-famille-berck.html"
+  },
+  {
+   "beds24": "Grand Large",
+   "nom": "Hamac Face Mer (face mer, 4 pers.)",
+   "lien": "https://appart-hotel-berck.com/appartements/hamac-face-mer-berck.html"
+  },
+  {
+   "beds24": "Apollo",
+   "nom": "Panoramique 2 Chambres (6 pers., parking)",
+   "lien": "https://appart-hotel-berck.com/appartements/panoramique-2-chambres-berck.html"
+  }
+ ]
+}
