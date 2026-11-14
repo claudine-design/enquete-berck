@@ -41,7 +41,22 @@ function installerOpale() {
   const d = sh.getDataRange().getValues();
   for (let i = 1; i < d.length; i++) if ((d[i][0] === 4 || d[i][0] === 24) && d[i][4] !== 'PUBLIE') sh.getRange(i + 1, 5).setValue('REMPLACE');
   log_('Opale : bilan lundi 8 h 15 + détecteur mercredi 10 h posés ; posts 4 et 24 = REMPLACE');
+  synchroOpale();
   if (!d.some(function (r) { return r[4] === 'PUBLIE'; })) publierOpale();   // 1re installation seulement
+}
+
+/** Ajoute les posts du JSON absents de l'onglet (ex. Maisonnette n°31-34, 14/11), juste après le n° indiqué par « apres ». Ne modifie jamais une ligne existante. */
+function synchroOpale() {
+  const sh = opaleSheet_(); const posts = JSON.parse(UrlFetchApp.fetch(OPALE.POSTS_URL + '?t=' + Date.now()).getContentText());
+  let ajout = 0;
+  posts.forEach(function (p) {
+    const d = sh.getDataRange().getValues(); if (d.some(function (r) { return r[0] === p.n; })) return;
+    let pos = d.length; for (let i = 1; i < d.length; i++) if (p.apres && d[i][0] === p.apres) pos = i + 1;
+    sh.insertRowAfter(pos);
+    sh.getRange(pos + 1, 1, 1, 13).setValues([[p.n, p.date, p.app, p.titre, p.statut, OPALE.IMG_BASE + p.image, p.legende_ig, p.legende_fb, p.alt, '', '', '', '']]);
+    ajout++;
+  });
+  log_('Opale synchro : ' + ajout + ' post(s) ajouté(s)');
 }
 
 /** Mercredi 10 h : lit derniere-minute.json (écrit le matin par la tâche Windows, Beds24 en lecture seule).
