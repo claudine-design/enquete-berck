@@ -43,7 +43,7 @@
   .cmp figcaption{color:#fff;text-align:center;font-size:13px;padding:6px}
   .cmp button{align-self:flex-end;background:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:15px;margin-bottom:8px}
   @media (max-width:600px){ .cmp .imgs{flex-direction:column} }
-  /* Rappels de Claudine à un prestataire (18/11/2026) : affichés au scan du QR code de son prochain ménage */
+  /* Rappels de Claudine à un prestataire (18/11/2026) : en grand au début et à la fin de son prochain ménage */
   .rap-btn{margin-left:auto;padding:5px 10px;border-radius:8px;border:1px solid #f1b5ad;background:#fff5f4;color:var(--bad);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
   .rap-panel{background:#fff;border:2px solid #f1b5ad;border-radius:12px;padding:12px;margin:12px 0 4px}
   .rap-panel h2{margin:0 0 6px;font-size:16px;color:var(--bad);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -88,7 +88,7 @@
 <div class="rap-form" id="rap-form" onclick="if(event.target===this)fermerRappel()">
   <div class="box">
     <h3>⚠️ Rappel pour un prestataire</h3>
-    <div class="aide" style="font-size:12.5px;color:var(--mut)">Le rappel s'affichera en grand au scan du QR code de son prochain ménage, sous le titre « ⚠️ Attention [prénom] ! ». Il faudra le cocher « c'est fait » pour pouvoir terminer.</div>
+    <div class="aide" style="font-size:12.5px;color:var(--mut)">Le rappel s'affichera en grand au début de son prochain ménage, sous le titre « ⚠️ Attention [prénom] ! » (il appuie sur OK), puis une 2e fois quand il appuiera sur « Terminer » (OK à nouveau).</div>
     <label for="rap-presta">Prestataire</label>
     <select id="rap-presta"></select>
     <label for="rap-texte">Le rappel (ce qu'il verra, mot pour mot)</label>
@@ -161,7 +161,7 @@ function render(){
       '<span class="who">' + photos.length + ' photo' + (photos.length > 1 ? 's' : '') + (s.total ? ' · ' + s.taches + '/' + s.total + ' tâches' : '') + '</span>' +
       (s.presta ? '<button type="button" class="rap-btn" data-r="' + i + '">⚠️ Rappel pour ' + esc(s.presta) + '</button>' : '') + '</div>' +
       (s.remarque && !/ANNUL|Abandonn|Jamais termin/.test(s.remarque) ? '<div class="rem">⚠️ ' + esc(s.remarque) + '</div>' : '') +
-      raps.map(r => '<div class="rem" style="color:var(--bad)">📌 Rappel « ' + esc(r.texte) + ' » : ' + (r.statut === 'FAIT' ? '✅ coché « c\'est fait » à la fin de ce ménage' : '👀 vu au début, pas encore coché') + '</div>').join('') +
+      raps.map(r => '<div class="rem" style="color:var(--bad)">📌 Rappel « ' + esc(r.texte) + ' » : ' + (r.statut === 'FAIT' ? '✅ OK au début et OK à la fin de ce ménage' : '👀 OK au début, pas encore l\'OK de fin') + '</div>').join('') +
       '<div class="photos">' + photos.map((p, k) => {
         const mn = s.debut ? Math.round((new Date(p.heure) - new Date(s.debut)) / 60000) : null;
         const m = mods[p.etape];
@@ -199,8 +199,8 @@ function render(){
 
 // ---------- Rappels à un prestataire (Claudine 18/11/2026) ----------
 // Claudine note un rappel (ex. « Attention, bien mettre les cartes de visite. ») ; au prochain ménage
-// de ce prestataire, le tuto l'affiche en grand dès le scan du QR code, puis le prestataire le coche
-// « c'est fait » avant de pouvoir terminer. Statuts : ACTIF → VU (au « Je commence ») → FAIT (à la fin).
+// de ce prestataire, le tuto l'affiche en grand au début (« OK ») puis à « Terminer » (« OK » à nouveau).
+// Statuts : ACTIF → VU (OK au « Je commence ») → FAIT (OK à la fin).
 const PRENOMS = ['Rémi','Christelle','Claire et Sébastien','Stéphanie','Aimance','Maëlys','Priscillia','Karl','Sabrina','Alicia','Hélène','Claudine']; // même liste que le tuto ménage
 let rapCtx = {};
 const dt = iso => iso ? new Date(iso).toLocaleDateString('fr-FR', {day:'numeric', month:'short'}) + ' ' + hm(iso) : '';
@@ -263,16 +263,16 @@ function renderRappels(){
   const faits = tous.filter(r => r.statut === 'FAIT');
   const ligne = r => {
     const lieu = a => a ? ' (' + esc(NOMS[a] || a) + ')' : '';
-    const etat = r.statut === 'ACTIF' ? '⏳ Pas encore vu : s\'affichera au scan du QR code de son prochain ménage'
-      : r.statut === 'VU' ? '👀 Vu le ' + dt(r.vuLe) + lieu(r.vuAu) + ', pas encore coché « c\'est fait »'
-      : '✅ Fait, coché le ' + dt(r.faitLe) + lieu(r.faitAu);
+    const etat = r.statut === 'ACTIF' ? '⏳ Pas encore vu : s\'affichera au début de son prochain ménage'
+      : r.statut === 'VU' ? '👀 OK au début du ménage le ' + dt(r.vuLe) + lieu(r.vuAu) + ', reviendra à la fin'
+      : '✅ OK à la fin du ménage le ' + dt(r.faitLe) + lieu(r.faitAu);
     return '<div class="rap' + (r.statut === 'FAIT' ? ' fait' : '') + '"><div class="txt"><b>' + esc(r.presta) + '</b> : ' + esc(r.texte) +
       '<div class="meta">' + etat + ' · noté le ' + dt(r.date) + (r.appart ? ' · seulement ' + esc(NOMS[r.appart] || r.appart) : '') + (r.origine ? ' · ' + esc(r.origine) : '') + '</div></div>' +
       (r.statut === 'FAIT' ? '' : '<button type="button" class="suppr" data-id="' + esc(r.id) + '">Retirer</button>') + '</div>';
   };
   zone.innerHTML = '<div class="rap-panel"><h2>⚠️ Rappels aux prestataires <span style="font-weight:400;color:var(--mut);font-size:13px">' +
     (ouverts.length ? ouverts.length + ' en attente' : 'aucun en attente') + '</span><button type="button" id="rap-new">➕ Nouveau rappel</button></h2>' +
-    '<p class="aide">Le prestataire le voit en grand dès qu\'il scanne le QR code de son prochain ménage, puis doit le cocher « c\'est fait » pour terminer. Aussi depuis chaque ménage : bouton « ⚠️ Rappel pour… ».</p>' +
+    '<p class="aide">Le prestataire le voit en grand au début de son prochain ménage (il appuie sur OK), puis une 2e fois quand il appuie sur « Terminer » (OK à nouveau). Rien ne reste affiché entre les deux. Aussi depuis chaque ménage : bouton « ⚠️ Rappel pour… ».</p>' +
     ouverts.map(ligne).join('') + faits.map(ligne).join('') + '</div>';
   document.getElementById('rap-new').onclick = () => ouvrirRappel({presta: f});
   zone.querySelectorAll('.suppr').forEach(b => b.onclick = async () => {
