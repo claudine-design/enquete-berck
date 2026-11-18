@@ -43,6 +43,33 @@
   .cmp figcaption{color:#fff;text-align:center;font-size:13px;padding:6px}
   .cmp button{align-self:flex-end;background:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:15px;margin-bottom:8px}
   @media (max-width:600px){ .cmp .imgs{flex-direction:column} }
+  /* Rappels de Claudine à un prestataire (18/11/2026) : affichés au scan du QR code de son prochain ménage */
+  .rap-btn{margin-left:auto;padding:5px 10px;border-radius:8px;border:1px solid #f1b5ad;background:#fff5f4;color:var(--bad);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+  .rap-panel{background:#fff;border:2px solid #f1b5ad;border-radius:12px;padding:12px;margin:12px 0 4px}
+  .rap-panel h2{margin:0 0 6px;font-size:16px;color:var(--bad);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .rap-panel h2 button{margin-left:auto;padding:7px 12px;border-radius:8px;border:none;background:var(--bad);color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+  .rap-panel .aide{font-size:12.5px;color:var(--mut);margin:0 0 8px}
+  .rap{display:flex;gap:10px;align-items:flex-start;border-top:1px dashed var(--line);padding:8px 0}
+  .rap .txt{flex:1;min-width:0}
+  .rap .txt b{font-size:14.5px}
+  .rap .txt .meta{font-size:12.5px;color:var(--mut);margin-top:2px}
+  .rap.fait{opacity:.6}
+  .rap .suppr{padding:4px 9px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--mut);font-size:12.5px;cursor:pointer}
+  .rap-form{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;z-index:60;align-items:center;justify-content:center;padding:16px}
+  .rap-form.open{display:flex}
+  .rap-form .box{background:#fff;border-radius:14px;padding:16px;width:100%;max-width:460px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+  .rap-form h3{margin:0 0 10px;font-size:17px;color:var(--bad)}
+  .rap-form label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
+  .rap-form select,.rap-form textarea{width:100%;padding:9px;border-radius:8px;border:1px solid var(--line);font-size:15px;font-family:inherit}
+  .rap-form textarea{min-height:80px;resize:vertical}
+  .rap-form .chk{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--txt);margin-top:10px}
+  .rap-form .chk input{width:18px;height:18px}
+  .rap-form .apercu{margin-top:10px;font-size:12.5px;color:var(--mut)}
+  .rap-form .btns{display:flex;gap:8px;margin-top:14px}
+  .rap-form .btns button{flex:1;padding:10px;border-radius:10px;border:none;font-size:15px;font-weight:600;cursor:pointer}
+  .rap-form .btns .ok{background:var(--bad);color:#fff}
+  .rap-form .btns .no{background:#eee;color:var(--txt)}
+  .rap-form .err{color:var(--bad);font-size:13px;margin-top:8px;min-height:1em}
 </style>
 </head>
 <body>
@@ -55,7 +82,22 @@
   <select id="presta"><option value="">Tous les prestataires</option></select>
   <button id="reload">Actualiser</button>
 </div>
+<div id="rap-zone" style="max-width:1100px;margin:0 auto;padding:0 16px"></div>
 <main id="out"><div class="empty">Chargement…</div></main>
+
+<div class="rap-form" id="rap-form" onclick="if(event.target===this)fermerRappel()">
+  <div class="box">
+    <h3>⚠️ Rappel pour un prestataire</h3>
+    <div class="aide" style="font-size:12.5px;color:var(--mut)">Le rappel s'affichera en grand au scan du QR code de son prochain ménage, sous le titre « ⚠️ Attention [prénom] ! ». Il faudra le cocher « c'est fait » pour pouvoir terminer.</div>
+    <label for="rap-presta">Prestataire</label>
+    <select id="rap-presta"></select>
+    <label for="rap-texte">Le rappel (ce qu'il verra, mot pour mot)</label>
+    <textarea id="rap-texte" maxlength="400" placeholder="Ex. : Bien mettre les cartes de visite."></textarea>
+    <label class="chk" id="rap-chk-l" style="display:none"><input type="checkbox" id="rap-appart"> <span id="rap-appart-t"></span></label>
+    <div class="err" id="rap-err"></div>
+    <div class="btns"><button class="no" type="button" onclick="fermerRappel()">Annuler</button><button class="ok" type="button" id="rap-ok">Enregistrer le rappel</button></div>
+  </div>
+</div>
 
 <div class="cmp" id="cmp" onclick="if(event.target===this)this.classList.remove('open')">
   <button onclick="document.getElementById('cmp').classList.remove('open')">✕ Fermer</button>
@@ -97,6 +139,7 @@ async function load(){
 }
 
 function render(){
+  renderRappels();
   const out = document.getElementById('out');
   const f = document.getElementById('presta').value;
   const list = DATA.sessions.filter(s => !f || s.presta === f);
@@ -112,10 +155,13 @@ function render(){
     else pill = '<span class="pill warn">En cours / pas encore terminé</span>';
     const mods = (DATA.modeles || {})[s.appart] || {};
     const photos = s.photos.slice().sort((a, b) => a.heure > b.heure ? 1 : -1);
+    const raps = (DATA.rappels || []).filter(r => r.session && r.session === s.id);
     html += '<div class="card"><div class="top"><span class="apt">' + esc(NOMS[s.appart] || s.appart) + '</span><span class="who">' + esc(s.presta) + '</span>' +
       '<span class="h">▶ ' + hm(s.debut) + ' → ' + hm(s.fin) + '</span>' + pill +
-      '<span class="who">' + photos.length + ' photo' + (photos.length > 1 ? 's' : '') + (s.total ? ' · ' + s.taches + '/' + s.total + ' tâches' : '') + '</span></div>' +
+      '<span class="who">' + photos.length + ' photo' + (photos.length > 1 ? 's' : '') + (s.total ? ' · ' + s.taches + '/' + s.total + ' tâches' : '') + '</span>' +
+      (s.presta ? '<button type="button" class="rap-btn" data-r="' + i + '">⚠️ Rappel pour ' + esc(s.presta) + '</button>' : '') + '</div>' +
       (s.remarque && !/ANNUL|Abandonn|Jamais termin/.test(s.remarque) ? '<div class="rem">⚠️ ' + esc(s.remarque) + '</div>' : '') +
+      raps.map(r => '<div class="rem" style="color:var(--bad)">📌 Rappel « ' + esc(r.texte) + ' » : ' + (r.statut === 'FAIT' ? '✅ coché « c\'est fait » à la fin de ce ménage' : '👀 vu au début, pas encore coché') + '</div>').join('') +
       '<div class="photos">' + photos.map((p, k) => {
         const mn = s.debut ? Math.round((new Date(p.heure) - new Date(s.debut)) / 60000) : null;
         const m = mods[p.etape];
@@ -128,6 +174,11 @@ function render(){
       }).join('') + '</div></div>';
   });
   out.innerHTML = html;
+  out.querySelectorAll('.rap-btn').forEach(b => b.onclick = () => {
+    const s = list[+b.dataset.r];
+    const quand = s.debut || s.fin;
+    ouvrirRappel({presta: s.presta, appart: s.appart, origine: 'après le ménage ' + (NOMS[s.appart] || s.appart) + (quand ? ' du ' + new Date(quand).toLocaleDateString('fr-FR', {day:'numeric', month:'short'}) : '')});
+  });
   out.querySelectorAll('.ph').forEach(el => el.onclick = () => {
     const s = list[+el.dataset.s];
     const p = s.photos.slice().sort((a, b) => a.heure > b.heure ? 1 : -1)[+el.dataset.k];
@@ -143,6 +194,97 @@ function render(){
       '<figure><img src="' + img(p.fileId, 1400) + '" alt=""><figcaption>' + esc(s.presta) + ' — ' + esc(p.libelle) + ' — ' + hm(p.heure) + '</figcaption></figure>' +
       (m ? '<figure><img src="' + img(m, 1400) + '" alt=""><figcaption>Photo modèle</figcaption></figure>' : '');
     document.getElementById('cmp').classList.add('open');
+  });
+}
+
+// ---------- Rappels à un prestataire (Claudine 18/11/2026) ----------
+// Claudine note un rappel (ex. « Attention, bien mettre les cartes de visite. ») ; au prochain ménage
+// de ce prestataire, le tuto l'affiche en grand dès le scan du QR code, puis le prestataire le coche
+// « c'est fait » avant de pouvoir terminer. Statuts : ACTIF → VU (au « Je commence ») → FAIT (à la fin).
+const PRENOMS = ['Rémi','Christelle','Claire et Sébastien','Stéphanie','Aimance','Maëlys','Priscillia','Karl','Sabrina','Alicia','Hélène','Claudine']; // même liste que le tuto ménage
+let rapCtx = {};
+const dt = iso => iso ? new Date(iso).toLocaleDateString('fr-FR', {day:'numeric', month:'short'}) + ' ' + hm(iso) : '';
+
+function ouvrirRappel(ctx){
+  rapCtx = ctx || {};
+  const noms = [...new Set(PRENOMS.concat((DATA ? DATA.sessions : []).map(s => s.presta).filter(Boolean)))];
+  document.getElementById('rap-presta').innerHTML = '<option value="">— Choisir —</option>' + noms.map(n => '<option' + (n === rapCtx.presta ? ' selected' : '') + '>' + esc(n) + '</option>').join('');
+  document.getElementById('rap-texte').value = '';
+  document.getElementById('rap-err').textContent = '';
+  const chk = document.getElementById('rap-chk-l');
+  if(rapCtx.appart){
+    chk.style.display = 'flex';
+    document.getElementById('rap-appart').checked = false;
+    document.getElementById('rap-appart-t').textContent = 'Seulement au ' + (NOMS[rapCtx.appart] || rapCtx.appart) + ' (sinon : à son prochain ménage, quel que soit le logement)';
+  } else chk.style.display = 'none';
+  document.getElementById('rap-form').classList.add('open');
+  setTimeout(() => document.getElementById(rapCtx.presta ? 'rap-texte' : 'rap-presta').focus(), 50);
+}
+function fermerRappel(){ document.getElementById('rap-form').classList.remove('open'); }
+
+// Écriture avec la clé : POST en text/plain (comme le tuto) ; réessais sans doublon (id fixé ici).
+async function poster(body){
+  let err = null;
+  for(let essai = 0; essai < 3; essai++){
+    try {
+      const r = await fetch(API, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(Object.assign({cle: CLE}, body))});
+      return await r.json();
+    } catch(e){ err = e; await new Promise(x => setTimeout(x, 1200)); }
+  }
+  throw err || new Error('serveur');
+}
+
+document.getElementById('rap-ok').onclick = async () => {
+  const btn = document.getElementById('rap-ok'), err = document.getElementById('rap-err');
+  const presta = document.getElementById('rap-presta').value;
+  const texte = document.getElementById('rap-texte').value.trim();
+  if(!presta){ err.textContent = 'Choisissez le prestataire.'; return; }
+  if(!texte){ err.textContent = 'Écrivez le rappel.'; return; }
+  const appart = rapCtx.appart && document.getElementById('rap-appart').checked ? rapCtx.appart : '';
+  const id = 'R' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  btn.disabled = true; btn.textContent = 'Enregistrement…'; err.textContent = '';
+  try {
+    const j = await poster({action:'rappel', id, presta, texte, appart, origine: rapCtx.origine || ''});
+    if(!j.ok) throw new Error(j.error === 'cle' ? 'clé refusée' : (j.error || 'erreur'));
+    fermerRappel();
+    DATA.rappels = [{id: j.id, date: new Date().toISOString(), presta, appart, texte, origine: rapCtx.origine || '', statut: 'ACTIF'}].concat(DATA.rappels || []);
+    renderRappels();
+    document.getElementById('rap-zone').scrollIntoView({behavior:'smooth', block:'start'});
+  } catch(e){ err.textContent = 'Pas enregistré (' + e.message + '). Réessayez.'; }
+  finally { btn.disabled = false; btn.textContent = 'Enregistrer le rappel'; }
+};
+
+function renderRappels(){
+  const zone = document.getElementById('rap-zone');
+  if(!DATA){ zone.innerHTML = ''; return; }
+  const f = document.getElementById('presta').value;
+  const tous = (DATA.rappels || []).filter(r => !f || r.presta === f);
+  const ouverts = tous.filter(r => r.statut === 'ACTIF' || r.statut === 'VU');
+  const faits = tous.filter(r => r.statut === 'FAIT');
+  const ligne = r => {
+    const lieu = a => a ? ' (' + esc(NOMS[a] || a) + ')' : '';
+    const etat = r.statut === 'ACTIF' ? '⏳ Pas encore vu : s\'affichera au scan du QR code de son prochain ménage'
+      : r.statut === 'VU' ? '👀 Vu le ' + dt(r.vuLe) + lieu(r.vuAu) + ', pas encore coché « c\'est fait »'
+      : '✅ Fait, coché le ' + dt(r.faitLe) + lieu(r.faitAu);
+    return '<div class="rap' + (r.statut === 'FAIT' ? ' fait' : '') + '"><div class="txt"><b>' + esc(r.presta) + '</b> : ' + esc(r.texte) +
+      '<div class="meta">' + etat + ' · noté le ' + dt(r.date) + (r.appart ? ' · seulement ' + esc(NOMS[r.appart] || r.appart) : '') + (r.origine ? ' · ' + esc(r.origine) : '') + '</div></div>' +
+      (r.statut === 'FAIT' ? '' : '<button type="button" class="suppr" data-id="' + esc(r.id) + '">Retirer</button>') + '</div>';
+  };
+  zone.innerHTML = '<div class="rap-panel"><h2>⚠️ Rappels aux prestataires <span style="font-weight:400;color:var(--mut);font-size:13px">' +
+    (ouverts.length ? ouverts.length + ' en attente' : 'aucun en attente') + '</span><button type="button" id="rap-new">➕ Nouveau rappel</button></h2>' +
+    '<p class="aide">Le prestataire le voit en grand dès qu\'il scanne le QR code de son prochain ménage, puis doit le cocher « c\'est fait » pour terminer. Aussi depuis chaque ménage : bouton « ⚠️ Rappel pour… ».</p>' +
+    ouverts.map(ligne).join('') + faits.map(ligne).join('') + '</div>';
+  document.getElementById('rap-new').onclick = () => ouvrirRappel({presta: f});
+  zone.querySelectorAll('.suppr').forEach(b => b.onclick = async () => {
+    const r = (DATA.rappels || []).find(x => x.id === b.dataset.id);
+    if(!r || !confirm('Retirer ce rappel pour ' + r.presta + ' ?\n\n« ' + r.texte + ' »')) return;
+    b.disabled = true; b.textContent = '…';
+    try {
+      const j = await poster({action:'rappelRetirer', id: r.id});
+      if(!j.ok) throw new Error(j.error || 'erreur');
+      DATA.rappels = DATA.rappels.filter(x => x.id !== r.id);
+      renderRappels();
+    } catch(e){ b.disabled = false; b.textContent = 'Retirer'; alert('Pas retiré (' + e.message + ').'); }
   });
 }
 

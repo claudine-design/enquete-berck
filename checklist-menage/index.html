@@ -192,6 +192,23 @@
   .item.flash{outline:3px solid #f59e0b;border-radius:10px;background:#fffbeb}
   .hint{text-align:center;color:#888;font-size:18px;padding:20px;background:#fff;border-radius:14px}
   .modele-banner{margin:12px 0;padding:12px;border-radius:14px;background:#fde2e6;border:2px solid #c0606c;color:#5A2A33;font-size:17.5px}
+  /* Rappels de Claudine à UN prestataire, affichés au scan du QR code (Claudine 18/11/2026) */
+  .rappels{display:none;margin:12px 0;padding:14px;border-radius:14px;background:#fef2f2;border:3px solid #dc2626;color:#7f1d1d;font-size:19.5px;line-height:1.4}
+  .rappels .rt{display:flex;align-items:center;gap:10px;font-weight:800;font-size:22px;color:#991b1b}
+  .rappels .rt .ico{font-size:40px;line-height:1;animation:pulse 1.6s ease-in-out infinite}
+  .rappels ul{margin:8px 0 4px;padding-left:24px}
+  .rappels li{margin:8px 0;font-weight:800;font-size:21px;color:#1f2937}
+  .rappels li small{display:block;font-weight:400;font-size:15.5px;color:#7f1d1d}
+  .rappels .rs{font-size:16.5px;color:#7f1d1d;margin-top:6px}
+  .rappel-pop .fin-card{border:4px solid #dc2626}
+  .rappel-pop .ico{font-size:76px;line-height:1;animation:pulse 1.6s ease-in-out infinite}
+  .rappel-pop .txt{font-size:25px;font-weight:800;color:#1f2937;margin:14px 0 2px;line-height:1.3}
+  .rappel-pop .date{font-size:16px;color:#7f1d1d}
+  .rappel-pop button{background:linear-gradient(135deg,#16a34a,#22c55e) !important}
+  .finp-rappel{display:flex;gap:10px;align-items:flex-start;margin:8px 0;padding:10px;border-radius:10px;background:#fef2f2;border:2px solid #dc2626;font-size:19px;font-weight:700;color:#1f2937;cursor:pointer}
+  .finp-rappel.ok{background:#f0fdf4;border-color:#16a34a;color:#14532d}
+  .finp-step .num.rap{background:#dc2626}
+  .finp-step .num.rap.ok{background:#16a34a}
   select:disabled{opacity:.75}
   footer{text-align:center;color:#b88;font-size:15.5px;padding:10px 0 30px}
 </style>
@@ -271,6 +288,7 @@
 <div id="mode-modele" style="display:none" class="modele-banner">📸 <b>MODE PHOTOS MODÈLES</b> — Claudine. Choisissez l'appartement, puis prenez chaque photo telle que vous voulez la voir. Les prestataires la verront à côté de leur bouton photo.</div>
 <div id="nav-warn" class="navwarn"></div>
 <div id="reprise-box" class="reprise"></div>
+<div id="rappels-box" class="rappels"></div>
 <div id="start-box" class="start"></div>
 <div id="sync-bar" class="sync ok"></div>
 
@@ -960,7 +978,9 @@ const data = [
 ];
 
 // ---------- état du ménage en cours (gardé dans le téléphone) ----------
-let S = null; // {id, appart, presta, debut, checked:{}, photos:{slot:[{heure,thumb}]}, nc:{}}
+let S = null; // {id, appart, presta, debut, checked:{}, photos:{slot:[{heure,thumb}]}, nc:{}, rappels:[], rappelsOk:{}}
+let RAPPELS = [], RAPPELS_DE = '';   // rappels de Claudine ouverts pour le prestataire RAPPELS_DE (voir « Rappels de Claudine »)
+let popupRappel = null;
 function saveS(){ try { if(S) localStorage.setItem('menage-en-cours', JSON.stringify(S)); else localStorage.removeItem('menage-en-cours'); } catch(e){} }
 function loadS(){ try { return JSON.parse(localStorage.getItem('menage-en-cours') || 'null'); } catch(e){ return null; } }
 function hhmm(iso){ const d = new Date(iso); return d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}); }
@@ -1263,8 +1283,15 @@ function renderFin(){
   const videoOk = !!S.video;
   const itemsTous = itemsFor(S.appart).flatMap(x => x[2]);
   const nonCochees = itemsTous.filter(it => !S.checked[it.id]);
-  const pret = videoOk && !manque.length && !nonCochees.length;
+  const rap = S.rappels || [], rapOk = rap.every(r => S.rappelsOk && S.rappelsOk[r.id]);
+  const pret = videoOk && !manque.length && !nonCochees.length && rapOk;
   let h = '<div class="finp"><div class="finp-t">🏁 Fin du ménage</div>';
+  if(rap.length){
+    h += '<div class="finp-step"><span class="num rap' + (rapOk ? ' ok' : '') + '">!</span><div class="grow"><b>⚠️ Le rappel de Claudine</b>' +
+      rap.map(r => { const c = !!(S.rappelsOk && S.rappelsOk[r.id]);
+        return '<label class="finp-rappel' + (c ? ' ok' : '') + '"><input type="checkbox" data-rappel="' + escapeHtml(r.id) + '"' + (c ? ' checked' : '') + '><span>' + escapeHtml(r.texte) + ' — <i>c\'est fait</i></span></label>'; }).join('') +
+      (rapOk ? '' : '<div class="finp-miss">Cochez quand c\'est fait.</div>') + '</div></div>';
+  }
   h += '<div class="finp-step"><span class="num' + (nonCochees.length ? '' : ' ok') + '">✓</span><div class="grow"><b>Les tâches cochées</b>' +
     (nonCochees.length
       ? '<div class="finp-miss">Il reste ' + nonCochees.length + ' tâche' + (nonCochees.length > 1 ? 's' : '') + ' à cocher sur ' + itemsTous.length + '. Chaque tâche se coche quand elle est faite.</div>'
@@ -1281,9 +1308,13 @@ function renderFin(){
     (videoOk ? '✅ Vidéo enregistrée à ' + hhmm(S.video.heure) + ' — refaire' : '🎥 FILMER LA VIDÉO') + '</button>' +
     '<div class="small-note">Toutes les pièces, sans couper. Entre ' + VIDEO_MIN_S + ' et ' + VIDEO_MAX_S + ' secondes.</div></div></div>';
   h += '<div class="finp-step"><span class="num' + (pret ? ' ok' : '') + '">3</span><div class="grow"><b>Valider</b>' +
-    '<button type="button" id="finp-send" class="bigbtn ' + (pret ? 'go' : 'wait') + '">' + (pret ? '✓ TERMINER LE MÉNAGE' : manque.length ? '✓ Terminer (il manque ' + manque.length + ' photo' + (manque.length > 1 ? 's' : '') + ')' : !videoOk ? '✓ Terminer (il manque la vidéo)' : '✓ Terminer (' + nonCochees.length + ' tâche' + (nonCochees.length > 1 ? 's' : '') + ' à cocher)') + '</button>' +
+    '<button type="button" id="finp-send" class="bigbtn ' + (pret ? 'go' : 'wait') + '">' + (pret ? '✓ TERMINER LE MÉNAGE' : manque.length ? '✓ Terminer (il manque ' + manque.length + ' photo' + (manque.length > 1 ? 's' : '') + ')' : !videoOk ? '✓ Terminer (il manque la vidéo)' : nonCochees.length ? '✓ Terminer (' + nonCochees.length + ' tâche' + (nonCochees.length > 1 ? 's' : '') + ' à cocher)' : '✓ Terminer (rappel de Claudine à cocher)') + '</button>' +
     '</div></div></div>';
   box.innerHTML = h;
+  box.querySelectorAll('input[data-rappel]').forEach(cb => cb.onchange = () => {
+    S.rappelsOk = S.rappelsOk || {};
+    S.rappelsOk[cb.dataset.rappel] = cb.checked; saveS(); renderFin();
+  });
   box.querySelectorAll('.finp-go').forEach(b => b.onclick = () => {
     const m = manque[+b.dataset.i];
     if(m.routine){ const r = document.getElementById('routines-block'); r.setAttribute('open', ''); r.scrollIntoView({behavior:'smooth'}); }
@@ -1583,6 +1614,7 @@ function renderStartBox(){
     document.getElementById('appart').disabled = false;
     document.getElementById('nom').disabled = false;
   }
+  afficherRappels();
 }
 // État des lieux à l'arrivée (demande Claudine 04/11/2026) : AVANT de commencer, deux questions
 // OUI / NON obligatoires — dégâts ? quelque chose qui manque (vol) ? Les prestataires arrivaient,
@@ -1631,10 +1663,13 @@ async function demarrer(){
   const etat = await etatDesLieux();
   const debut = new Date().toISOString();
   S = { id: 'M' + debut.replace(/\D/g,'').slice(0,14) + Math.random().toString(36).slice(2,6), appart: slug(), presta: presta(), debut, checked:{}, photos:{}, nc:{}, etat };
+  // Rappels de Claudine affichés à ce prestataire : ils suivent ce ménage jusqu'à « Terminer ».
+  S.rappels = rappelsPour(S.appart).map(r => ({id:r.id, texte:r.texte, date:r.date, appart:r.appart || ''}));
+  S.rappelsOk = {};
   if(etat.degats === 'non' && etat.vol === 'non') S.checked['premier-tour'] = true;
   saveS(); render();
   window.scrollTo({top: document.getElementById('sections').offsetTop - 10, behavior:'smooth'});
-  await qAdd({action:'start', id:S.id, appart:S.appart, presta:S.presta, heure:debut, degats:etat.degats, degatsDetail:etat.degatsDetail || '', vol:etat.vol, volDetail:etat.volDetail || ''});
+  await qAdd({action:'start', id:S.id, appart:S.appart, presta:S.presta, heure:debut, degats:etat.degats, degatsDetail:etat.degatsDetail || '', vol:etat.vol, volDetail:etat.volDetail || '', rappels:S.rappels.map(r => r.id).join(',')});
 }
 async function send(){
   if(!S){ alert('▶️ Ce navigateur n\'a pas de ménage en cours.' + String.fromCharCode(10,10) + 'Si vous aviez commencé ce ménage puis que l\'appli s\'est coupée ou que vous avez rescanné le QR code, la session a été perdue : les photos déjà envoyées sont chez Claudine. Appuyez sur « Je commence le ménage » en haut, refaites les photos, puis Terminer.'); return; }
@@ -1656,11 +1691,21 @@ async function send(){
     allerA(nonCochees[0].id, si);
     return;
   }
+  // Rappel de Claudine (18/11/2026) : à cocher « c'est fait » avant de terminer.
+  const rapNon = (S.rappels || []).filter(r => !(S.rappelsOk && S.rappelsOk[r.id]));
+  if(rapNon.length){
+    alert('⚠️ Rappel de Claudine à cocher avant de terminer :' + String.fromCharCode(10,10) + rapNon.map(r => '☐ ' + r.texte).join(String.fromCharCode(10)) + String.fromCharCode(10,10) + 'Cochez-le dans « 🏁 Fin du ménage » quand c\'est fait.');
+    document.getElementById('fin-panel').scrollIntoView({behavior:'smooth'});
+    return;
+  }
   let remarque = '';
   if(S.etat && (S.etat.degats === 'oui' || S.etat.vol === 'oui')) remarque = (S.etat.degats === 'oui' ? 'DÉGÂTS : ' + S.etat.degatsDetail + '. ' : '') + (S.etat.vol === 'oui' ? 'MANQUE/VOL : ' + S.etat.volDetail : '');
   const fin = new Date().toISOString();
   const minutes = Math.round((new Date(fin) - new Date(S.debut)) / 60000);
-  await qAdd({action:'fin', id:S.id, appart:S.appart, presta:S.presta, heure:fin, taches:done, total:items.length, remarque});
+  const rapFaits = (S.rappels || []).map(r => r.id);
+  await qAdd({action:'fin', id:S.id, appart:S.appart, presta:S.presta, heure:fin, taches:done, total:items.length, remarque, rappelsFaits:rapFaits.join(',')});
+  // gardé dans le téléphone : le rappel ne se réaffiche pas, même avant que la fin soit arrivée chez Claudine
+  if(rapFaits.length){ const f = lsGet('rappels-faits', {}); rapFaits.forEach(id => { f[id] = Date.now(); }); lsSet('rappels-faits', f); }
   const nom = S.presta, appart = appartLabel(S.appart), nbPhotos = Object.values(S.photos).reduce((a, l) => a + l.length, 0) + (S.video ? 1 : 0);
   S = null; saveS(); render();
   ecranFin(nom, appart, minutes, nbPhotos);
@@ -1763,7 +1808,7 @@ async function chercherReprise(s){
   document.getElementById('btn-nouveau').onclick = () => { repriseIgnoree[s] = true; box.style.display = 'none'; };
 }
 function reprendre(sess){
-  S = { id: sess.id, appart: sess.appart, presta: sess.presta, debut: sess.debut, checked:{}, photos:{}, nc:{}, reprise: true };
+  S = { id: sess.id, appart: sess.appart, presta: sess.presta, debut: sess.debut, checked:{}, photos:{}, nc:{}, reprise: true, rappels:[], rappelsOk:{} };
   sess.photos.forEach(p => {
     if(p.etape === 'video'){ S.video = { heure: p.heure, mo: 0 }; return; }
     if(p.etape.indexOf('routine-') === 0) return;
@@ -1777,7 +1822,91 @@ function reprendre(sess){
   document.getElementById('reprise-box').style.display = 'none';
   saveS(); render();
   renderGallery(S.appart); renderApartWarning(S.appart);
+  chargerRappels();
   window.scrollTo({top: document.getElementById('start-box').offsetTop - 10, behavior:'smooth'});
+}
+
+// ---------- Rappels de Claudine à UN prestataire (demande Claudine 18/11/2026) ----------
+// Claudine note un rappel pour un prestataire sur sa page « Suivi des ménages » (ex. « Attention,
+// bien mettre les cartes de visite »). Au ménage SUIVANT de ce prestataire, quel que soit le
+// logement, le rappel s'affiche en grand dès que le QR code est scanné et le prénom connu ; il reste
+// dans l'encadré rouge pendant le ménage et se coche dans « Fin du ménage » avant de pouvoir terminer.
+// Sans réseau (local ménage) : on montre la dernière liste gardée dans le téléphone.
+function lsGet(k, def){ try { const v = JSON.parse(localStorage.getItem(k) || 'null'); return v == null ? def : v; } catch(e){ return def; } }
+function lsSet(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+// Rappels « tous logements » + ceux limités au logement choisi ; jamais ceux déjà cochés sur ce téléphone.
+function rappelsPour(s){
+  if(!RAPPELS_DE || RAPPELS_DE !== presta()) return [];
+  const faits = lsGet('rappels-faits', {});
+  return RAPPELS.filter(r => !faits[r.id] && (!r.appart || r.appart === s));
+}
+function dateCourte(iso){ return iso ? new Date(iso).toLocaleDateString('fr-FR', {day:'numeric', month:'long'}) : ''; }
+async function chargerRappels(){
+  const p = presta();
+  if(MODE_MODELE || !p){ RAPPELS = []; RAPPELS_DE = ''; afficherRappels(); return; }
+  RAPPELS = lsGet('rappels-' + p, []); RAPPELS_DE = p;
+  afficherRappels();
+  if(SUIVI_API.indexOf('http') !== 0) return;
+  let j = null;
+  for(let essai = 0; essai < 2 && !j; essai++){
+    try { const r = await fetch(SUIVI_API + '?action=rappels&presta=' + encodeURIComponent(p) + '&t=' + Date.now()); j = await r.json(); }
+    catch(e){ j = null; if(!navigator.onLine) break; await new Promise(x => setTimeout(x, 1500)); }
+  }
+  if(!j || !j.ok || presta() !== p) return;   // pas de réseau / serveur pas encore à jour : on garde la liste du téléphone
+  RAPPELS = j.rappels || []; RAPPELS_DE = p;
+  lsSet('rappels-' + p, RAPPELS);
+  afficherRappels();
+}
+function afficherRappels(){
+  const box = document.getElementById('rappels-box');
+  if(!box) return;
+  // Ménage commencé : les rappels arrivés après le « Je commence » s'ajoutent à CE ménage.
+  if(S && S.presta === presta()){
+    const deja = new Set((S.rappels || []).map(r => r.id));
+    const nouveaux = rappelsPour(S.appart).filter(r => !deja.has(r.id));
+    if(nouveaux.length){
+      S.rappels = (S.rappels || []).concat(nouveaux.map(r => ({id:r.id, texte:r.texte, date:r.date, appart:r.appart || ''})));
+      S.rappelsOk = S.rappelsOk || {};
+      saveS(); renderFin();
+    }
+  }
+  const liste = S ? (S.rappels || []) : rappelsPour(slug());
+  if(!liste.length || MODE_MODELE){ box.style.display = 'none'; afficherPopupRappels([]); return; }
+  const qui = S ? S.presta : presta();
+  box.innerHTML = '<div class="rt"><span class="ico">⚠️</span><span>Rappel de Claudine pour ' + escapeHtml(qui) + '</span></div>' +
+    '<ul>' + liste.map(r => '<li>' + escapeHtml(r.texte) + '<small>noté le ' + dateCourte(r.date) + (r.appart ? ' · pour ' + escapeHtml(appartLabel(r.appart)) : '') +
+      (S && S.rappelsOk && S.rappelsOk[r.id] ? ' · ✅ coché' : '') + '</small></li>').join('') + '</ul>' +
+    '<div class="rs">' + (S ? 'À cocher dans « 🏁 Fin du ménage » (en bas) quand c\'est fait.' : 'À faire pendant ce ménage : vous le cocherez à la fin.') + '</div>';
+  box.style.display = 'block';
+  afficherPopupRappels(liste);
+}
+// En GRAND, une fois par téléphone (« J'ai compris ») ; ensuite le rappel reste dans l'encadré rouge.
+function afficherPopupRappels(liste){
+  const lus = lsGet('rappels-lus', {});
+  const aVoir = liste.filter(r => !lus[r.id]);
+  if(!aVoir.length){ if(popupRappel){ popupRappel.remove(); popupRappel = null; } return; }
+  if(!popupRappel){ popupRappel = document.createElement('div'); popupRappel.className = 'fin rappel-pop'; document.body.appendChild(popupRappel); }
+  const qui = S ? S.presta : presta();
+  popupRappel.innerHTML = '<div class="fin-card"><div class="ico">⚠️</div>' +
+    '<div class="fin-t" style="color:#991b1b">Attention ' + escapeHtml(qui) + ' !</div>' +
+    '<div class="fin-s">Rappel de Claudine pour ce ménage :</div>' +
+    aVoir.map(r => '<div class="txt">' + escapeHtml(r.texte) + '</div><div class="date">noté le ' + dateCourte(r.date) + (r.appart ? ' · pour ' + escapeHtml(appartLabel(r.appart)) : '') + '</div>').join('') +
+    '<button type="button">✅ J\'ai compris</button></div>';
+  popupRappel.querySelector('button').onclick = () => {
+    const l = lsGet('rappels-lus', {});
+    aVoir.forEach(r => { l[r.id] = Date.now(); });
+    lsSet('rappels-lus', l);
+    if(popupRappel){ popupRappel.remove(); popupRappel = null; }
+  };
+}
+// Mémoire du téléphone : on oublie les rappels vus / cochés depuis plus de 60 jours.
+function nettoyerRappelsLocaux(){
+  const limite = Date.now() - 60 * 86400000;
+  ['rappels-lus', 'rappels-faits'].forEach(k => {
+    const m = lsGet(k, {}); let change = false;
+    Object.keys(m).forEach(id => { if(!(m[id] > limite)){ delete m[id]; change = true; } });
+    if(change) lsSet(k, m);
+  });
 }
 
 // ---------- navigateur intégré (appli de scan, appareil photo, WhatsApp…) ----------
@@ -1839,8 +1968,13 @@ async function copierLien(){
   if(!S && !MODE_MODELE && PARAMS.get('appart')){ let p = null; try { p = localStorage.getItem('menage-presta'); } catch(e){} sessionPerdue = !p; }
   afficherNavWarn();
   document.getElementById('appart').addEventListener('change', e => { loadModeles(e.target.value); chargerCave(e.target.value); chercherReprise(e.target.value); });
-  sel.addEventListener('change', () => { try { localStorage.setItem('menage-presta', sel.value); } catch(e){} });
+  sel.addEventListener('change', () => { try { localStorage.setItem('menage-presta', sel.value); } catch(e){} chargerRappels(); });
   if(!sel.value){ try { const p = localStorage.getItem('menage-presta'); if(p) sel.value = p; } catch(e){} }
+  // Rappels de Claudine pour ce prestataire : au scan, au retour du réseau, au retour sur l'onglet.
+  nettoyerRappelsLocaux();
+  chargerRappels();
+  window.addEventListener('online', () => chargerRappels());
+  document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') chargerRappels(); });
   loadModeles(slug());
   chargerCave(slug());
   updateSyncBar();
