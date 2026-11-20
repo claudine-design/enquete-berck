@@ -384,6 +384,8 @@ function openLightbox(src){
 }
 
 // ===== Caractéristiques spécifiques par appartement =====
+// Panier d'accueil en osier noir avec photo obligatoire + photo modèle (demande Claudine 20/11/2026).
+const PANIER_ACCUEIL = ['kitesurf','hamac','paddle','surf','famille','albatros','face-mer','grand-large','terrasse','kingston'];
 // panier: 'classique' (1 panier + accessoires évier) | 'loveroom' (2 paniers : gourmand + petit utilitaire)
 // capacite: nombre max de personnes — pilote la quantité de dosettes/thé/sucrettes (règle: max(4, capacite))
 // balneo: a une balnéo/jacuzzi → anti-calcaire sur buses + chrome
@@ -433,7 +435,20 @@ function renderApartWarning(slug){
   // 🎁 Panier de bienvenue (TOUJOURS en premier — c'est ce que le voyageur voit en arrivant)
   if(f.panier){
     const qty = Math.max(4, f.capacite || 4);
-    if(f.panier === 'classique'){
+    if(PANIER_ACCUEIL.includes(slug)){
+      const the = slug === 'terrasse' ? 8 : slug === 'famille' ? 6 : 4;
+      bullets.push(
+        '🎁 <b>Panier d’accueil</b> (panier en <b>osier noir</b>, posé sur la table) — <b>photo obligatoire</b> :' +
+        '<ul style="margin:6px 0 0 0;padding-left:20px;list-style:disc">' +
+          '<li><b>' + the + ' thés</b> + <b>' + the + ' cafés</b></li>' +
+          '<li><b>1 paquet de gâteaux</b> (gaufres fines pur beurre)</li>' +
+          '<li>Le guide <b>« Informations pratiques »</b></li>' +
+          '<li><b>Au moins 4 dosettes de sucre</b></li>' +
+          '<li>Des <b>cartes de visite</b></li>' +
+        '</ul>' +
+        '<div style="margin-top:6px"><b>À côté de l’évier</b> (hors panier) : <b>liquide vaisselle</b> + <b>1 éponge</b> avec <b>1 dosette lave-vaisselle posée dessus</b>, <b>1 torchon</b> + <b>1 essuie-main</b>.</div>'
+      );
+    } else if(f.panier === 'classique'){
       bullets.push(
         '🎁 <b>Panier de bienvenue</b> à préparer (posé sur la table) :' +
         '<ul style="margin:6px 0 0 0;padding-left:20px;list-style:disc">' +
@@ -914,7 +929,8 @@ const data = [
     {id:"evier", t:"Liquide vaisselle, éponge, dosettes lave-vaisselle, torchon, essuie-main."},
     {id:"sdb-produits", t:"Salle de bain : savon, gel douche, coton, sèche-cheveux, tapis. Papier toilette : 1 rouleau + 3/4 minimum, pliage en pointe."},
     {id:"surfaces", t:"Surfaces : plan de travail, crédence, table, miroir, plan vasque (sans toucher aux produits qui agissent).", photos:[{id:"plan-travail", label:"Plan de travail de la cuisine"}]},
-    {id:"panier", t:"Panier d'accueil + petites cartes de visite.", d:"Voir le détail du panier dans l'encadré « Consignes spécifiques » en haut de la page."},
+    {id:"panier", t:"Panier d'accueil + petites cartes de visite.", d:"Voir le détail du panier dans l'encadré « Consignes spécifiques » en haut de la page.", only: s => !PANIER_ACCUEIL.includes(s)},
+    {id:"panier", t:"Panier d'accueil (panier en osier noir) : thé + café, 1 paquet de gaufres fines pur beurre, le guide « Informations pratiques », au moins 4 dosettes de sucre et des cartes de visite.", d:"Thé et café : 4 thés + 4 cafés (Famille : 6 + 6, Terrasse : 8 + 8). Comparez avec la photo modèle.", photos:[{id:"panier-accueil", label:"Panier d'accueil complet (osier noir)"}], only: s => PANIER_ACCUEIL.includes(s)},
   ]],
   ["s4","4. Retour sur les produits — dans cet ordre",[
     {id:"essuyer-javel", t:"① Javel du WC essuyée au papier toilette, jeté dans les WC. Tirer la chasse."},
@@ -1192,7 +1208,7 @@ function imgModele(id){
   return im;
 }
 // Photos modèles communes à TOUS les logements (priment sur le modèle du logement) — choix Claudine 27/09/2026.
-const MODELES_FIXES = { canape: 'modele-canape.jpg', 'etagere-linge': 'modele-etagere-grande-roue.jpg', 'bougies-piles': 'modele-bougies-balneo-apolove.jpg' };
+const MODELES_FIXES = { canape: 'modele-canape.jpg', 'etagere-linge': 'modele-etagere-grande-roue.jpg', 'bougies-piles': 'modele-bougies-balneo-apolove.jpg', 'panier-accueil': 'modele-panier-accueil.jpg' };
 function modeleUrl(id){ return /\.jpg$/.test(id) ? id : 'https://lh3.googleusercontent.com/d/' + id + '=w1000'; }
 function saveModeles(s){ try { localStorage.setItem('modeles-' + s, JSON.stringify(modeles)); } catch(e){} }
 async function loadModeles(s){
