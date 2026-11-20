@@ -39,6 +39,7 @@
   .item .info-btn:active{background:rgba(0,0,0,.15)}
   .item .detail{display:none;background:rgba(255,255,255,.85);border-left:3px solid #E89BA3;padding:8px 10px;margin:6px 0 4px 30px;border-radius:6px;font-size:17px;line-height:1.45;color:#5a3b46}
   .item.show-detail .detail{display:block}
+  .item-warn{background:#dc2626;color:#fff;font-weight:800;font-size:19px;line-height:1.35;padding:10px 12px;border-radius:10px;margin:8px 0 4px;text-decoration:none}
   .item{display:flex;align-items:flex-start;gap:10px;padding:8px 6px;border-bottom:1px dashed rgba(0,0,0,.06);cursor:pointer}
   .item:last-child{border-bottom:none}
   .item input{margin-top:3px;width:20px;height:20px;accent-color:#E89BA3;flex-shrink:0}
@@ -439,6 +440,7 @@ function renderApartWarning(slug){
         '<ul style="margin:6px 0 0 0;padding-left:20px;list-style:disc">' +
           '<li><b>' + qty + ' dosettes de café</b>, <b>' + qty + ' sachets de thé</b>, <b>' + qty + ' sucrettes</b></li>' +
           '<li><b>1 paquet de gâteaux</b> (cadeau de bienvenue)</li>' +
+          '<li style="color:#b91c1c"><b>⚠️ AU MOINS 1 CARTE DE VISITE — obligatoire !</b></li>' +
           '<li><b>1 torchon</b> + <b>1 essuie-main</b></li>' +
         '</ul>' +
         '<div style="margin-top:6px"><b>À côté de l\'évier</b> (hors panier) : <b>liquide vaisselle</b> + <b>1 éponge</b> avec <b>1 dosette lave-vaisselle posée dessus</b>.</div>'
@@ -450,6 +452,7 @@ function renderApartWarning(slug){
           '<li><b>' + qty + ' dosettes de café</b>, <b>' + qty + ' sachets de thé</b>, <b>' + qty + ' sucrettes</b></li>' +
           '<li><b>Gâteaux sucrés</b> (petits cœurs) + <b>gâteaux salés</b> (chips)</li>' +
           '<li><b>1 petite bouteille</b></li>' +
+          '<li style="color:#b91c1c"><b>⚠️ AU MOINS 1 CARTE DE VISITE — obligatoire !</b></li>' +
         '</ul>' +
         '<div style="margin-top:6px">🧺 <b>Petit panier à côté</b> : <b>1 torchon</b> + <b>1 essuie-main</b>, <b>liquide vaisselle</b>, <b>1 éponge</b>, <b>1 dosette lave-vaisselle</b>.</div>'
       );
@@ -914,7 +917,7 @@ const data = [
     {id:"evier", t:"Liquide vaisselle, éponge, dosettes lave-vaisselle, torchon, essuie-main."},
     {id:"sdb-produits", t:"Salle de bain : savon, gel douche, coton, sèche-cheveux, tapis. Papier toilette : 1 rouleau + 3/4 minimum, pliage en pointe."},
     {id:"surfaces", t:"Surfaces : plan de travail, crédence, table, miroir, plan vasque (sans toucher aux produits qui agissent).", photos:[{id:"plan-travail", label:"Plan de travail de la cuisine"}]},
-    {id:"panier", t:"Panier d'accueil + petites cartes de visite.", d:"Voir le détail du panier dans l'encadré « Consignes spécifiques » en haut de la page."},
+    {id:"panier", t:"Panier d'accueil + petites cartes de visite.", d:"Voir le détail du panier dans l'encadré « Consignes spécifiques » en haut de la page.", warn:"⚠️ OBLIGATOIRE : mettre AU MOINS UNE CARTE DE VISITE dans le panier d'accueil. C'est très important !"},
   ]],
   ["s4","4. Retour sur les produits — dans cet ordre",[
     {id:"essuyer-javel", t:"① Javel du WC essuyée au papier toilette, jeté dans les WC. Tirer la chasse."},
@@ -1334,7 +1337,8 @@ function renderItem(it){
   });
   div.innerHTML = '<input type="checkbox"' + (checked ? ' checked' : '') + '><div class="col"><div style="display:flex;align-items:flex-start"><span style="flex:1">' + it.t + '</span>' +
     (it.d ? '<button type="button" class="info-btn" aria-label="Détail">ⓘ</button>' : '') + '</div>' +
-    (it.d ? '<div class="detail">' + it.d + '</div>' : '') + photosHtml + '</div>';
+    (it.d ? '<div class="detail">' + it.d + '</div>' : '') +
+    (it.warn ? '<div class="item-warn">' + it.warn + '</div>' : '') + photosHtml + '</div>';
   div.querySelectorAll('.mfig').forEach(fg => fg.insertBefore(imgModele(fg.dataset.m), fg.firstChild));
   const cb = div.querySelector('input');
   cb.onclick = e => {
