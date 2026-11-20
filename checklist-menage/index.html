@@ -1655,6 +1655,8 @@ function etatDesLieux(){
 async function demarrer(){
   if(!slug()){ alert('Choisissez d\'abord l\'appartement.'); return; }
   if(!presta()){ alert('Choisissez d\'abord votre prénom dans la liste « Prestataire ».'); document.getElementById('nom').focus(); return; }
+  const avBougies = avertissementBougies();
+  if(avBougies) await popupAvertissementBougies(avBougies);
   const etat = await etatDesLieux();
   // Rappel de Claudine : en grand au début du ménage, le prestataire répond « OK » (il reviendra à « Terminer »).
   const rap = rappelsPour(slug()).map(r => ({id:r.id, texte:r.texte, date:r.date, appart:r.appart || ''}));
@@ -1879,6 +1881,32 @@ function afficherRappels(){
     if(!S) return;
     aVoir.forEach(r => { S.rappelsDebut[r.id] = Date.now(); });
     saveS(); afficherRappels();
+  });
+}
+// Avertissements bougies PAR PRESTATAIRE (20/11/2026) : au tout début du ménage, seulement dans les logements à bougies
+// (liste BOUGIES), et seulement pour le prestataire concerné. Photo = même modèle que la tâche « bougies-piles ».
+// Clé = prénom en minuscules sans accent. Pour en ajouter/retirer un : modifier seulement cet objet.
+const AVERTISSEMENTS_BOUGIES = {
+  'sabrina':    '⚠️ Sabrina, attention à bien vérifier toutes les bougies. Pour votre dernier ménage à Apolove, j\'ai dû changer toutes les piles. Les bougies doivent être allumées sur la photo, comme sur la photo modèle.',
+  'christelle': '⚠️ Christelle, attention à bien vérifier toutes les bougies. Pour votre dernier ménage à l\'Escapade, j\'ai dû changer toutes les piles. Les bougies doivent être allumées sur la photo, comme sur la photo modèle.'
+};
+function avertissementBougies(){
+  if(MODE_MODELE || !BOUGIES.includes(slug())) return '';
+  const cle = (presta() || '').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  return AVERTISSEMENTS_BOUGIES[cle] || '';
+}
+function popupAvertissementBougies(texte){
+  return new Promise(resolve => {
+    const pop = document.createElement('div');
+    pop.className = 'fin rappel-pop';
+    pop.innerHTML = '<div class="fin-card" style="max-height:94vh;overflow-y:auto"><div class="ico">⚠️</div>' +
+      '<div class="txt">' + escapeHtml(texte) + '</div>' +
+      '<img src="modele-bougies-balneo-apolove.jpg" alt="Photo modèle : bougies allumées" style="width:100%;border-radius:12px;margin-top:12px;cursor:zoom-in">' +
+      '<div class="date">Photo modèle : les bougies allumées (touchez pour agrandir)</div>' +
+      '<button type="button">✅ OK</button></div>';
+    document.body.appendChild(pop);
+    pop.querySelector('img').onclick = e => openLightbox(e.target.src);
+    pop.querySelector('button').onclick = () => { pop.remove(); resolve(); };
   });
 }
 // La grande fenêtre rouge. moment = 'debut' ou 'fin'. Se ferme seulement avec « OK ».
