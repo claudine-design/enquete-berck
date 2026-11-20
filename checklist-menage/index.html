@@ -953,6 +953,7 @@ const data = [
     {id:"rincer-receveur", t:"Rincer le receveur et le carrelage aspergés de javel."},
     {id:"recoins-receveur", t:"Inspecter et nettoyer les petits recoins, notamment en bas du receveur : il y a souvent des saletés dans ce coin-là."},
     {id:"bougies", t:"Photo avec les bougies allumées (n'oubliez pas de les éteindre après).", d:"Toutes les bougies doivent fonctionner. Une bougie qui ne s’allume plus : changer les piles, ou le signaler.", photos:[{id:"bougies-table", label:"Table à manger, bougies allumées"},{id:"bougies-balneo", label:"Balnéo, les 5 bougies allumées", only: s => s === 'apolove'},{id:"bougies-balneo", label:"Près de la balnéo, bougies allumées", only: s => s !== 'apolove' && !!(apartFeatures[s] && apartFeatures[s].balneo)}], only: s => BOUGIES.includes(s)},
+    {id:"bougies-piles", t:"Vérification du bon fonctionnement des 4 grosses bougies présentes au niveau de la balnéo et du feu — s’il n’y a plus de piles, merci de changer les piles.", d:"Allumer les 4 grosses bougies une par une. Une bougie qui ne s’allume pas = piles à changer tout de suite. Comparez avec la photo modèle.", photos:[{id:"bougies-piles", label:"Les 4 grosses bougies allumées (balnéo + feu)"}], only: s => s === 'apolove'},
     {id:"video", t:"Vidéo continue de toutes les pièces (45 secondes maximum).", d:"Filmer sans couper : entrée, cuisine, salon, chambre(s), salle de bain. La vidéo part directement chez Claudine depuis l'appli.", video:true},
     {id:"linge", t:"Sortir le linge de la machine et l'étendre. Hublot entrouvert.", only: s => !LESSIVE[s]},
     {id:"linge", t:"Reprendre le linge dans la machine et aller l'étendre dans la CAVE. Hublot entrouvert.", only: s => LESSIVE[s] === 'cave'},
@@ -1191,7 +1192,7 @@ function imgModele(id){
   return im;
 }
 // Photos modèles communes à TOUS les logements (priment sur le modèle du logement) — choix Claudine 27/09/2026.
-const MODELES_FIXES = { canape: 'modele-canape.jpg', 'etagere-linge': 'modele-etagere-grande-roue.jpg' };
+const MODELES_FIXES = { canape: 'modele-canape.jpg', 'etagere-linge': 'modele-etagere-grande-roue.jpg', 'bougies-piles': 'modele-bougies-balneo-apolove.jpg' };
 function modeleUrl(id){ return /\.jpg$/.test(id) ? id : 'https://lh3.googleusercontent.com/d/' + id + '=w1000'; }
 function saveModeles(s){ try { localStorage.setItem('modeles-' + s, JSON.stringify(modeles)); } catch(e){} }
 async function loadModeles(s){
