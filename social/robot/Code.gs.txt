@@ -1,0 +1,417 @@
+/**
+ * ROBOT RÉSEAUX SOCIAUX — Love Room Berck (v2, 07/11/2026)
+ * Drive « Réseaux sociaux/<Love Room>/ » → feuille « File de publication » → Instagram @loveroomberck + Page Facebook Love Room Berck (API Meta officielle).
+ *
+ * Projet Apps Script sur le compte appart.hotel.berck (propriétaire du dossier Drive).
+ * Fonctions à lancer à la main dans l'éditeur, dans cet ordre :
+ *   1. installer()  : crée la feuille « File de publication » (onglets File + Journal) dans le dossier Réseaux sociaux. Sans risque, relançable.
+ *   2. Claudine colle les 3 clés dans Paramètres du projet → Propriétés du script : META_TOKEN, CLAUDE_KEY, GITHUB_TOKEN.
+ *   3. tester()     : vérifie Meta, Claude, GitHub, Drive et le kit. Ne publie RIEN. Retrouve et enregistre l'identifiant de la Page.
+ *   4. activer()    : pose les déclencheurs (scanDrive toutes les heures, publier mardi + vendredi 18 h, rapport lundi 8 h).
+ *   desactiver()    : retire tous les déclencheurs du robot.
+ * Les clés ne sont JAMAIS écrites dans ce code.
+ */
+const CONFIG = {
+  DRIVE_ROOT_ID: '1iPZeQNq77si9NVJ1u4r5dGCQug6LUIGs',   // dossier « Réseaux sociaux » (appart.hotel.berck)
+  KIT_NOM: 'KIT-LOVE-ROOM-BERCK.md',                     // copie du kit déposée dans ce dossier
+  NOM_FEUILLE: 'Love Room Berck — File de publication',
+  IG_USER_ID: '17841436426023393',                       // @loveroomberck (Business Suite, 07/11/2026)
+  NOM_PAGE: 'Love Room Berck',
+  GITHUB_REPO: 'claudine-design/enquete-berck',          // hébergement public des médias (l'API Instagram refuse les liens Drive)
+  GITHUB_BRANCH: 'main',
+  GITHUB_DIR: 'social',
+  SITE_LOVE_ROOM: 'https://appart-hotel-berck.com/love-room-berck.html',
+  MAIL_RAPPORT: 'princessedopale@gmail.com',
+  MODELE: 'claude-sonnet-5-5',
+  GRAPH: 'https://graph.facebook.com/v25.0/',   // 22/11/2026 : v21 expire le 21/01/2027 ; v25 est valable jusqu'au 29/07/2028
+  HASHTAGS: '#loveroom #loveroomberck #berck #berckSurMer #cotedopale #weekendenamoureux #balneo #spaprivatif #hautsdefrance #escapaderomantique',
+  TAG_PAR_LOVE_ROOM: { 'Cocon Romantique': '#coconromantique', 'Apolove': '#apolove', 'Mini Love Room': '#balneofacemer', 'Grande Love Room': '#grandeloveroom',
+    'Patio': '#patioberck', 'Rotonde': '#rotondeberck', 'Évasion': '#evasionberck', 'Balnéo Garden': '#balneogarden', 'Grande Roue': '#granderoueberck', 'Escapade': '#escapadeberck' },
+  FICHE: { 'Cocon Romantique': 'https://appart-hotel-berck.com/appartements/cocon-romantique-berck.html',
+    'Apolove': 'https://appart-hotel-berck.com/appartements/suite-romantique-face-mer-berck.html',
+    'Mini Love Room': 'https://appart-hotel-berck.com/appartements/balneo-face-mer-berck.html',
+    'Grande Love Room': 'https://appart-hotel-berck.com/appartements/romantique-face-mer-berck.html',
+    'Patio': 'https://appart-hotel-berck.com/appartements/patio-romantique-chic-berck.html',
+    'Rotonde': 'https://appart-hotel-berck.com/appartements/rotonde-bien-etre-berck.html',
+    'Évasion': 'https://appart-hotel-berck.com/appartements/evasion-balneo-sauna-berck.html',
+    'Balnéo Garden': 'https://appart-hotel-berck.com/appartements/balneo-garden-berck.html',
+    'Grande Roue': 'https://beds24.com/booking2.php?propid=345658&lang=fr&referer=appart-hotel-berck',
+    'Escapade': 'https://beds24.com/booking2.php?propid=356752&lang=fr&referer=appart-hotel-berck' }
+};
+const PROPS = PropertiesService.getScriptProperties();   // META_TOKEN, CLAUDE_KEY, GITHUB_TOKEN, SHEET_ID, FB_PAGE_ID
+const ENTETES = ['ID fichier', 'Love Room', 'Fichier', 'Type', 'Légende', 'Texte alt', 'Statut', 'Date', 'URL média', 'ID Instagram', 'ID Facebook', 'Erreur'];
+const COLS = { ID: 0, LOVE_ROOM: 1, FICHIER: 2, TYPE: 3, LEGENDE: 4, ALT: 5, STATUT: 6, DATE_PUB: 7, URL_MEDIA: 8, IG_ID: 9, FB_ID: 10, ERREUR: 11 };
+// STATUT : A_REDIGER → A_VALIDER (mail envoyé) → PRET (validé à la main, ou 24 h écoulées) → PUBLIE / ERREUR / REFUSE
+
+function log_(msg) {
+  Logger.log(msg);
+  try { const ss = SpreadsheetApp.openById(PROPS.getProperty('SHEET_ID')); ss.getSheetByName('Journal').appendRow([new Date(), String(msg).substring(0, 500)]); } catch (e) {}
+}
+function sheet_() { return SpreadsheetApp.openById(PROPS.getProperty('SHEET_ID')).getSheetByName('File'); }
+
+/** 1. Création de la feuille, relançable sans doublon. */
+function installer() {
+  let id = PROPS.getProperty('SHEET_ID');
+  if (id) { try { SpreadsheetApp.openById(id); Logger.log('Feuille déjà là : https://docs.google.com/spreadsheets/d/' + id); return; } catch (e) { id = null; } }
+  const ss = SpreadsheetApp.create(CONFIG.NOM_FEUILLE);
+  const file = DriveApp.getFileById(ss.getId()); DriveApp.getFolderById(CONFIG.DRIVE_ROOT_ID).addFile(file); DriveApp.getRootFolder().removeFile(file);
+  const f = ss.getSheets()[0]; f.setName('File'); f.getRange(1, 1, 1, ENTETES.length).setValues([ENTETES]).setFontWeight('bold'); f.setFrozenRows(1);
+  f.setColumnWidth(5, 420); f.getRange('E:E').setWrap(true);
+  ss.insertSheet('Journal').appendRow(['Date', 'Message']);
+  PROPS.setProperty('SHEET_ID', ss.getId());
+  Logger.log('OK feuille créée : ' + ss.getUrl());
+}
+
+/** 2. Contrôle complet sans rien publier. */
+function tester() {
+  const ok = [], ko = [];
+  ['META_TOKEN', 'CLAUDE_KEY', 'GITHUB_TOKEN', 'SHEET_ID'].forEach(k => (PROPS.getProperty(k) ? ok : ko).push('propriété ' + k));
+  try { const k = kit_(); ok.push('kit lu (' + k.length + ' caractères)'); } catch (e) { ko.push('kit : ' + e.message); }
+  try {
+    const sous = []; const it = DriveApp.getFolderById(CONFIG.DRIVE_ROOT_ID).getFolders(); while (it.hasNext()) sous.push(it.next().getName());
+    ok.push('Drive : ' + sous.length + ' sous-dossiers (' + sous.join(', ') + ')');
+  } catch (e) { ko.push('Drive : ' + e.message); }
+  const tok = PROPS.getProperty('META_TOKEN');
+  if (tok) {
+    try {
+      const ig = metaGet_(CONFIG.IG_USER_ID, { fields: 'username,name' }, tok); ok.push('Instagram : @' + ig.username);
+      const pages = metaGet_('me/accounts', { fields: 'id,name,instagram_business_account' }, tok).data || [];
+      const p = pages.filter(x => x.name === CONFIG.NOM_PAGE)[0];
+      if (p) { PROPS.setProperty('FB_PAGE_ID', p.id); ok.push('Page Facebook : ' + p.name + ' id ' + p.id + (p.instagram_business_account ? ' (Instagram lié ' + p.instagram_business_account.id + ')' : ' (Instagram NON lié)')); }
+      else ko.push('Page « ' + CONFIG.NOM_PAGE + ' » absente du jeton (pages vues : ' + pages.map(x => x.name).join(', ') + ')');
+      const perms = metaGet_('debug_token', { input_token: tok }, tok).data;
+      if (perms) ok.push('jeton : expire ' + (perms.expires_at ? new Date(perms.expires_at * 1000) : 'jamais') + ', droits ' + (perms.scopes || []).join(','));
+    } catch (e) { ko.push('Meta : ' + e.message); }
+  }
+  if (PROPS.getProperty('CLAUDE_KEY')) {
+    try { claude_([{ type: 'text', text: 'Réponds juste OK.' }], 10); ok.push('Claude : OK'); } catch (e) { ko.push('Claude : ' + e.message); }
+  }
+  if (PROPS.getProperty('GITHUB_TOKEN')) {
+    try {
+      const r = UrlFetchApp.fetch('https://api.github.com/repos/' + CONFIG.GITHUB_REPO, { headers: { Authorization: 'Bearer ' + PROPS.getProperty('GITHUB_TOKEN') }, muteHttpExceptions: true });
+      const j = JSON.parse(r.getContentText());
+      if (r.getResponseCode() === 200 && j.permissions && j.permissions.push) ok.push('GitHub : écriture OK sur ' + CONFIG.GITHUB_REPO); else ko.push('GitHub : pas de droit d\'écriture (' + r.getResponseCode() + ')');
+    } catch (e) { ko.push('GitHub : ' + e.message); }
+  }
+  log_('TEST OK : ' + ok.join(' | '));
+  log_('TEST À CORRIGER : ' + (ko.join(' | ') || 'rien'));
+}
+
+/** 3. Déclencheurs (relançable : retire d'abord les anciens). */
+function activer() {
+  desactiver();
+  ScriptApp.newTrigger('scanDrive').timeBased().everyHours(1).create();
+  // 22/11/2026 : le vendredi 18 h (créneau faible selon Buffer, Sprout et Metricool 2026) est remplacé par le mercredi 12 h, à l'essai.
+  [[ScriptApp.WeekDay.TUESDAY, 18], [ScriptApp.WeekDay.WEDNESDAY, 12], [ScriptApp.WeekDay.THURSDAY, 18], [ScriptApp.WeekDay.SUNDAY, 18]].forEach(c => ScriptApp.newTrigger('publier').timeBased().onWeekDay(c[0]).atHour(c[1]).nearMinute(0).create());
+  ScriptApp.newTrigger('rapport').timeBased().onWeekDay(ScriptApp.WeekDay.MONDAY).atHour(8).create();
+  log_('Déclencheurs posés : ' + ScriptApp.getProjectTriggers().map(t => t.getHandlerFunction()).join(', '));
+}
+function desactiver() {
+  ScriptApp.getProjectTriggers().filter(t => ['scanDrive', 'publier', 'rapport'].indexOf(t.getHandlerFunction()) >= 0).forEach(t => ScriptApp.deleteTrigger(t));
+  Logger.log('Déclencheurs du robot retirés.');
+}
+
+function kit_() {
+  const c = CacheService.getScriptCache(); const k = c.get('kit2'); if (k) return k;
+  const it = DriveApp.getFolderById(CONFIG.DRIVE_ROOT_ID).getFilesByName(CONFIG.KIT_NOM);
+  let f = null; while (it.hasNext() && !f) { const x = it.next(); if (!x.isTrashed()) f = x; }   // ignore les copies à la corbeille
+  if (!f) throw new Error('fichier ' + CONFIG.KIT_NOM + ' introuvable dans le dossier Réseaux sociaux');
+  const txt = f.getBlob().getDataAsString('UTF-8'); c.put('kit2', txt.substring(0, 90000), 21600); return txt;
+}
+
+/** Toutes les heures : nouveaux médias des sous-dossiers → lignes A_REDIGER, puis rédaction. */
+function scanDrive() {
+  const sh = sheet_(); const lignes = sh.getDataRange().getValues(); const connus = new Set(lignes.map(r => r[COLS.ID]));
+  const parNom = {}; lignes.forEach(function (r, i) { if (i && r[COLS.STATUT] !== 'PUBLIE') parNom[r[COLS.LOVE_ROOM] + '|' + r[COLS.FICHIER]] = i; });
+  const dossiers = DriveApp.getFolderById(CONFIG.DRIVE_ROOT_ID).getFolders(); let n = 0;
+  while (dossiers.hasNext()) {
+    const d = dossiers.next(); const loveRoom = d.getName(); const fichiers = d.getFiles();
+    while (fichiers.hasNext()) {
+      const f = fichiers.next(); if (f.isTrashed() || connus.has(f.getId())) continue;
+      const cle = loveRoom + '|' + f.getName();
+      if (cle in parNom) {   // même nom, pas encore publié : nouvelle version de la vidéo, on garde le texte et la place dans la file
+        const i = parNom[cle]; const ancien = lignes[i][COLS.ID];
+        sh.getRange(i + 1, COLS.ID + 1).setValue(f.getId()); sh.getRange(i + 1, COLS.URL_MEDIA + 1).setValue('');
+        try { DriveApp.getFileById(ancien).setTrashed(true); } catch (e) { log_('Ancienne version non retirée : ' + f.getName() + ' : ' + e); }
+        connus.add(f.getId()); log_('Vidéo remplacée : ' + f.getName()); continue;
+      }
+      const mime = f.getMimeType(); const type = mime.indexOf('video/') === 0 ? 'REEL' : (mime.indexOf('image/') === 0 ? 'PHOTO' : null);
+      if (!type) continue;
+      sh.appendRow([f.getId(), loveRoom, f.getName(), type, '', '', 'A_REDIGER', '', '', '', '', '']); n++;
+    }
+  }
+  if (n) log_('scanDrive : ' + n + ' nouveau(x) média(s)');
+  rediger_();
+}
+
+/** Rédaction par Claude : il voit la photo (pas les vidéos) et suit le kit. Mail de validation à Claudine. */
+function rediger_() {
+  const sh = sheet_(); const data = sh.getDataRange().getValues(); let kit; try { kit = kit_(); } catch (e) { log_('Rédaction impossible : ' + e.message); return; }
+  for (let i = 1; i < data.length; i++) {
+    const r = data[i]; if (r[COLS.STATUT] !== 'A_REDIGER') continue;
+    const lr = r[COLS.LOVE_ROOM];
+    const consigne = 'Tu rédiges un post Instagram et Facebook pour la love room « ' + nomPublic_(lr) + ' » à Berck-sur-Mer. Média : ' + (r[COLS.TYPE] === 'REEL' ? 'une vidéo verticale (tu ne la vois pas, reste général et vrai)' : 'la photo jointe, décris ce qu\'on y voit vraiment') + '.\n'
+      + 'Suis strictement les règles du kit ci-dessous (ton, interdits, prix, signature « Claudine » seulement, jamais « Repos et détente », jamais de nom de famille).\n'
+      + 'Réponds en JSON strict {"legende": "...", "alt": "..."} : légende de 60 à 90 mots, 1re phrase = mot-clé + Berck-sur-Mer, au moins un chiffre vrai tiré du kit, jamais d\'ordre d\'interaction (« commente », « tague », « partage », « envoie », « réponds X ») mais une phrase utile qui donne envie de garder ou d\'envoyer le post, aucun lien et jamais « Lien dans la bio » (le lien direct du logement est ajouté automatiquement), avant-dernière ligne « — ' + nomPublic_(lr) + ', Berck-sur-Mer », dernière ligne : ' + CONFIG.HASHTAGS + ' ' + (CONFIG.TAG_PAR_LOVE_ROOM[lr] || '') + '. Alt = description factuelle du média en 15 mots maximum.\n\nKIT :\n' + kit;
+    const contenu = [];
+    try {
+      if (r[COLS.TYPE] === 'PHOTO') {
+        const f = DriveApp.getFileById(r[COLS.ID]); let blob = f.getBlob();
+        if (blob.getBytes().length > 3500000) blob = f.getThumbnail();   // Claude refuse les images trop lourdes
+        if (blob) contenu.push({ type: 'image', source: { type: 'base64', media_type: blob.getContentType() || 'image/jpeg', data: Utilities.base64Encode(blob.getBytes()) } });
+      }
+      contenu.push({ type: 'text', text: consigne });
+      const txt = claude_(contenu, 4000);
+      const j = JSON.parse(txt.substring(txt.indexOf('{'), txt.lastIndexOf('}') + 1));
+      sh.getRange(i + 1, COLS.LEGENDE + 1, 1, 4).setValues([[nomsPublics_(j.legende), nomsPublics_(j.alt), 'A_VALIDER', new Date()]]);
+      MailApp.sendEmail(CONFIG.MAIL_RAPPORT, '[Love Room Berck] Post à valider — ' + lr,
+        avecLien_(j.legende, lr) + '\n\nTexte alt : ' + j.alt + '\n\nFeuille : https://docs.google.com/spreadsheets/d/' + PROPS.getProperty('SHEET_ID') + '\n'
+        + 'Pour REFUSER : écrire REFUSE en colonne G, ligne ' + (i + 1) + ', avant 24 h. Pour corriger : modifier la colonne E. Sans action, le post part au prochain créneau (mardi, jeudi, dimanche 18 h ou mercredi 12 h).');
+    } catch (e) { sh.getRange(i + 1, COLS.ERREUR + 1).setValue('Rédaction : ' + e); log_('Rédaction ' + lr + ' : ' + e); }
+  }
+}
+
+/** Insère « 👉 Réserver <appartement> : <lien direct> » avant la ligne de hashtags (jamais le site global si l'appartement est connu). */
+function avecLien_(legende, lr) {
+  const url = CONFIG.FICHE[lr] || CONFIG.SITE_LOVE_ROOM;
+  const lignes = nomsPublics_(legende).replace(/\s+$/, '').split('\n');
+  const tags = /^\s*#/.test(lignes[lignes.length - 1]) ? lignes.pop() : '';
+  const acces = ACCES_SANS_VOITURE[lr] ? '\n\n' + ACCES_SANS_VOITURE[lr] : '';
+  return lignes.join('\n').replace(/\s+$/, '') + acces + '\n\n👉 ' + (CONFIG.FICHE[lr] ? 'Réserver en direct : ' : 'Nos love rooms : ') + url + (tags ? '\n\n' + tags5_(tags, lr) : '');
+}
+// 17/11/2026 : noms affichés en public. Claudine : « Mini Love Room, c'est un peu dépressif » → « Balnéo Face Mer ».
+// La clé interne (colonne Love Room, dossier Drive) ne change pas : seuls les textes publiés (et le mail de validation) sont corrigés.
+const NOM_PUBLIC = { 'Mini Love Room': 'Balnéo Face Mer' };
+function nomPublic_(lr) { return NOM_PUBLIC[lr] || lr; }
+function nomsPublics_(texte) { return String(texte).replace(/#miniloveroom/gi, '#balneofacemer').replace(/mini[ -]?love[ -]?room/gi, 'Balnéo Face Mer'); }
+// 15/11/2026 : love rooms proches de la gare routière de Berck (temps à pied donnés par Claudine).
+const ACCES_SANS_VOITURE = {
+  'Évasion': '🚆 Sans voiture : à 3 min à pied de la gare routière de Berck (train direct Paris-Nord → Rang-du-Fliers, puis le bus).',
+  'Rotonde': '🚆 Sans voiture : à 3 min à pied de la gare routière de Berck (train direct Paris-Nord → Rang-du-Fliers, puis le bus).',
+  'Patio': '🚆 Sans voiture : à 3 min à pied de la gare routière de Berck (train direct Paris-Nord → Rang-du-Fliers, puis le bus).',
+  'Mini Love Room': '🚆 Sans voiture : à 6 min à pied (500 m) de la gare routière de Berck (train direct Paris-Nord → Rang-du-Fliers, puis le bus).'
+};
+// Instagram : 5 hashtags au maximum depuis décembre 2025. Garde celui de la love room, puis les 4 principaux.
+function tags5_(ligne, lr) {
+  const tous = String(ligne).split(/\s+/).filter(function (t) { return /^#/.test(t); });
+  const bas = function (t) { return t.toLowerCase(); };
+  const garde = [];
+  const ajoute = function (t) { if (t && garde.length < 5 && garde.map(bas).indexOf(bas(t)) < 0 && tous.map(bas).indexOf(bas(t)) >= 0) garde.push(t); };
+  ajoute(CONFIG.TAG_PAR_LOVE_ROOM[lr]);
+  ['#loveroomberck', '#loveroom', '#berck', '#cotedopale'].forEach(ajoute);
+  tous.forEach(ajoute);
+  return garde.join(' ');
+}
+// Liens marqués par réseau, pour le compteur de visites du site et l'origine des réservations Beds24.
+function avecSource_(texte, source) {
+  return String(texte)
+    .replace(/(https:\/\/appart-hotel-berck\.com\/[^\s?#]*)(?=\s|$)/g, '$1?utm_source=' + source + '&utm_medium=social&utm_campaign=loveroomberck')
+    .replace(/referer=appart-hotel-berck/g, 'referer=' + source + '-loveroomberck');
+}
+function urlsDe_(v) { return String(v).split('|').map(function (x) { return x.trim(); }).filter(String); }
+
+function claude_(contenu, maxTokens) {
+  const res = UrlFetchApp.fetch('https://api.anthropic.com/v1/messages', { method: 'post', contentType: 'application/json', muteHttpExceptions: true,
+    headers: { 'x-api-key': PROPS.getProperty('CLAUDE_KEY'), 'anthropic-version': '2023-06-01' },
+    payload: JSON.stringify({ model: CONFIG.MODELE, max_tokens: maxTokens, messages: [{ role: 'user', content: contenu }] }) });
+  const j = JSON.parse(res.getContentText()); if (j.error) throw new Error(j.error.message);
+  const t = (j.content || []).filter(function (c) { return c.type === 'text'; }).map(function (c) { return c.text; }).join('');
+  if (!t) throw new Error('réponse Claude sans texte : ' + JSON.stringify(j).substring(0, 300));
+  return t;
+}
+
+/** Calendrier : parmi les posts PRET dont la date prévue (colonne Date) est passée, publie le plus ancien.
+ *  (A_VALIDER reste publiable 24 h après sa date de rédaction.) Les statuts REMPLACE et EN_ATTENTE sont ignorés. */
+function prochainePublication_(data, now) {
+  let choix = -1; let meilleur = Infinity;
+  for (let i = 1; i < data.length; i++) {
+    const r = data[i]; const t = new Date(r[COLS.DATE_PUB]).getTime() || 0;
+    const ok = (r[COLS.STATUT] === 'PRET' && t <= now) || (r[COLS.STATUT] === 'A_VALIDER' && t && now - t > 24 * 3600e3);
+    if (ok && t < meilleur) { meilleur = t; choix = i; }
+  }
+  return choix;
+}
+
+/** Mardi, vendredi et dimanche 18 h : publie UN post par créneau, dans l'ordre du calendrier. */
+function publier() {
+  const sh = sheet_(); const data = sh.getDataRange().getValues(); const now = Date.now();
+  let pageId = PROPS.getProperty('FB_PAGE_ID'); const tok = PROPS.getProperty('META_TOKEN');
+  if (!pageId || !tok) { log_('publier : FB_PAGE_ID ou META_TOKEN manquant, lancer tester()'); return; }
+  const choix = prochainePublication_(data, now);
+  if (choix < 0) { log_('publier : aucun post prêt à ce créneau'); return; }
+  for (const i of [choix]) {
+    const r = data[i];
+    try {
+      const url = r[COLS.URL_MEDIA] || hebergerSurGitHub_(r[COLS.ID], r[COLS.FICHIER]);
+      sh.getRange(i + 1, COLS.URL_MEDIA + 1).setValue(url);
+      const legende = avecLien_(r[COLS.LEGENDE], r[COLS.LOVE_ROOM]); let cont;
+      // Texte alternatif : un par image, séparés par « | » en colonne F (lu par la recherche Instagram et Google). Pas accepté sur les reels.
+      const alts = String(r[COLS.ALT] || '').split('|').map(function (x) { return nomsPublics_(x.trim()).substring(0, 1000); });
+      if (r[COLS.TYPE] === 'REEL') {
+        cont = igMedia_(CONFIG.IG_USER_ID, { media_type: 'REELS', video_url: url, caption: legende, share_to_feed: true, thumb_offset: 1500 }, [], tok, true);
+        attendreTraitement_(cont.id, tok);
+      } else if (r[COLS.TYPE] === 'CAROUSEL') {
+        const enfants = urlsDe_(url).map(function (u, k) { return igMedia_(CONFIG.IG_USER_ID, { image_url: u, is_carousel_item: true, alt_text: alts[k] || alts[0] }, ['alt_text'], tok, false).id; });
+        cont = igMedia_(CONFIG.IG_USER_ID, { media_type: 'CAROUSEL', children: enfants.join(','), caption: legende }, [], tok, true);
+        attendreTraitement_(cont.id, tok);
+      } else {
+        cont = igMedia_(CONFIG.IG_USER_ID, { image_url: url, caption: legende, alt_text: alts[0] }, ['alt_text'], tok, true);
+        attendrePret_(cont.id, tok);
+      }
+      const ig = meta_(CONFIG.IG_USER_ID + '/media_publish', { creation_id: cont.id }, tok);
+      const msg = fbTexte_(avecSource_(legende, 'facebook'));   // lien direct inséré par avecLien_, marqué pour le compteur du site ; 3 hashtags au plus sur Facebook
+      const pageTok = metaGet_(pageId, { fields: 'access_token' }, tok).access_token || tok;
+      let fb;
+      if (r[COLS.TYPE] === 'REEL') fb = meta_(pageId + '/videos', { file_url: url, description: msg, title: titreDe_(r[COLS.LEGENDE]) }, pageTok);
+      else if (r[COLS.TYPE] === 'CAROUSEL') {
+        const p = { message: msg };
+        urlsDe_(url).forEach(function (u, k) { p['attached_media[' + k + ']'] = JSON.stringify({ media_fbid: fbPhoto_(pageId, { url: u, published: false, alt_text_custom: alts[k] || alts[0] }, pageTok).id }); });
+        fb = meta_(pageId + '/feed', p, pageTok);
+      } else fb = fbPhoto_(pageId, { url: url, message: msg, alt_text_custom: alts[0] }, pageTok);
+      sh.getRange(i + 1, COLS.STATUT + 1, 1, 5).setValues([['PUBLIE', new Date(), url, ig.id, fb.post_id || fb.id]]);
+      log_('Publié : ' + r[COLS.LOVE_ROOM] + ' — ' + r[COLS.FICHIER]);
+    } catch (e) { sh.getRange(i + 1, COLS.STATUT + 1).setValue('ERREUR'); sh.getRange(i + 1, COLS.ERREUR + 1).setValue(String(e)); log_('Erreur publication ligne ' + (i + 1) + ' : ' + e); }
+    break;
+  }
+}
+
+function attendreTraitement_(id, tok) {
+  for (let k = 0; k < 16; k++) {
+    Utilities.sleep(15000);
+    const s = metaGet_(id, { fields: 'status_code' }, tok).status_code;
+    if (s === 'FINISHED') return; if (s === 'ERROR' || s === 'EXPIRED') throw new Error('vidéo refusée par Instagram (' + s + ')');
+  }
+  throw new Error('vidéo toujours en traitement après 4 min');
+}
+
+/** Images : Instagram refuse parfois la publication si le conteneur n'est pas encore prêt (« Media ID is not available », vu le 18/11). */
+function attendrePret_(id, tok) {
+  for (let k = 0; k < 10; k++) {
+    Utilities.sleep(3000);
+    let s = ''; try { s = metaGet_(id, { fields: 'status_code' }, tok).status_code; } catch (e) {}
+    if (s === 'FINISHED') return; if (s === 'ERROR' || s === 'EXPIRED') throw new Error('image refusée par Instagram (' + s + ')');
+  }
+}
+
+/** Crée un conteneur Instagram. Les réglages « optionnels » (texte alternatif) et le lieu sont retirés si Instagram les refuse : la publication part quand même. */
+function igMedia_(igId, params, optionnels, tok, avecLieu) {
+  const p = Object.assign({}, params); const lieu = avecLieu ? PROPS.getProperty('LIEU_ID') : '';
+  if (lieu) p.location_id = lieu;
+  Object.keys(p).forEach(function (k) { if (p[k] === '' || p[k] == null) delete p[k]; });
+  try { return meta_(igId + '/media', p, tok); }
+  catch (e) {
+    const q = Object.assign({}, p); let retire = 0;
+    optionnels.concat(['location_id']).forEach(function (k) { if (k in q) { delete q[k]; retire++; } });
+    if (!retire) throw e;
+    log_('Instagram : réglage facultatif refusé, nouvel essai sans (' + e.message + ')');
+    return meta_(igId + '/media', q, tok);
+  }
+}
+/** Photo Facebook avec texte alternatif ; sans lui si Facebook le refuse. */
+function fbPhoto_(pageId, params, pageTok) {
+  const p = Object.assign({}, params); if (!p.alt_text_custom) delete p.alt_text_custom;
+  try { return meta_(pageId + '/photos', p, pageTok); }
+  catch (e) { if (!('alt_text_custom' in p)) throw e; delete p.alt_text_custom; log_('Facebook : texte alternatif refusé, nouvel essai sans (' + e.message + ')'); return meta_(pageId + '/photos', p, pageTok); }
+}
+/** Facebook : 3 hashtags au plus (au-delà, aucun gain et un air de spam). */
+function fbTexte_(t) {
+  const l = String(t).split('\n'); const d = l.length - 1;
+  if (/^\s*#/.test(l[d])) l[d] = l[d].split(/\s+/).filter(String).slice(0, 3).join(' ');
+  return l.join('\n');
+}
+/** Instagram : 5 hashtags au plus dans tout le texte (règle du 18/12/2025). */
+function cinqTags_(t) { let n = 0; return String(t).replace(/(^|\s)#[^\s#]+/g, function (m) { n++; return n <= 5 ? m : ''; }).replace(/[ \t]+$/gm, ''); }
+/** Titre d'un reel Facebook : la 1re ligne de la légende, avec le lieu (lu par la recherche Facebook). */
+function titreDe_(legende) {
+  let t = (String(legende).split('\n').filter(function (x) { return x.trim(); })[0] || 'Love Room Berck').trim();
+  if (!/berck/i.test(t)) t += ' · Love room à Berck-sur-Mer';
+  return nomsPublics_(t).substring(0, 250);
+}
+
+/** À lancer à la main : cherche l'identifiant du lieu « Berck-sur-Mer » (le résultat s'écrit dans l'onglet Journal). */
+function chercherLieu() {
+  const tok = PROPS.getProperty('META_TOKEN');
+  try {
+    const d = metaGet_('pages/search', { q: 'Berck-sur-Mer', fields: 'id,name,location,link' }, tok).data || [];
+    log_('LIEUX : ' + (d.slice(0, 8).map(function (p) { return p.id + ' ' + p.name + ' [' + (p.location ? [p.location.city, p.location.zip, p.location.country].join(' ') : 'sans lieu') + ']'; }).join(' | ') || 'aucun résultat'));
+  } catch (e) { log_('LIEUX : recherche refusée (' + e.message + ')'); }
+}
+
+function meta_(path, params, token) {
+  const res = UrlFetchApp.fetch(CONFIG.GRAPH + path, { method: 'post', payload: Object.assign({ access_token: token }, params), muteHttpExceptions: true });
+  const j = JSON.parse(res.getContentText()); if (j.error) throw new Error(j.error.message); return j;
+}
+function metaGet_(path, params, token) {
+  const q = Object.keys(params).map(k => k + '=' + encodeURIComponent(params[k])).join('&');
+  const res = UrlFetchApp.fetch(CONFIG.GRAPH + path + '?' + q + '&access_token=' + encodeURIComponent(token), { muteHttpExceptions: true });
+  const j = JSON.parse(res.getContentText()); if (j.error) throw new Error(j.error.message); return j;
+}
+
+/** Copie le média Drive sur GitHub Pages (URL publique acceptée par Meta), puis attend qu'il soit en ligne. */
+function hebergerSurGitHub_(fileId, nom) {
+  const f = DriveApp.getFileById(fileId); const ext = nom.indexOf('.') >= 0 ? nom.substring(nom.lastIndexOf('.')).toLowerCase() : '.jpg';
+  const path = CONFIG.GITHUB_DIR + '/' + fileId + ext;
+  const res = UrlFetchApp.fetch('https://api.github.com/repos/' + CONFIG.GITHUB_REPO + '/contents/' + path, { method: 'put', contentType: 'application/json',
+    headers: { Authorization: 'Bearer ' + PROPS.getProperty('GITHUB_TOKEN') },
+    payload: JSON.stringify({ message: 'media ' + nom, branch: CONFIG.GITHUB_BRANCH, content: Utilities.base64Encode(f.getBlob().getBytes()) }), muteHttpExceptions: true });
+  if (res.getResponseCode() >= 300 && res.getResponseCode() !== 422) throw new Error('GitHub : ' + res.getContentText().substring(0, 200));
+  const parts = CONFIG.GITHUB_REPO.split('/'); const url = 'https://' + parts[0] + '.github.io/' + parts[1] + '/' + path;
+  for (let k = 0; k < 12; k++) { Utilities.sleep(15000); if (UrlFetchApp.fetch(url, { muteHttpExceptions: true }).getResponseCode() === 200) return url; }
+  throw new Error('média toujours pas en ligne sur GitHub Pages après 3 min');
+}
+
+/** Lundi 8 h : rapport de la semaine. */
+function rapport() {
+  const data = sheet_().getDataRange().getValues().slice(1); const il7j = Date.now() - 7 * 86400e3; const tok = PROPS.getProperty('META_TOKEN');
+  const pub = data.filter(r => r[COLS.STATUT] === 'PUBLIE' && new Date(r[COLS.DATE_PUB]).getTime() > il7j);
+  const att = data.filter(r => ['A_VALIDER', 'PRET', 'A_REDIGER'].indexOf(r[COLS.STATUT]) >= 0); const err = data.filter(r => r[COLS.STATUT] === 'ERREUR');
+  // 22/11/2026 : les mesures que regarde Instagram (envois et j'aime par compte touché, temps de visionnage, départs avant 3 s), classées de la meilleure à la moins bonne.
+  const fiches = pub.map(function (r) {
+    const reel = r[COLS.TYPE] === 'REEL';
+    const s = statsIg_(r[COLS.IG_ID], tok, reel ? ['reach', 'views', 'likes', 'comments', 'saved', 'shares', 'reposts', 'ig_reels_avg_watch_time', 'reels_skip_rate'] : ['reach', 'views', 'likes', 'comments', 'saved', 'shares', 'reposts', 'follows', 'profile_visits']);
+    const pc = function (n) { return s.reach ? Math.round(1000 * (s[n] || 0) / s.reach) / 10 : 0; };
+    const alertes = [];
+    if (reel && s.ig_reels_avg_watch_time != null && s.ig_reels_avg_watch_time < 3000) alertes.push('regardé moins de 3 s en moyenne : accroche à refaire');
+    if (s.reach >= 50 && !s.shares && !s.saved) alertes.push('aucun envoi ni enregistrement');
+    const t = '• ' + nomPublic_(r[COLS.LOVE_ROOM]) + ' — ' + String(r[COLS.LEGENDE]).split('\n')[0].substring(0, 70) + ' (' + r[COLS.TYPE] + ')\n'
+      + (s.reach == null ? '   Instagram : chiffres pas encore disponibles (48 h de délai possible)\n'
+        : '   Instagram : ' + s.reach + ' comptes touchés, ' + (s.views || 0) + ' vues, ' + (s.shares || 0) + ' envois (' + pc('shares') + ' %), ' + (s.saved || 0) + ' enregistrements, ' + (s.likes || 0) + ' j\'aime (' + pc('likes') + ' %), ' + (s.comments || 0) + ' commentaires, ' + (s.reposts || 0) + ' republications'
+          + (reel ? '\n   Temps regardé en moyenne : ' + (s.ig_reels_avg_watch_time != null ? Math.round(s.ig_reels_avg_watch_time / 100) / 10 + ' s' : '—') + ' ; départs avant 3 s : ' + (s.reels_skip_rate != null ? s.reels_skip_rate : '—')
+            : '\n   Visites du profil : ' + (s.profile_visits != null ? s.profile_visits : '—') + ' ; nouveaux abonnés : ' + (s.follows != null ? s.follows : '—')) + '\n')
+      + '   Facebook : ' + statsFb_(r[COLS.FB_ID], reel) + (alertes.length ? '\n   ⚠ ' + alertes.join(' ; ') : '');
+    return { t: t, score: pc('shares') * 3 + pc('saved') * 2 + pc('likes'), reach: s.reach || 0 };
+  }).sort(function (a, b) { return (b.score - a.score) || (b.reach - a.reach); });
+  MailApp.sendEmail(CONFIG.MAIL_RAPPORT, '[Love Room Berck] Rapport : ' + pub.length + ' publiés, ' + att.length + ' en attente, ' + err.length + ' erreurs',
+    (fiches.length ? 'Du post qui a le mieux marché au moins bon (envois et enregistrements comptent plus que les j\'aime) :\n\n' + fiches.map(function (f) { return f.t; }).join('\n\n') : 'Aucune publication cette semaine.')
+    + '\n\nEn attente : ' + att.length + ' posts' + '\nErreurs : ' + (err.map(r => r[COLS.LOVE_ROOM] + ' (' + r[COLS.ERREUR] + ')').join('; ') || '—'));
+}
+/** Lit les chiffres d'un post Instagram ; si une mesure n'existe pas pour ce type de post, les demande une par une. */
+function statsIg_(id, tok, noms) {
+  const o = {}; const val = function (m) { return m.values && m.values.length ? m.values[0].value : (m.total_value ? m.total_value.value : null); };
+  if (!id) return o;
+  try { (metaGet_(id + '/insights', { metric: noms.join(',') }, tok).data || []).forEach(function (m) { o[m.name] = val(m); }); }
+  catch (e) { noms.forEach(function (n) { try { const d = metaGet_(id + '/insights', { metric: n }, tok).data || []; if (d[0]) o[n] = val(d[0]); } catch (e2) {} }); }
+  return o;
+}
+/** Chiffres Facebook d'un post (les anciennes mesures « impressions » ont été supprimées par Meta en 2025-2026). */
+function statsFb_(id, reel) {
+  if (!id) return 'pas d\'identifiant';
+  const tok = PROPS.getProperty('META_TOKEN'); let pageTok = tok; const out = [];
+  try { pageTok = metaGet_(PROPS.getProperty('FB_PAGE_ID'), { fields: 'access_token' }, tok).access_token || tok; } catch (e) {}
+  const essais = reel ? [[id + '/video_insights', 'fb_reels_total_plays', 'lectures'], [id + '/video_insights', 'post_video_avg_time_watched', 'temps moyen (ms)'], [id + '/video_insights', 'post_video_social_actions', 'interactions']]
+    : [[id + '/insights', 'post_media_view', 'vues'], [id + '/insights', 'post_total_media_view_unique', 'personnes'], [id + '/insights', 'post_clicks', 'clics'], [id + '/insights', 'post_reactions_by_type_total', 'réactions']];
+  essais.forEach(function (x) {
+    try { const d = metaGet_(x[0], { metric: x[1] }, pageTok).data || []; if (d[0]) { const v = d[0].values && d[0].values.length ? d[0].values[0].value : (d[0].total_value || {}).value; out.push(x[2] + ' ' + (typeof v === 'object' ? JSON.stringify(v) : v)); } } catch (e) {}
+  });
+  return out.join(', ') || 'chiffres indisponibles';
+}
+
+
+/** Test sans publication : prépare un carrousel Instagram (3 photos) et vérifie qu'Instagram l'accepte. Rien n'est publié. */
+function testerCarrousel() {
+  const tok = PROPS.getProperty('META_TOKEN'); const base = 'https://claudine-design.github.io/enquete-berck/social/lr/';
+  const enfants = ['p04-1.jpg', 'p04-2.jpg', 'p04-3.jpg'].map(n => meta_(CONFIG.IG_USER_ID + '/media', { image_url: base + n, is_carousel_item: true }, tok).id);
+  const cont = meta_(CONFIG.IG_USER_ID + '/media', { media_type: 'CAROUSEL', children: enfants.join(','), caption: 'test' }, tok);
+  attendreTraitement_(cont.id, tok);
+  log_('TEST CARROUSEL OK (non publié) : conteneur ' + cont.id);
+}
