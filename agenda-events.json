@@ -1,7 +1,7 @@
 [
  {
   "titre": "Atelier broderie avec \" fibre en jeu\" - Chez Causettes",
-  "start": "2026-11-20",
+  "start": "2026-11-21",
   "date_label": "Jusqu'au 21/11/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=108571",
@@ -9,7 +9,7 @@
  },
  {
   "titre": "Exposition \"Ecrite par la lumière\"",
-  "start": "2026-11-20",
+  "start": "2026-11-21",
   "date_label": "Jusqu'au 14/03/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=114145",
@@ -17,7 +17,7 @@
  },
  {
   "titre": "Lectures Philosophiques à partager - Musée Opale Sud",
-  "start": "2026-11-20",
+  "start": "2026-11-21",
   "date_label": "Jusqu'au 23/12/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131128",
@@ -25,7 +25,7 @@
  },
  {
   "titre": "Brocante - Ambassade Bonchat",
-  "start": "2026-11-20",
+  "start": "2026-11-21",
   "date_label": "Jusqu'au 10/01/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=113893",
@@ -33,7 +33,7 @@
  },
  {
   "titre": "Exposition Chalotte HIS - Causettes",
-  "start": "2026-11-20",
+  "start": "2026-11-21",
   "date_label": "Jusqu'au 02/12/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131532",
@@ -41,7 +41,7 @@
  },
  {
   "titre": "Concours de dessin - Au comptoir du littoral",
-  "start": "2026-11-20",
+  "start": "2026-11-21",
   "date_label": "Jusqu'au 04/12/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131690",
@@ -50,9 +50,17 @@
  {
   "titre": "6h de Berck - 61ème édition",
   "start": "2026-11-21",
-  "date_label": "Du 21/11/2026 au 22/11/2026",
+  "date_label": "Jusqu'au 22/11/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=70584",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Soirée Harengs - Brassi restaurant",
+  "start": "2026-11-24",
+  "date_label": "Le 24/11/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131801",
   "source": "Office de Tourisme"
  },
  {
