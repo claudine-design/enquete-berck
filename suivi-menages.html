@@ -93,7 +93,9 @@
     <select id="rap-presta"></select>
     <label for="rap-texte">Le rappel (ce qu'il verra, mot pour mot)</label>
     <textarea id="rap-texte" maxlength="400" placeholder="Ex. : Bien mettre les cartes de visite."></textarea>
-    <label class="chk" id="rap-chk-l" style="display:none"><input type="checkbox" id="rap-appart"> <span id="rap-appart-t"></span></label>
+    <label for="rap-ou">Pour quels logements ?</label>
+    <select id="rap-ou"></select>
+    <div class="aide" id="rap-ou-aide" style="font-size:12px;color:var(--mut)"></div>
     <div class="err" id="rap-err"></div>
     <div class="btns"><button class="no" type="button" onclick="fermerRappel()">Annuler</button><button class="ok" type="button" id="rap-ok">Enregistrer le rappel</button></div>
   </div>
@@ -201,6 +203,9 @@ function render(){
 // Claudine note un rappel (ex. « Attention, bien mettre les cartes de visite. ») ; au prochain ménage
 // de ce prestataire, le tuto l'affiche en grand au début (« OK ») puis à « Terminer » (« OK » à nouveau).
 // Statuts : ACTIF → VU (OK au « Je commence ») → FAIT (OK à la fin).
+// Les 10 Love Rooms (liste du site, 20/11/2026) — même liste dans le tuto (checklist-menage) et le robot WhatsApp de 10h.
+const LOVE_ROOMS = ['mini-love-room','grande-love-room','apolove','cocon-romantique','balneo','evasion','rotonde','patio','escapade','grande-roue'];
+NOMS['love-rooms'] = 'les Love Rooms';
 const PRENOMS = ['Rémi','Christelle','Claire et Sébastien','Stéphanie','Aimance','Maëlys','Priscillia','Karl','Sabrina','Alicia','Hélène','Claudine']; // même liste que le tuto ménage
 let rapCtx = {};
 const dt = iso => iso ? new Date(iso).toLocaleDateString('fr-FR', {day:'numeric', month:'short'}) + ' ' + hm(iso) : '';
@@ -211,12 +216,14 @@ function ouvrirRappel(ctx){
   document.getElementById('rap-presta').innerHTML = '<option value="">— Choisir —</option>' + noms.map(n => '<option' + (n === rapCtx.presta ? ' selected' : '') + '>' + esc(n) + '</option>').join('');
   document.getElementById('rap-texte').value = '';
   document.getElementById('rap-err').textContent = '';
-  const chk = document.getElementById('rap-chk-l');
-  if(rapCtx.appart){
-    chk.style.display = 'flex';
-    document.getElementById('rap-appart').checked = false;
-    document.getElementById('rap-appart-t').textContent = 'Seulement au ' + (NOMS[rapCtx.appart] || rapCtx.appart) + ' (sinon : à son prochain ménage, quel que soit le logement)';
-  } else chk.style.display = 'none';
+  // 21/11/2026 : tous les logements / seulement les 10 Love Rooms / seulement le logement de cette carte
+  const ou = document.getElementById('rap-ou');
+  ou.innerHTML = '<option value="">Tous les logements (son prochain ménage)</option>' +
+    '<option value="love-rooms">Seulement les Love Rooms (10)</option>' +
+    (rapCtx.appart ? '<option value="' + esc(rapCtx.appart) + '">Seulement ' + esc(NOMS[rapCtx.appart] || rapCtx.appart) + '</option>' : '');
+  const aide = () => { document.getElementById('rap-ou-aide').textContent = ou.value === 'love-rooms'
+    ? 'Love Rooms : ' + LOVE_ROOMS.map(s => NOMS[s]).join(', ') + '. Le rappel attend son prochain ménage dans l\'une d\'elles.' : ''; };
+  ou.onchange = aide; aide();
   document.getElementById('rap-form').classList.add('open');
   setTimeout(() => document.getElementById(rapCtx.presta ? 'rap-texte' : 'rap-presta').focus(), 50);
 }
@@ -240,7 +247,7 @@ document.getElementById('rap-ok').onclick = async () => {
   const texte = document.getElementById('rap-texte').value.trim();
   if(!presta){ err.textContent = 'Choisissez le prestataire.'; return; }
   if(!texte){ err.textContent = 'Écrivez le rappel.'; return; }
-  const appart = rapCtx.appart && document.getElementById('rap-appart').checked ? rapCtx.appart : '';
+  const appart = document.getElementById('rap-ou').value;
   const id = 'R' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
   btn.disabled = true; btn.textContent = 'Enregistrement…'; err.textContent = '';
   try {
