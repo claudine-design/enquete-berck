@@ -1,7 +1,7 @@
 [
  {
   "titre": "Exposition \"Ecrite par la lumière\"",
-  "start": "2026-11-22",
+  "start": "2026-11-23",
   "date_label": "Jusqu'au 14/03/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=114145",
@@ -9,7 +9,7 @@
  },
  {
   "titre": "Lectures Philosophiques à partager - Musée Opale Sud",
-  "start": "2026-11-22",
+  "start": "2026-11-23",
   "date_label": "Jusqu'au 23/12/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131128",
@@ -17,7 +17,7 @@
  },
  {
   "titre": "Brocante - Ambassade Bonchat",
-  "start": "2026-11-22",
+  "start": "2026-11-23",
   "date_label": "Jusqu'au 10/01/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=113893",
@@ -25,7 +25,7 @@
  },
  {
   "titre": "Exposition Chalotte HIS - Causettes",
-  "start": "2026-11-22",
+  "start": "2026-11-23",
   "date_label": "Jusqu'au 02/12/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131532",
@@ -33,18 +33,10 @@
  },
  {
   "titre": "Concours de dessin - Au comptoir du littoral",
-  "start": "2026-11-22",
+  "start": "2026-11-23",
   "date_label": "Jusqu'au 04/12/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131690",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "6h de Berck - 61ème édition",
-  "start": "2026-11-22",
-  "date_label": "Jusqu'au 22/11/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=70584",
   "source": "Office de Tourisme"
  },
  {
@@ -194,6 +186,14 @@
   "date_label": "Le 19/12/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131166",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Vérotière Nocturne",
+  "start": "2026-12-19",
+  "date_label": "Le 19/12/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=90715",
   "source": "Office de Tourisme"
  }
 ]
