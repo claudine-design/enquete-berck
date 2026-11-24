@@ -1,7 +1,15 @@
 [
  {
+  "titre": "Matchs de Basket de l'ABBR",
+  "start": "2026-11-24",
+  "date_label": "Jusqu'au 19/02/2027",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=124554",
+  "source": "Office de Tourisme"
+ },
+ {
   "titre": "Exposition \"Ecrite par la lumière\"",
-  "start": "2026-11-23",
+  "start": "2026-11-24",
   "date_label": "Jusqu'au 14/03/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=114145",
@@ -9,7 +17,7 @@
  },
  {
   "titre": "Lectures Philosophiques à partager - Musée Opale Sud",
-  "start": "2026-11-23",
+  "start": "2026-11-24",
   "date_label": "Jusqu'au 23/12/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131128",
@@ -17,15 +25,15 @@
  },
  {
   "titre": "Brocante - Ambassade Bonchat",
-  "start": "2026-11-23",
+  "start": "2026-11-24",
   "date_label": "Jusqu'au 10/01/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=113893",
   "source": "Office de Tourisme"
  },
  {
-  "titre": "Exposition Chalotte HIS - Causettes",
-  "start": "2026-11-23",
+  "titre": "Exposition Charlotte HIS chez Causettes",
+  "start": "2026-11-24",
   "date_label": "Jusqu'au 02/12/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131532",
@@ -33,22 +41,14 @@
  },
  {
   "titre": "Concours de dessin - Au comptoir du littoral",
-  "start": "2026-11-23",
+  "start": "2026-11-24",
   "date_label": "Jusqu'au 04/12/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131690",
   "source": "Office de Tourisme"
  },
  {
-  "titre": "Soirée Harengs - Brassi restaurant",
-  "start": "2026-11-24",
-  "date_label": "Le 24/11/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131801",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Christophe Alévêque - Familia théâtre",
+  "titre": "Christophe Alévêque - Familia théâtre - ANNULE",
   "start": "2026-11-27",
   "date_label": "Le 27/11/2026",
   "categories": [],
@@ -141,6 +141,14 @@
   "source": "Office de Tourisme"
  },
  {
+  "titre": "ABBR – Match de Coupe de France – 8èmes de finale",
+  "start": "2026-12-02",
+  "date_label": "Le 02/12/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131833",
+  "source": "Office de Tourisme"
+ },
+ {
   "titre": "ANTEK - Familia Théâtre - ANNULE",
   "start": "2026-12-03",
   "date_label": "Le 03/12/2026",
@@ -178,22 +186,6 @@
   "date_label": "Le 19/12/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131755",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Ca sent l’sapin ! – Familia Théâtre",
-  "start": "2026-12-19",
-  "date_label": "Le 19/12/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131166",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Vérotière Nocturne",
-  "start": "2026-12-19",
-  "date_label": "Le 19/12/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=90715",
   "source": "Office de Tourisme"
  }
 ]
