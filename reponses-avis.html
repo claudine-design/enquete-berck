@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Remerciements Voyageurs &mdash; Avis 5 &eacute;toiles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Great+Vibes&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --noir:#0a0a0a;--noir-2:#141414;
+  --or-clair:#f4d98a;--or:#d4a84a;--or-cuivre:#b8872c;--or-fonce:#7a5a1c;
+  --creme:#f5ecd9;--creme-2:#e8dcc0;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',sans-serif;
+  background:radial-gradient(ellipse at top,#1a1a1a 0%,#0a0a0a 50%,#050505 100%);
+  background-attachment:fixed;
+  min-height:100vh;color:var(--creme);padding:20px 16px 60px;
+}
+.wrap{max-width:880px;margin:0 auto;position:relative;z-index:1}
+.hero{
+  text-align:center;padding:32px 24px 28px;margin-bottom:24px;
+  background:linear-gradient(180deg,rgba(20,20,20,0.95),rgba(10,10,10,0.95));
+  border:1px solid var(--or-cuivre);position:relative;
+}
+.hero::before{
+  content:"";position:absolute;top:5px;left:5px;right:5px;bottom:5px;
+  border:0.5px solid rgba(212,168,74,0.25);pointer-events:none;
+}
+.brand-line{
+  font-family:'Cinzel',serif;font-size:11px;font-weight:500;
+  letter-spacing:6px;text-transform:uppercase;color:var(--or);margin-bottom:8px;
+}
+.hero-title{
+  font-family:'Great Vibes',cursive;font-size:52px;font-weight:400;line-height:1.1;
+  background:linear-gradient(180deg,var(--or-clair),var(--or),var(--or-cuivre));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  margin:6px 0 8px;
+}
+.hero-sub{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:17px;color:var(--creme-2);line-height:1.5;max-width:560px;margin:0 auto;
+}
+.hero-note{
+  font-size:12px;color:rgba(245,236,217,0.55);margin-top:14px;line-height:1.5;
+}
+.count-badge{
+  display:inline-block;margin-top:12px;padding:6px 18px;
+  border:1px solid var(--or-cuivre);color:var(--or-clair);
+  font-family:'Cinzel',serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;
+}
+.card{
+  background:linear-gradient(180deg,rgba(20,20,20,0.92),rgba(12,12,12,0.95));
+  border:1px solid rgba(184,135,44,0.5);margin-bottom:18px;padding:22px 22px 18px;
+  position:relative;
+}
+.card::before{
+  content:"";position:absolute;top:4px;left:4px;right:4px;bottom:4px;
+  border:0.5px solid rgba(212,168,74,0.15);pointer-events:none;
+}
+.card-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px;margin-bottom:4px}
+.guest-name{
+  font-family:'Great Vibes',cursive;font-size:34px;line-height:1;
+  background:linear-gradient(180deg,var(--or-clair),var(--or));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.stars{color:var(--or);font-size:13px;letter-spacing:2px}
+.meta{
+  color:rgba(245,236,217,0.65);margin-bottom:12px;
+  font-style:italic;font-family:'Cormorant Garamond',serif;font-size:15px;
+}
+.avis{
+  border-left:2px solid var(--or-cuivre);padding:8px 14px;margin-bottom:12px;
+  font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;
+  color:var(--creme-2);line-height:1.5;
+}
+.avis .label{
+  display:block;font-family:'Cinzel',serif;font-style:normal;font-size:9px;
+  letter-spacing:3px;text-transform:uppercase;color:var(--or);margin-bottom:4px;
+}
+.clin{
+  font-size:12.5px;color:rgba(244,217,138,0.75);margin-bottom:12px;line-height:1.55;
+}
+.clin b{color:var(--or-clair);font-weight:500}
+.reponse{
+  background:rgba(244,217,138,0.06);border:1px dashed rgba(212,168,74,0.45);
+  padding:14px 16px;font-size:14.5px;line-height:1.65;color:var(--creme);
+  white-space:pre-wrap;margin-bottom:12px;
+}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+.btn{
+  flex:1;min-width:150px;text-align:center;cursor:pointer;
+  font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  padding:12px 16px;border:1px solid var(--or-cuivre);background:transparent;
+  color:var(--or-clair);text-decoration:none;transition:all .25s;
+}
+.btn:hover{background:rgba(212,168,74,0.12)}
+.btn.primary{
+  background:linear-gradient(180deg,var(--or-clair),var(--or),var(--or-cuivre));
+  color:#141414;font-weight:600;border:none;
+}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.copied{background:#2e5c34;border-color:#2e5c34;color:#d9f5dd}
+.sep{display:flex;align-items:center;justify-content:center;gap:10px;margin:26px 0 18px}
+.sep .line{width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--or-cuivre),transparent)}
+.sep .diamond{width:6px;height:6px;background:var(--or);transform:rotate(45deg)}
+.footer{
+  text-align:center;margin-top:30px;font-family:'Cormorant Garamond',serif;
+  font-style:italic;font-size:14px;color:rgba(245,236,217,0.5);
+}
+@media(max-width:520px){
+  .hero-title{font-size:40px}
+  .guest-name{font-size:28px}
+  .card{padding:18px 14px 14px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hero">
+  <div class="brand-line">Conciergerie &mdash; Berck-sur-Mer</div>
+  <div class="hero-title">Merci &agrave; nos voyageurs</div>
+  <p class="hero-sub">R&eacute;ponses publiques aux avis 5&nbsp;&eacute;toiles &mdash; chaleureuses et bienveillantes, sans d&eacute;tails personnels&nbsp;: seuls les &eacute;l&eacute;ments que le voyageur a lui-m&ecirc;me rendus publics dans son avis sont &eacute;voqu&eacute;s.</p>
+  <div class="count-badge">25 avis &middot; 2 juin &mdash; 1er juillet 2026</div>
+  <p class="hero-note">Pour publier : cliquez &laquo;&nbsp;Copier&nbsp;&raquo; puis &laquo;&nbsp;R&eacute;pondre sur Airbnb&nbsp;&raquo; et collez le texte. Seul le texte encadr&eacute; est publi&eacute;&nbsp;; la ligne &laquo;&nbsp;Pour m&eacute;moire&nbsp;&raquo; reste priv&eacute;e, pour vous.<br>Airbnb n&rsquo;autorise les r&eacute;ponses publiques que pendant 30 jours apr&egrave;s l&rsquo;avis&nbsp;: les plus anciens (en bas de page) sont &agrave; traiter en premier.</p>
+</div>
+
+<div id="cards"></div>
+
+<div class="sep"><div class="line"></div><div class="diamond"></div><div class="line"></div></div>
+<div class="footer">G&eacute;n&eacute;r&eacute; le 2 juillet 2026 &mdash; d&rsquo;apr&egrave;s les avis et conversations Airbnb</div>
+
+</div>
+
+<script>
+const DATA = [
+{
+  n:"Isabelle", l:"« L'Évasion » Balnéo et Sauna – 150 m plage", d:"27–28 juin 2026",
+  avis:"Très bon accueil, le logement est propre et fidèle à la description, nous y avons passé un excellent week-end à refaire",
+  clin:"Arrivée anticipée à 14h accordée · venue avec son mari · a écrit « ça sera avec plaisir que nous reviendrons »",
+  rep:"Merci beaucoup Isabelle ! Nous sommes ravis que vous ayez passé un excellent week-end à L'Évasion. Un accueil chaleureux et un logement soigné, c'est ce que nous souhaitons offrir à chacun de nos voyageurs, et votre gentil message nous touche beaucoup. Au plaisir de vous accueillir à nouveau ! Claudine",
+  url:"https://www.airbnb.fr/users/reviews?id=560705312&respond_to=1717916448978101403"
+},
+{
+  n:"Linda", l:"La Rotonde du bien-être – 150 m plage, cœur de Berck", d:"26–28 juin 2026",
+  avis:"très bon séjour, nos hôtes étaient réactif, merci pour la petite attention. tout était parfait.",
+  clin:"En arrivant, elle a trouvé l'appartement « vraiment très joli » et a remercié pour le panier de bienvenue (sa « petite attention »)",
+  rep:"Merci Linda ! Nous sommes ravis que tout ait été parfait et que la petite attention de bienvenue vous ait fait plaisir — c'est notre façon de remercier nos voyageurs d'avoir choisi La Rotonde. Au plaisir de vous revoir à Berck ! Claudine",
+  url:"https://www.airbnb.fr/users/reviews?id=560705312&respond_to=1717972184590079116"
+},
+{
+  n:"Sabrina", l:"Cocon Romantique — Sauna, Balnéo & Mer à 100 m", d:"24–26 juin 2026",
+  avis:"Nous avons passé un bon sejour tres bonne communication. Claudine a ete comprehnsive lors quon a eu un petit retard pour quitter le logement. Merci…",
+  clin:"Venue avec son enfant · s'est excusée d'un petit retard au départ et proposait même de payer un supplément",
+  rep:"Merci beaucoup Sabrina ! Ce fut un plaisir de vous accueillir au Cocon Romantique. Une bonne communication et un peu de souplesse, c'est tout naturel — merci à vous pour votre gentillesse tout au long du séjour. Au plaisir de vous accueillir à nouveau ! Claudine",
+  url:"https://www.airbnb.fr/users/reviews?id=560705312&respond_to=1716461648152516925"
+},
+{
+  n:"Khalifa", l:"Balnéo Face à la mer", d:"24–25 juin 2026",
+  avis:"Merci",
+  clin:"Petite confusion sur la date d'arrivée résolue avec le sourire · message chaleureux une fois installé · « Merci 🙏 » au départ",
+  rep:"Merci à vous Khalifa ! Ce fut un plaisir de vous accueillir face à la mer. Vous serez toujours le bienvenu à Berck ! Claudine",
+  url:"https://www.airbnb.fr/users/reviews?id=560705312&respond_to=1715780158640194060"
+},
+{
+  n:"Matthieu", l:"« L'Évasion » Balnéo et Sauna – 150 m plage", d:"22–23 juin 2026",
+  avis:"Séjour très accueillant, je recommande à 100 %",
+  clin:"Son cousin fait les berlingots au Succès Berckois ! · mer, bowling et phoques avec son frère et son fils · a signalé le store avec une vidéo",
+  rep:"Merci Matthieu ! Votre recommandation à 100 % nous fait très plaisir. Nous espérons que vous avez bien profité de Berck et de tout ce que la ville a à offrir. Au plaisir de vous accueillir à nouveau ! Claudine",
+  url:"https://www.airbnb.fr/users/reviews?id=560705312&respond_to=1714391469508892296"
+},
+{
+  n:"Simon", l:"La Rotonde du bien-être – 150 m plage, cœur de Berck", d:"18–20 juin 2026",
+  avis:"super séjour dans ce logement très bien décoré, grand, bien agencé et fonctionnel ! le bain à remous et le sauna sont vraiment super pour se détendre…",
+  clin:"Séjour organisé en surprise pour sa copine · arrivée à minuit et demi depuis l'aéroport de Beauvais, tout avait été vérifié pour eux · suggestion privée : un porte-clés",
+  rep:"Merci Simon ! Nous sommes ravis que la décoration de La Rotonde et ses équipements bien-être vous aient plu — le bain à remous et le sauna font le bonheur de nos voyageurs. À bientôt pour un prochain séjour ! Claudine",
+  url:"https://www.airbnb.fr/users/reviews?id=560705312&respond_to=1712159673650257971"
+},
+{
+  n:"Charlotte", l:"« L'Évasion » Balnéo et Sauna – 150 m plage", d:"15–17 juin 2026",
+  avis:"Séjour parfait avec une hôte très agréable et de bon conseil sur les choses à ne pas rater sur Berck. À refaire",
+  clin:"Ils ont pu voir les phoques grâce aux conseils donnés · message de départ très chaleureux",
+  rep:"Merci Charlotte ! Ce fut un plaisir de partager nos bonnes adresses et les incontournables de Berck. Ravie que votre séjour à L'Évasion ait été parfait — « à refaire » quand vous voulez ! Claudine",
+  url:"https://www.airbnb.fr/users/reviews?id=560705312&respond_to=1710031068474656179"
+},
+{
+  n:"Lotte", l:"Romantique chic – 150 m plage, patio", d:"6–13 juin 2026",
+  avis:"mooie plek en vriendelijke eigenaar (« bel endroit et propriétaire sympathique »)",
+  clin:"Voyageuse néerlandaise, une semaine complète · « Tout est parfait ici :) » · touchée qu'on lui signale ses affaires oubliées",
+  rep:"Hartelijk dank Lotte ! Ce fut un plaisir de vous accueillir au Romantique Chic. Nous espérons vous revoir un jour à Berck — tot ziens ! Claudine",
+  url:"https://www.airbnb.fr/users/reviews?id=560705312&respond_to=1707065888518642305"
+},
+{
+  n:"Marie-Laurence", l:"Parking, Wi-Fi et balcon – très bien situé", d:"10–12 juin 2026",
+  avis:"Comme précédemment, nous avons trouvé un logement tout à fait répondant à nos besoins, et correspondant bien aux descriptions et photos sur l'annonce…",
+  clin:"Voyageuse fidèle (« Comme précédemment ») · a déjà réservé le même logement pour les 18–20 juillet · en privé : « ne changez rien »",
+  rep:"Merci Marie-Laurence ! Quelle joie de vous accueillir à nouveau — votre fidélité est le plus beau des compliments et nous touche énormément. Au plaisir de vous retrouver très bientôt ! Claudine",
+  url:"https://www.airbnb.fr/users/reviews?id=560705312&respond_to=1706548405081768353"
+},
+{
+  n:"Cyril", l:"« L'Évasion » Balnéo et Sauna – 150 m plage", d:"8–12 juin 2026",
+  avis:"propre, hote réactif, nous reviendrons très certainement pour notre prochain voyage.",
+  clin:"A reçu des conseils détente (Spa Marin, thalasso du Touquet) · a félicité la personne du ménage · veut revenir « dans quelques semaines ou jours 😁 » · signalements privés utiles (jacuzzi, volet)",
+  rep:"Merci Cyril ! Nous serons très heureux de vous retrouver lors de votre prochain voyage — L'Évasion vous attend. Merci aussi pour vos retours attentionnés, qui nous aident à toujours nous améliorer. À bientôt ! Claudine",
+  url:"https://www.airbnb.fr/users/reviews?id=560705312&respond_to=1706491181948034394"
+},
+{
+  n:"Lucas", l:"Parking, Wi-Fi et balcon – très bien situé", d:"9–10 juin 2026",
+  avis:"Merci beaucoup pour ce séjour",
+  clin:"Parenthèse en couple d'une nuit · arrivée en train, entrée anticipée à 15h accordée · avait promis un avis pour saluer la réactivité",
+  rep:"Merci à vous Lucas ! Ce fut un plaisir de vous accueillir. Être disponibles et réactifs pour nos voyageurs nous tient à cœur — au plaisir de vous revoir ! Claudine",
+  url:"https://www.airbnb.fr/users/reviews?id=560705312&respond_to=1705078154787272091"
+},
+{
+  n:"Tamara", l:"La Rotonde du bien-être – 150 m plage, cœur de Berck", d:"6–8 juin 2026",
+  avis:"Super logement !! Bien propre personne très réactive je recommande 🥰",
+  clin:"En plein séjour : « Merci de votre accueil tous ce passe super bien !! 😌 » · départ tardif à 13h accordé le lundi",
+  rep:"Merci Tamara pour ce commentaire plein de soleil 🥰 ! Nous sommes ravis que La Rotonde vous ait plu. Revenez quand vous voulez, c'est toujours un plaisir ! Claudine",
+  url:"https://www.airbnb.fr/users/reviews?id=560705312&respond_to=1703469472668173404"
+},
+{
+  n:"Aurélien", l:"Balnéo Face à la mer", d:"6–7 juin 2026",
+  avis:"Très bon séjour , logement propre",
+  clin:"Venu avec Mathilde · arrivée dès 14h sous la pluie · départ signé « Aurélien & Mathilde — Belle journée et à bientôt »",
+  rep:"Merci Aurélien ! Nous sommes ravis que votre séjour face à la mer vous ait plu. Au plaisir de vous accueillir à nouveau à Berck — belle journée et à bientôt ! Claudine",
+  url:"https://www.airbnb.fr/users/reviews?id=560705312&respond_to=1702778526599564618"
+},
+{
+  n:"Steffy", l:"Parking, Wi-Fi et balcon – très bien situé", d:"6–7 juin 2026",
+  avis:"Le logement est très beau et impeccable je vous le conseille fortement. Hôte très sympathique et donne des instructions très clairs…",
+  clin:"Réservation de dernière minute · si consciencieuse qu'elle voulait envoyer une photo du canapé remis en place",
+  rep:"Merci Steffy pour ce commentaire adorable ! Nous sommes ravis que le logement vous ait plu et que tout ait été clair et simple pour votre séjour. Prenez soin de vous, et à bientôt ! Claudine",
+  url:"https://www.airbnb.fr/users/reviews?id=560705312&respond_to=1702771488067845948"
+},
+{
+  n:"Alison", l:"« L'Évasion » Balnéo et Sauna – 150 m plage", d:"5–7 juin 2026",
+  avis:"Appartement très propre. Une belle experience de pouvoir profite du balneo et du sauna. Une petite attention, est prevue pour l'arrivée et c'est appré…",
+  clin:"A adoré la petite attention de bienvenue (mentionnée en privé ET dans l'avis) · appartement laissé très bien rangé · suggestion privée : rideau/volet cuisine",
+  rep:"Merci Alison ! Nous sommes ravis que la balnéo, le sauna et la petite attention d'arrivée vous aient plu — c'est notre façon de souhaiter la bienvenue à nos voyageurs. À bientôt ! Claudine",
+  url:"https://www.airbnb.fr/users/reviews?id=560705312&respond_to=1702840124083657662"
+},
+{
+  n:"Jeremy", l:"Balnéo Face à la mer", d:"5–6 juin 2026",
+  avis:"Très agréable",
+  clin:"Réservation de dernière minute, arrivée le jour même · a prévenu spontanément de son départ et de la remise des clés",
+  rep:"Merci Jeremy ! Nous sommes ravis que votre séjour face à la mer ait été agréable. Vous serez toujours le bienvenu ! Claudine",
+  url:"https://www.airbnb.fr/users/reviews?id=560705312&respond_to=1702129464824655293"
+},
+{
+  n:"Jennifer", l:"La Rotonde du bien-être – 150 m plage, cœur de Berck", d:"4–6 juin 2026",
+  avis:"Excellent séjour, logement très beau, très fonctionnel idéal pour la détente ! Hôtes très réactifs et accueillants, il n y a plus qu'à profiter !",
+  clin:"Au départ : « très agréable séjour, avec le soleil en prime » et « Encore merci nous reviendrons avec plaisir ! »",
+  rep:"Merci Jennifer pour ce superbe commentaire ! « Il n'y a plus qu'à profiter » : c'est exactement ce que nous souhaitons offrir à nos voyageurs. Au plaisir de vous accueillir à nouveau à La Rotonde ! Claudine",
+  url:"https://www.airbnb.fr/users/reviews?id=560705312&respond_to=1701989401208411628"
+},
+{
+  n:"Élodie", l:"« L'Évasion » Balnéo et Sauna – 150 m plage", d:"4–5 juin 2026",
+  avis:"Parfait. Très propre. Par contre pour rentrer la porte du bâtiment est vestuste, j'ai eu bcp de mal pour rentrer dans le bâtiment. Il faut forcer",
+  clin:"Pendant le séjour : « Votre appartement est très chaleureux » · souci de porte d'immeuble résolu en 5 minutes par Léa",
+  rep:"Merci Élodie ! Nous sommes ravis que l'appartement vous ait plu. Merci également d'avoir signalé la difficulté avec la porte de l'immeuble : nous avons fait remonter le point afin que l'accès soit amélioré. Au plaisir de vous revoir ! Claudine",
+  url:"https://www.airbnb.fr/users/reviews?id=560705312&respond_to=1701338924295232024"
+},
+{
+  n:"Jean-François", l:"Parking, Wi-Fi et balcon – très bien situé", d:"20–23 mai 2026",
+  avis:"Logement conforme a la description. Confortable, très propre, bien équipé et bien situé. Le parking est un vrai plus pour utiliser les transports en c…",
+  clin:"Fidèle depuis fin 2024 (« déjà eu un problème de code ! 😉 ») · 20 min de lutte victorieuse avec le volume de la TV · suggestion privée : un petit couteau pointu (à ajouter !)",
+  rep:"Merci Jean-François ! Nous sommes ravis que le logement vous ait plu et que le parking vous ait facilité les déplacements. Au plaisir de vous accueillir à nouveau ! Claudine",
+  url:"https://www.airbnb.fr/users/reviews?id=560705312&respond_to=1692018729342888140"
+},
+{
+  n:"Sabrina", l:"La Rotonde du bien-être – 150 m plage, cœur de Berck", d:"30 mai – 1er juin 2026",
+  avis:"Nous avons passe un agréable moment le logement correspond aux description. Hote réactive tres bonne communication. Je recommande vivement",
+  clin:"Longue route, arrivée après 19h en autonomie · venue avec son enfant · « nous souhaitons revenir prochainement »",
+  rep:"Merci beaucoup Sabrina ! Nous sommes ravis que votre séjour à La Rotonde vous ait plu. Une bonne communication avec nos voyageurs nous tient vraiment à cœur. Au plaisir de vous accueillir à nouveau ! Claudine",
+  url:"https://www.airbnb.fr/users/reviews?id=560705312&respond_to=1698430065030155344"
+},
+{
+  n:"Maxime", l:"Balnéo Face à la mer", d:"30–31 mai 2026",
+  avis:"Logement très agréable et très apaisant avec vue sur la mer en prenant soin de soi. La localisation est bonne avec les restaurants accessibles à pied…",
+  clin:"A salué « la présentation très claire » avant l'arrivée · a signalé avec une grande gentillesse un petit oubli de papier toilette",
+  rep:"Merci Maxime ! Nous sommes ravis que la vue sur la mer et le quartier vous aient séduit — c'est un endroit idéal pour se ressourcer et prendre soin de soi. Au plaisir de vous revoir ! Claudine",
+  url:"https://www.airbnb.fr/users/reviews?id=560705312&respond_to=1697821531736711759"
+},
+{
+  n:"Antoine", l:"« L'Évasion » Balnéo et Sauna – 150 m plage", d:"29–31 mai 2026",
+  avis:"Nous avons passés un super week end dans ce logement, je recommande",
+  clin:"Deuxième séjour (déjà 5 étoiles en avril !) · venu avec Marinelle · « nous gardons cette adresse dans nos favoris 😊 »",
+  rep:"Merci Antoine ! Nous sommes ravis que vous ayez passé un super week-end à L'Évasion. Votre recommandation nous fait très plaisir — au plaisir de vous accueillir à nouveau ! Claudine",
+  url:"https://www.airbnb.fr/users/reviews?id=560705312&respond_to=1697757232243026359"
+},
+{
+  n:"Michael", l:"Cocon Romantique — Sauna, Balnéo & Mer à 100 m", d:"30–31 mai 2026",
+  avis:"Nous avons adoré notre séjour ! Endroit relaxant et romantique ! Panier d'accueil très sympathique",
+  clin:"Remerciements chaleureux dès le soir de l'arrivée · déjà revenus fin juin au Balnéo Face à la mer — clients fidèles !",
+  rep:"Merci Michael ! Nous sommes ravis que l'ambiance relaxante et romantique du Cocon vous ait plu, et que le panier d'accueil vous ait fait plaisir — c'est notre façon de souhaiter la bienvenue. À très bientôt ! Claudine",
+  url:"https://www.airbnb.fr/users/reviews?id=560705312&respond_to=1697761320135782068"
+},
+{
+  n:"Mabrouk", l:"Parking, Wi-Fi et balcon – très bien situé", d:"24–31 mai 2026",
+  avis:"studio propre, proche des commodités. place de parking privé. instructions très claires. petit balcon au calme. je recommande vivement",
+  clin:"Une semaine au studio · entrée dès 15h accordée · voulait re-réserver un mois entier (dates prises jusqu'au 12/06)",
+  rep:"Merci Mabrouk ! Nous sommes ravis que le studio, le parking privé et le petit balcon au calme vous aient plu. Ce fut un plaisir de vous accueillir — le studio vous recevra de nouveau avec joie ! Claudine",
+  url:"https://www.airbnb.fr/users/reviews?id=560705312&respond_to=1697613302541312655"
+},
+{
+  n:"Danielle", l:"La Rotonde du bien-être – 150 m plage, cœur de Berck", d:"28–30 mai 2026",
+  avis:"Séjour très agréable, hôte très disponible, petit panier de bienvenue bien appréciable logement impeccable. Je recommande vivement. Expérience à re…",
+  clin:"Message de départ spontané : « merci beaucoup pour l'accueil c'était super 👌 »",
+  rep:"Merci Danielle ! Nous sommes ravis que le panier de bienvenue et La Rotonde vous aient plu. Au plaisir de vous accueillir à nouveau pour cette « expérience à refaire » ! Claudine",
+  url:"https://www.airbnb.fr/users/reviews?id=560705312&respond_to=1696936817226899901"
+}
+];
+
+const cards = document.getElementById('cards');
+DATA.forEach((g, i) => {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="card-head">
+      <span class="guest-name">${g.n}</span>
+      <span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733; 5/5</span>
+    </div>
+    <div class="meta">${g.l} &middot; ${g.d}</div>
+    <div class="avis"><span class="label">Son avis</span>&laquo; ${g.avis} &raquo;</div>
+    <div class="clin"><b>Pour m&eacute;moire (non publi&eacute;) :</b> ${g.clin}</div>
+    <div class="reponse" id="rep-${i}">${g.rep}</div>
+    <div class="actions">
+      <button class="btn primary" onclick="copier(${i}, this)">Copier le remerciement</button>
+      <a class="btn" href="${g.url}" target="_blank" rel="noopener">R&eacute;pondre sur Airbnb</a>
+    </div>`;
+  cards.appendChild(card);
+});
+
+function copier(i, btn){
+  const txt = document.getElementById('rep-'+i).innerText;
+  navigator.clipboard.writeText(txt).then(() => {
+    const old = btn.textContent;
+    btn.textContent = 'Copié ✓';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = old; btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
+</body>
+</html>
