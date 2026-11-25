@@ -898,6 +898,10 @@ const LESSIVE = {
   'balneo':'auto', 'cocon-romantique':'auto', 'apolove':'auto', 'mini-love-room':'auto', 'grande-love-room':'auto',
   'rotonde':'aucune', 'patio':'aucune', 'evasion':'aucune', 'jeanne':'aucune'
 };
+// Chauffage piloté à distance (Cozytouch) partout SAUF Hamac et Apolove (Claudine 25/11/2026) :
+// le prestataire vérifie que les radiateurs sont allumés et ne touche pas à la température.
+const SANS_CHAUFFAGE_AUTO = ['hamac','apolove'];
+const CHAUFFAGE_AUTO = s => !SANS_CHAUFFAGE_AUTO.includes(s);
 const SANS_LINGE = ['hamac','paddle','kitesurf','surf','face-mer','grand-large','albatros','terrasse','famille']; // + Famille 11/10/2026
 
 // Photos : {id, label, multi?:true (plusieurs lits), nonConcerne?:true}
@@ -913,7 +917,8 @@ const data = [
     {id:"machine", t:"Lancer la machine à laver avec : lavettes, essuie-mains, tapis de bain ET peignoirs. Lavante-séchante : elle lave et sèche toute seule, on ne s'en occupe pas.", only: s => LESSIVE[s] === 'auto'},
     {id:"sac-blanchisserie", t:"Pas de lessive ici. Draps, draps-housses, taies d'oreiller et serviettes → dans un sac BLANC ET NOIR, déposé dans la cave (pour la blanchisserie).", d:"Torchons, lavettes, tapis de bain ne vont PAS dans ce sac : voir étape 8 (sac Lidl).", only: s => LESSIVE[s] === 'aucune'},
     {id:"fenetres", t:"Ouvrir les fenêtres."},
-    {id:"radiateurs", t:"Radiateurs : 12° l'hiver, éteints l'été."},
+    {id:"radiateurs", t:"Radiateurs : 12° l'hiver, éteints l'été.", only: s => !CHAUFFAGE_AUTO(s)},
+    {id:"radiateurs", t:"Vérifier que les radiateurs sont ALLUMÉS. Ne PAS toucher à la température : c'est automatique.", d:"Le chauffage est piloté à distance. Un radiateur éteint : le rallumer, sans changer le réglage.", only: s => CHAUFFAGE_AUTO(s)},
   ]],
   ["s2","2. Salle de bain : produits — dans cet ordre",[
     {id:"anticalcaire", t:"① Anti-calcaire sur toute la robinetterie : salle de bain, cuisine, balnéo, buses et commandes balnéo."},
@@ -979,6 +984,7 @@ const data = [
     {id:"torchons", t:"Torchons : les déposer dans le local ménage.", only: s => s === 'apolove'},
     {id:"reassort", t:"Noter le réassort dans l'appli.", d:"Appli réassort : https://claudine-design.github.io/enquete-berck/reassort/"},
     {id:"spray-he", t:"Asperger le spray huiles essentielles dans chaque pièce.", d:"Dernier geste avant de partir : quelques pulvérisations dans chaque pièce (entrée, salon, chambre(s), salle de bain) pour que le voyageur entre dans un logement qui sent bon."},
+    {id:"portes-entrouvertes", t:"Laisser les portes INTÉRIEURES de l'appartement entrouvertes : ne pas les fermer.", d:"Chambres, salle de bain, WC, couloir : les portes restent entrouvertes pour une bonne aération. Seule la porte d'entrée se ferme."},
     {id:"fermeture", t:"Fenêtres fermées, lumières éteintes, robinets vérifiés, clés en place, code brouillé."},
   ]],
 ];
