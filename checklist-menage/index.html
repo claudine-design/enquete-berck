@@ -931,7 +931,7 @@ const data = [
     {id:"machine", t:"Lancer la machine à laver avec : lavettes, essuie-mains, tapis de bain ET peignoirs. Lavante-séchante : elle lave et sèche toute seule, on ne s'en occupe pas.", only: s => LESSIVE[s] === 'auto'},
     {id:"sac-blanchisserie", t:"Pas de lessive ici. Draps, draps-housses, taies d'oreiller et serviettes → dans un sac BLANC ET NOIR, déposé dans la cave (pour la blanchisserie).", d:"Torchons, lavettes, tapis de bain ne vont PAS dans ce sac : voir étape 8 (sac Lidl).", only: s => LESSIVE[s] === 'aucune'},
     {id:"fenetres", t:"Ouvrir les fenêtres."},
-    {id:"radiateurs", t:"Radiateurs : 12° l'hiver, éteints l'été.", only: s => !RADIATEUR_AUTO(s) && s !== 'kingston'},
+    {id:"radiateurs", t:"Radiateurs : 12° l'hiver, éteints l'été.", only: s => ['hamac','helene'].includes(s)},
   ]],
   ["s2","2. Salle de bain : produits — dans cet ordre",[
     {id:"anticalcaire", t:"① Anti-calcaire sur toute la robinetterie : salle de bain, cuisine, balnéo, buses et commandes balnéo."},
