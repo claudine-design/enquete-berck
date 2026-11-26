@@ -388,6 +388,8 @@ function openLightbox(src){
 const PANIER_ACCUEIL = ['kitesurf','hamac','paddle','surf','famille','albatros','face-mer','grand-large','terrasse','kingston'];
 // panier: 'classique' (1 panier + accessoires évier) | 'loveroom' (2 paniers : gourmand + petit utilitaire)
 // capacite: nombre max de personnes — pilote la quantité de dosettes/thé/sucrettes (règle: max(4, capacite))
+// Apparts où le volet doit être fermé après le ménage (Claudine 26/11/2026)
+const VOLET_A_FERMER = ['balneo', 'cocon-romantique'];
 // balneo: a une balnéo/jacuzzi → anti-calcaire sur buses + chrome
 // peignoirs: nombre de peignoirs propres à installer (apparts balnéo/spa)
 // sauna: a un sauna → 2 grandes serviettes dans le sauna
@@ -979,6 +981,7 @@ const data = [
     {id:"torchons", t:"Torchons : les déposer dans le local ménage.", only: s => s === 'apolove'},
     {id:"reassort", t:"Noter le réassort dans l'appli.", d:"Appli réassort : https://claudine-design.github.io/enquete-berck/reassort/"},
     {id:"spray-he", t:"Asperger le spray huiles essentielles dans chaque pièce.", d:"Dernier geste avant de partir : quelques pulvérisations dans chaque pièce (entrée, salon, chambre(s), salle de bain) pour que le voyageur entre dans un logement qui sent bon."},
+    {id:"volet", t:"🪟 <b>FERMER LE VOLET</b> en partant.", d:"Balnéo et Cocon : le volet doit être baissé avant de quitter le logement (Claudine 26/11/2026).", only: s => VOLET_A_FERMER.includes(s)},
     {id:"fermeture", t:"Fenêtres fermées, lumières éteintes, robinets vérifiés, clés en place, code brouillé."},
   ]],
 ];
@@ -1700,6 +1703,7 @@ async function send(){
     rapFin.forEach(r => { S.rappelsOk[r.id] = Date.now(); });
     saveS();
   }
+  if(VOLET_A_FERMER.includes(s)){ await popupVolet(); if(!S) return; }
   let remarque = '';
   if(S.etat && (S.etat.degats === 'oui' || S.etat.vol === 'oui')) remarque = (S.etat.degats === 'oui' ? 'DÉGÂTS : ' + S.etat.degatsDetail + '. ' : '') + (S.etat.vol === 'oui' ? 'MANQUE/VOL : ' + S.etat.volDetail : '');
   const fin = new Date().toISOString();
@@ -1908,6 +1912,20 @@ function popupAvertissementBougies(texte){
       '<button type="button">✅ OK</button></div>';
     document.body.appendChild(pop);
     pop.querySelector('img').onclick = e => openLightbox(e.target.src);
+    pop.querySelector('button').onclick = () => { pop.remove(); resolve(); };
+  });
+}
+// Volet à fermer après le ménage : rappel permanent en grand à « Terminer » (Claudine 26/11/2026).
+function popupVolet(){
+  return new Promise(resolve => {
+    const pop = document.createElement('div');
+    pop.className = 'fin rappel-pop';
+    pop.innerHTML = '<div class="fin-card"><div class="ico">🪟</div>' +
+      '<div class="fin-t" style="color:#991b1b">Avant de partir !</div>' +
+      '<div class="txt">Fermez bien le VOLET.</div>' +
+      '<div class="apres">Le volet est baissé ? Appuyez sur OK pour terminer.</div>' +
+      '<button type="button">✅ Volet fermé</button></div>';
+    document.body.appendChild(pop);
     pop.querySelector('button').onclick = () => { pop.remove(); resolve(); };
   });
 }
