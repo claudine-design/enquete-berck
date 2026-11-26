@@ -332,7 +332,7 @@ const apartPhotos = {
 
 // Légendes des photos déco qui portent une consigne précise (numéro de photo → texte)
 const apartPhotoNotes = {
-  'escapade': { 1:"Vue d’ensemble : lit rond fait, plaids roulés, table dressée, cuisine dégagée", 2:"Table dressée pour 2 : assiettes, verres, bougies dorées, panier gourmand, cœurs dorés", 3:"Cuisine + mur TV : plan de travail vide, Senseo en place, déco du meuble TV", 4:"Four et lave-vaisselle : propres, ouverts pour la photo", 5:"Mur en pierre : soleil doré, miroir rond, lampe et tabouret bouclette à leur place", 6:"Entrée : miroir doré, étagère noire, bougeoir, tabouret bouclette", 7:"Salle de bain : lave-linge, vasque en pierre, miroir lumineux, douche marbre noir sans trace", 8:"Balnéo 2 places et sauna 2 places : buses propres, feuilles dorées, bandeau LED" },
+  'escapade': { 1:"Vue d’ensemble : lit rond fait, plaids roulés, table dressée, cuisine dégagée", 2:"Table dressée pour 2 : sets noir et or, assiettes noires empilées + couverts dorés, verres à pied retournés, chandelier doré à gauche, mignonnette + panier au centre, rose dorée à droite, petits cœurs dorés, un coussin gris plissé sur chaque fauteuil", 3:"Cuisine + mur TV : plan de travail vide, Senseo en place, déco du meuble TV", 4:"Four et lave-vaisselle : propres, ouverts pour la photo", 5:"Mur en pierre : soleil doré, miroir rond, lampe et tabouret bouclette à leur place", 6:"Entrée : miroir doré, étagère noire, bougeoir, tabouret bouclette", 7:"Salle de bain : lave-linge, vasque en pierre, miroir lumineux, douche marbre noir sans trace", 8:"Balnéo 2 places et sauna 2 places : buses propres, feuilles dorées, bandeau LED" },
   'famille': { 61:'Salon : grande fenêtre 4 vantaux — vitres, châssis et rebord sans trace', 62:'Chambre : les 4 petites fenêtres — vitres sans coulures, tablette bois et radiateur propres' },
   'apolove': { 14:'Table à manger : bougies allumées, couverts dressés', 15:'Balnéo : les 5 bougies allumées' },
   'grande-roue': {
@@ -953,6 +953,7 @@ const data = [
   ["s6","6. Salon — extérieur — vitres",[
     {id:"canape", t:"Ouvrir le canapé-lit : dedans et dessous, rien d'oublié. Ranger coussins, plaids, déco.", photos:[{id:"canape", label:"Canapé OUVERT (déplié)"}], only: s => !SANS_CANAPE.includes(s)},
     {id:"tv-video", t:"Télé et vidéoprojecteur : écrans sans poussière, télécommandes à leur place, tout éteint.", photos:[{id:"tv-video", label:"Mur TV + vidéoprojecteur, télécommandes rangées"}], only: s => s === 'escapade'},
+    {id:"table-dressee", t:"Table dressée pour 2, exactement comme la photo modèle.", d:"Table blanche essuyée sans trace. Sur chaque set noir et or : grande assiette noire + petite assiette dessus, couverts dorés. 2 verres à pied retournés. Chandelier doré 3 bougies à gauche, mignonnette + panier au centre, rose dorée dans le petit vase doré à droite, petits cœurs dorés sur la table. Un coussin gris plissé sur chaque fauteuil noir.", photos:[{id:"table-dressee", label:"Table dressée (présentation comme la photo modèle)"}], only: s => s === 'escapade'},
     {id:"deco-salon", t:"Ranger coussins, plaids, déco.", only: s => SANS_CANAPE.includes(s)},
     {id:"exterieur", t:"Balcon / terrasse / jardin / patio : mégots, déchets, crottes de chien. Sol balayé, mobilier remis en place.", only: s => !!(apartFeatures[s] && apartFeatures[s].exterieur) || PHOTO_BALCON.includes(s) || PHOTO_JARDIN.includes(s) || PHOTO_TERRASSE.includes(s) || PHOTO_PATIO.includes(s) || PHOTO_EXTERIEUR.includes(s),
       photos:[{id:"balcon", label:"Balcon propre, en entier", only: s => PHOTO_BALCON.includes(s)},{id:"jardin", label:"Jardin propre, en entier", only: s => PHOTO_JARDIN.includes(s)},{id:"terrasse", label:"Terrasse propre, en entier", only: s => PHOTO_TERRASSE.includes(s)},{id:"patio", label:"Patio propre, en entier", only: s => PHOTO_PATIO.includes(s)},{id:"exterieur", label:"Extérieur propre, en entier", only: s => PHOTO_EXTERIEUR.includes(s)}]},
@@ -1208,7 +1209,7 @@ function imgModele(id){
   return im;
 }
 // Photos modèles communes à TOUS les logements (priment sur le modèle du logement) — choix Claudine 27/09/2026.
-const MODELES_FIXES = { canape: 'modele-canape.jpg', 'etagere-linge': 'modele-etagere-grande-roue.jpg', 'bougies-piles': 'modele-bougies-balneo-apolove.jpg', 'panier-accueil': 'modele-panier-accueil.jpg' };
+const MODELES_FIXES = { canape: 'modele-canape.jpg', 'etagere-linge': 'modele-etagere-grande-roue.jpg', 'bougies-piles': 'modele-bougies-balneo-apolove.jpg', 'panier-accueil': 'modele-panier-accueil.jpg', 'table-dressee': 'modele-table-escapade.jpg' };
 function modeleUrl(id){ return /\.jpg$/.test(id) ? id : 'https://lh3.googleusercontent.com/d/' + id + '=w1000'; }
 function saveModeles(s){ try { localStorage.setItem('modeles-' + s, JSON.stringify(modeles)); } catch(e){} }
 async function loadModeles(s){
