@@ -386,12 +386,12 @@ function openLightbox(src){
 // ===== Caractéristiques spécifiques par appartement =====
 // Consignes affichées TOUT EN HAUT (demande Claudine 26/11/2026) : dégâts pour tous ; radiateurs allumés
 // (température automatisée) pour tous SAUF les logements sans box : Mini Love Room, Grande Love Room, Hamac
-// (+ Studio Hélène, conciergerie, pas sur les box de Claudine). Kingston : radiateur chambre calé sur 2.
-const SANS_RADIATEUR_AUTO = ['mini-love-room','grande-love-room','hamac','helene'];
+// (+ Studio Hélène, conciergerie, pas sur les box de Claudine). Kingston : box non paramétrable → réglage manuel.
+const SANS_RADIATEUR_AUTO = ['mini-love-room','grande-love-room','hamac','helene','kingston'];
 const RADIATEUR_AUTO = s => !SANS_RADIATEUR_AUTO.includes(s);
 const TXT_DEGATS = "En arrivant dans le logement : vérifier qu'il n'y a pas de dégâts.";
 const TXT_RADIATEURS = "Je vérifie que tous les radiateurs sont allumés. La température est automatisée : ne pas y toucher, juste vérifier que c'est allumé (si c'est éteint, Claudine n'a pas accès au radiateur à distance).";
-const TXT_RADIATEUR_KINGSTON = "Le radiateur de la chambre peut être calé sur 2.";
+const TXT_RADIATEUR_KINGSTON = "Mettre le premier radiateur sur 12 et le deuxième radiateur (celui de la chambre) sur le chiffre 2.";
 // Panier d'accueil en osier noir avec photo obligatoire + photo modèle (demande Claudine 20/11/2026).
 const PANIER_ACCUEIL = ['kitesurf','hamac','paddle','surf','famille','albatros','face-mer','grand-large','terrasse','kingston'];
 // panier: 'classique' (1 panier + accessoires évier) | 'loveroom' (2 paniers : gourmand + petit utilitaire)
@@ -442,9 +442,10 @@ function renderApartWarning(slug){
   let bullets = [];
   // ⚠️ EN PREMIER (Claudine 26/11/2026) : dégâts, puis radiateurs (logements avec box), puis Kingston
   bullets.push('🔎 <b>' + TXT_DEGATS + '</b>');
-  if(RADIATEUR_AUTO(slug)){
-    bullets.push('🌡️ <b>' + TXT_RADIATEURS + '</b>' +
-      (slug === 'kingston' ? '<div style="margin-top:6px">🛏️ <b>Kingston : ' + TXT_RADIATEUR_KINGSTON + '</b></div>' : ''));
+  if(slug === 'kingston'){
+    bullets.push('🌡️ <b>' + TXT_RADIATEUR_KINGSTON + '</b>');
+  } else if(RADIATEUR_AUTO(slug)){
+    bullets.push('🌡️ <b>' + TXT_RADIATEURS + '</b>');
   }
   // 🎁 Panier de bienvenue (TOUJOURS en premier — c'est ce que le voyageur voit en arrivant)
   if(f.panier){
@@ -920,8 +921,8 @@ const data = [
   ["s1","1. Arrivée",[
     {id:"cave", t:"EN PREMIER, au local ménage, en prenant le sac : photo de toutes les étagères, de face, bien éclairées (une fois par semaine).", d:"Cette photo sert à prévoir les achats : produits, gâteaux, papier toilette. Reculez pour tout avoir sur la photo et allumez la lumière.", photos:[{id:"cave", label:"Étagères du local ménage"}], only: s => MODE_MODELE ? !!caveDe(s) : (caveDue(s) || !!(S && S.photos && S.photos.cave))},
     {id:"degats", t:TXT_DEGATS},
-    {id:"radiateurs", t:TXT_RADIATEURS, only: s => RADIATEUR_AUTO(s) && s !== 'kingston'},
-    {id:"radiateurs", t:TXT_RADIATEURS + " " + TXT_RADIATEUR_KINGSTON, only: s => s === 'kingston'},
+    {id:"radiateurs", t:TXT_RADIATEURS, only: s => RADIATEUR_AUTO(s)},
+    {id:"radiateurs", t:TXT_RADIATEUR_KINGSTON, only: s => s === 'kingston'},
     {id:"questionnaire", t:"Photo du questionnaire d'arrivée + lire les annotations."},
     {id:"premier-tour", t:"Premier tour : casse, manque, panne, saleté anormale → photo + signalement AVANT de commencer."},
     {id:"machine", t:"Lancer la machine à laver.", only: s => !LESSIVE[s]},
@@ -930,7 +931,7 @@ const data = [
     {id:"machine", t:"Lancer la machine à laver avec : lavettes, essuie-mains, tapis de bain ET peignoirs. Lavante-séchante : elle lave et sèche toute seule, on ne s'en occupe pas.", only: s => LESSIVE[s] === 'auto'},
     {id:"sac-blanchisserie", t:"Pas de lessive ici. Draps, draps-housses, taies d'oreiller et serviettes → dans un sac BLANC ET NOIR, déposé dans la cave (pour la blanchisserie).", d:"Torchons, lavettes, tapis de bain ne vont PAS dans ce sac : voir étape 8 (sac Lidl).", only: s => LESSIVE[s] === 'aucune'},
     {id:"fenetres", t:"Ouvrir les fenêtres."},
-    {id:"radiateurs", t:"Radiateurs : 12° l'hiver, éteints l'été.", only: s => !RADIATEUR_AUTO(s)},
+    {id:"radiateurs", t:"Radiateurs : 12° l'hiver, éteints l'été.", only: s => !RADIATEUR_AUTO(s) && s !== 'kingston'},
   ]],
   ["s2","2. Salle de bain : produits — dans cet ordre",[
     {id:"anticalcaire", t:"① Anti-calcaire sur toute la robinetterie : salle de bain, cuisine, balnéo, buses et commandes balnéo."},
