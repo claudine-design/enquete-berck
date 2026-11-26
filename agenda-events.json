@@ -1,7 +1,7 @@
 [
  {
   "titre": "Matchs de Basket de l'ABBR",
-  "start": "2026-11-25",
+  "start": "2026-11-26",
   "date_label": "Jusqu'au 19/02/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=124554",
@@ -9,23 +9,15 @@
  },
  {
   "titre": "Exposition \"Ecrite par la lumière\"",
-  "start": "2026-11-25",
+  "start": "2026-11-26",
   "date_label": "Jusqu'au 14/03/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=114145",
   "source": "Office de Tourisme"
  },
  {
-  "titre": "Lectures Philosophiques à partager - Musée Opale Sud",
-  "start": "2026-11-25",
-  "date_label": "Jusqu'au 23/12/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131128",
-  "source": "Office de Tourisme"
- },
- {
   "titre": "Brocante - Ambassade Bonchat",
-  "start": "2026-11-25",
+  "start": "2026-11-26",
   "date_label": "Jusqu'au 10/01/2027",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=113893",
@@ -33,7 +25,7 @@
  },
  {
   "titre": "Exposition Charlotte HIS chez Causettes",
-  "start": "2026-11-25",
+  "start": "2026-11-26",
   "date_label": "Jusqu'au 02/12/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131532",
@@ -41,7 +33,7 @@
  },
  {
   "titre": "Concours de dessin - Au comptoir du littoral",
-  "start": "2026-11-25",
+  "start": "2026-11-26",
   "date_label": "Jusqu'au 04/12/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131690",
@@ -173,27 +165,35 @@
   "source": "Office de Tourisme"
  },
  {
+  "titre": "Coup de Coeur Surprise - Cinos",
+  "start": "2026-12-07",
+  "date_label": "Le 07/12/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=125995",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Avant-première \"Changer l'eau des fleurs\" - CINOS",
+  "start": "2026-12-08",
+  "date_label": "Le 08/12/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131917",
+  "source": "Office de Tourisme"
+ },
+ {
+  "titre": "Soirée ABAC - \" Les matins merveilleux\"",
+  "start": "2026-12-09",
+  "date_label": "Le 09/12/2026",
+  "categories": [],
+  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=125649",
+  "source": "Office de Tourisme"
+ },
+ {
   "titre": "Les ateliers de Min'harmonie - Découvrir les 38 fleurs de Bach",
   "start": "2026-12-12",
   "date_label": "Le 12/12/2026",
   "categories": [],
   "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=130790",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Projection d'un film de Noël",
-  "start": "2026-12-19",
-  "date_label": "Le 19/12/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131755",
-  "source": "Office de Tourisme"
- },
- {
-  "titre": "Ca sent l’sapin ! – Familia Théâtre",
-  "start": "2026-12-19",
-  "date_label": "Le 19/12/2026",
-  "categories": [],
-  "lien": "https://www.berck-tourisme.com/fr/sortir-et-se-divertir/agenda-annuel?_event=131166",
   "source": "Office de Tourisme"
  }
 ]
