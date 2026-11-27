@@ -392,6 +392,9 @@ const RADIATEUR_AUTO = s => !SANS_RADIATEUR_AUTO.includes(s);
 const TXT_DEGATS = "En arrivant dans le logement : vérifier qu'il n'y a pas de dégâts.";
 const TXT_RADIATEURS = "Je vérifie que tous les radiateurs sont allumés. La température est automatisée : ne pas y toucher, juste vérifier que c'est allumé (si c'est éteint, Claudine n'a pas accès au radiateur à distance).";
 const TXT_RADIATEUR_KINGSTON = "Mettre le premier radiateur sur 12 et le deuxième radiateur (celui de la chambre) sur le chiffre 2.";
+// Fin de ménage (Claudine 27/11/2026) : case « Radiateur allumé » pour tous SAUF Mini LR, Grande LR, Kingston.
+const SANS_RADIATEUR_FIN = ['mini-love-room','grande-love-room','kingston'];
+const TXT_RADIATEUR_FIN = "Radiateur allumé — ne pas toucher à la température";
 // Panier d'accueil en osier noir avec photo obligatoire + photo modèle (demande Claudine 20/11/2026).
 const PANIER_ACCUEIL = ['kitesurf','hamac','paddle','surf','famille','albatros','face-mer','grand-large','terrasse','kingston'];
 // panier: 'classique' (1 panier + accessoires évier) | 'loveroom' (2 paniers : gourmand + petit utilitaire)
@@ -998,6 +1001,7 @@ const data = [
     {id:"reassort", t:"Noter le réassort dans l'appli.", d:"Appli réassort : https://claudine-design.github.io/enquete-berck/reassort/"},
     {id:"spray-he", t:"Asperger le spray huiles essentielles dans chaque pièce.", d:"Dernier geste avant de partir : quelques pulvérisations dans chaque pièce (entrée, salon, chambre(s), salle de bain) pour que le voyageur entre dans un logement qui sent bon."},
     {id:"fermeture", t:"Fenêtres fermées, lumières éteintes, robinets vérifiés, clés en place, code brouillé."},
+    {id:"radiateur-fin", t:TXT_RADIATEUR_FIN, only: s => !SANS_RADIATEUR_FIN.includes(s)},
   ]],
 ];
 
